@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "651826951315",
+    "firebase_url": "https://fitrack-7ee93-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fitrack-7ee93",
+    "storage_bucket": "fitrack-7ee93.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651826951315:android:f1abd693e3f23fef300966",
+        "android_client_info": {
+          "package_name": "com.company.fitrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAv3KeYMGVRgqKbbiQ3jIPHbLWlUYJ8KoY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

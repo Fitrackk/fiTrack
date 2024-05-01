@@ -1,6 +1,9 @@
+import 'package:fitrack/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseService.initializeFirebase();
   runApp(const MainApp());
 }
 
@@ -10,6 +13,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
           child: Text('Fitrack!'),
