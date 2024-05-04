@@ -1,4 +1,5 @@
 import 'package:fitrack/services/firebase_service.dart';
+import 'package:fitrack/view/user_data.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -14,11 +15,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text('Fitrack!'),
-        ),
-      ),
+      home: UserData(),
     );
   }
 }
