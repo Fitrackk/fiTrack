@@ -1,3 +1,4 @@
+import 'package:fitrack/configures/routes.dart';
 import 'package:fitrack/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
@@ -8,17 +9,14 @@ void main() async {
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  const MainApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text('Fitrack!'),
-        ),
-      ),
+      initialRoute: '/',
+      routes: Routes.getRoutes(context),
     );
   }
 }
