@@ -1,6 +1,6 @@
+import 'package:fitrack/configures/routes.dart';
 import 'package:fitrack/services/firebase_service.dart';
-import 'package:fitrack/view/sign_in.dart';
-import 'package:fitrack/view/user_data.dart';
+import 'package:fitrack/view/sign_up.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -10,13 +10,14 @@ void main() async {
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  const MainApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-        home: SignIn(),
+      home: SignUp(),
+      routes: Routes.getRoutes(context),
     );
   }
 }
