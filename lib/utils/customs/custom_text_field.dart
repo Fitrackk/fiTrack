@@ -7,12 +7,14 @@ class CustomTextField extends StatelessWidget {
   final String lableText;
   final IconButton? icon;
   final bool obScureText;
+
   CustomTextField(
       {super.key,
       required this.lableText,
       required this.icon,
       required this.obScureText,
       required this.myController});
+
   @override
   Widget build(BuildContext context) {
     TextStyle labelStyle = TextStyles.bodysmall.copyWith(
@@ -28,7 +30,7 @@ class CustomTextField extends StatelessWidget {
           blurRadius: 6,
           offset: Offset(2, 4), // changes
         )
-      ], color: FitColors.primary100, borderRadius: BorderRadius.circular(50)),
+      ], color: FitColors.tertiary90, borderRadius: BorderRadius.circular(50)),
       child: TextField(
         controller: myController,
         obscureText: obScureText,

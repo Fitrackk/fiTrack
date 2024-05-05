@@ -1,5 +1,6 @@
 import 'package:fitrack/configures/routes.dart';
 import 'package:fitrack/services/firebase_service.dart';
+import 'package:fitrack/view/sign_up.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -15,7 +16,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      home: SignUp(),
       routes: Routes.getRoutes(context),
     );
   }

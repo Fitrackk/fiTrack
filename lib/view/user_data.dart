@@ -2,17 +2,23 @@ import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:flutter/material.dart';
 
+import '../configures/routes.dart';
+import '../view_model/sign_up.dart';
+
 class UserData extends StatelessWidget {
-  const UserData({super.key});
+  const UserData({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: Routes.getRoutes(context),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/signup');
+            },
             icon: const Icon(Icons.arrow_back_ios_new),
             color: FitColors.tertiary60,
           ),
@@ -24,7 +30,7 @@ class UserData extends StatelessWidget {
 }
 
 class DataForm extends StatefulWidget {
-  const DataForm({super.key});
+  const DataForm({Key? key});
 
   @override
   _DataFormState createState() => _DataFormState();
@@ -32,21 +38,23 @@ class DataForm extends StatefulWidget {
 
 class _DataFormState extends State<DataForm> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
   String? _selectedGender;
 
   @override
   void dispose() {
     _usernameController.dispose();
-    _emailController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _fullNameController.dispose();
+    _heightController.dispose();
+    _weightController.dispose();
     _dateOfBirthController.dispose();
     super.dispose();
   }
+
+  final FirebaseAuthService _authService = FirebaseAuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -58,30 +66,34 @@ class _DataFormState extends State<DataForm> {
           children: <Widget>[
             Transform.translate(
               offset: const Offset(0, -50),
-              child: Text('Tell us about yourself',
-                  style: TextStyles.headlineMedium
-                      .copyWith(color: FitColors.text20)),
+              child: Text(
+                'Tell us about yourself',
+                style:
+                    TextStyles.headlineMedium.copyWith(color: FitColors.text20),
+              ),
             ),
             Transform.translate(
               offset: const Offset(0, -45),
-              child: Text('To give you a better experience',
-                  style:
-                      TextStyles.titlesmall.copyWith(color: FitColors.text20)),
+              child: Text(
+                'To give you a better experience',
+                style: TextStyles.titlesmall.copyWith(color: FitColors.text20),
+              ),
             ),
             const SizedBox(height: 20),
             TextField(
+              controller: _usernameController,
               decoration: InputDecoration(
                 labelText: 'Username',
                 labelStyle:
                     TextStyles.titleMedium.copyWith(color: FitColors.text10),
                 hintText: 'Enter your username',
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                     color: FitColors.tertiary60, // Standard border color
                     width: 1.1,
                   ),
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                     color: FitColors
                         .primary30, // Color when the TextField is focused
@@ -90,21 +102,26 @@ class _DataFormState extends State<DataForm> {
                 ),
               ),
             ),
+            if (_authService.usernameError.isNotEmpty)
+              Text(
+                _authService.usernameError,
+                style: const TextStyle(color: FitColors.error40),
+              ),
             const SizedBox(height: 20),
             TextField(
-              controller: _emailController,
+              controller: _fullNameController,
               decoration: InputDecoration(
                 labelText: 'Full Name',
                 labelStyle:
                     TextStyles.titleMedium.copyWith(color: FitColors.text10),
-                hintText: 'Enter your full name',
+                hintText: 'Enter your Full Name',
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                     color: FitColors.tertiary60,
                     width: 1.1,
                   ),
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                     color: FitColors
                         .primary30, // Color when the TextField is focused
@@ -113,44 +130,73 @@ class _DataFormState extends State<DataForm> {
                 ),
               ),
             ),
+            if (_authService.fullNameError.isNotEmpty)
+              Text(
+                _authService.fullNameError,
+                style: const TextStyle(color: FitColors.error40),
+              ),
             const SizedBox(height: 20),
             Row(
               children: <Widget>[
                 Expanded(
                   child: TextField(
-                    controller: _firstNameController,
+                    controller: _heightController,
                     decoration: InputDecoration(
-                      labelText: 'First Name',
+                      labelText: 'Height',
                       labelStyle: TextStyles.titleMedium
                           .copyWith(color: FitColors.text10),
-                      hintText: 'John',
+                      hintText: 'Enter your height',
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: FitColors.tertiary60,
                           width: 1.1,
                         ),
                       ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: FitColors
+                              .primary30, // Color when the TextField is focused
+                          width: 1.1,
+                        ),
+                      ),
                     ),
                   ),
                 ),
+                if (_authService.heightError.isNotEmpty)
+                  Text(
+                    _authService.heightError,
+                    style: const TextStyle(color: FitColors.error40),
+                  ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextField(
-                    controller: _lastNameController,
+                    controller: _weightController,
                     decoration: InputDecoration(
-                      labelText: 'Last Name',
+                      labelText: 'Weight',
                       labelStyle: TextStyles.titleMedium
                           .copyWith(color: FitColors.text10),
-                      hintText: 'Doe',
+                      hintText: 'Enter your weight',
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: FitColors.tertiary60,
                           width: 1.1,
                         ),
                       ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: FitColors
+                              .primary30, // Color when the TextField is focused
+                          width: 1.1,
+                        ),
+                      ),
                     ),
                   ),
                 ),
+                if (_authService.weightError.isNotEmpty)
+                  Text(
+                    _authService.weightError,
+                    style: const TextStyle(color: FitColors.error40),
+                  ),
               ],
             ),
             const SizedBox(height: 20),
@@ -175,16 +221,23 @@ class _DataFormState extends State<DataForm> {
                 ),
               ),
             ),
+            if (_authService.dateOfBirthError.isNotEmpty)
+              Text(
+                _authService.dateOfBirthError,
+                style: const TextStyle(color: FitColors.error40),
+              ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Gender: ',
-                      style: TextStyles.labelmedium.copyWith(
-                        color: FitColors.text10,
-                      )),
+                  Text(
+                    'Gender: ',
+                    style: TextStyles.labelmedium.copyWith(
+                      color: FitColors.text10,
+                    ),
+                  ),
                   const SizedBox(width: 10), // Space between label and dropdown
                   Expanded(
                     child: DropdownButtonFormField<String>(
@@ -193,6 +246,13 @@ class _DataFormState extends State<DataForm> {
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: FitColors.tertiary60,
+                            width: 1.1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: FitColors.primary30,
+                            // Color when the TextField is focused
                             width: 1.1,
                           ),
                         ),
@@ -216,18 +276,32 @@ class _DataFormState extends State<DataForm> {
                 ],
               ),
             ),
+            if (_authService.genderError.isNotEmpty)
+              Text(
+                _authService.genderError,
+                style: const TextStyle(color: FitColors.error40),
+              ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Implement your sign up logic here
+                setState(() {
+                  _authService.signUp(
+                    context,
+                    _fullNameController.text,
+                    _usernameController.text,
+                    _heightController.text,
+                    _weightController.text,
+                    _selectedGender ?? '',
+                    _dateOfBirthController.text,
+                  );
+                });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: FitColors.primary95,
-                foregroundColor: FitColors.primary30,
-                minimumSize: const Size(double.infinity,
-                    50), // Makes the button taller and full-width
+                backgroundColor: FitColors.primary30,
+                foregroundColor: FitColors.primary95,
+                minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20), // Border Radius
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
               child: const Text('Sign Up'),
@@ -236,17 +310,15 @@ class _DataFormState extends State<DataForm> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushReplacementNamed("signin");
-                  },
-                  child: const Text("Already have an account?"),
+                const InkWell(
+                  child: Text("Already have an account?"),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Navigator.pushNamed(context, '/signin');
+                  },
                   style: TextButton.styleFrom(
-                    foregroundColor:
-                        FitColors.tertiary50, // Sets the text color to blue
+                    foregroundColor: FitColors.tertiary50,
                   ),
                   child: const Text("Sign In"),
                 ),
@@ -261,20 +333,20 @@ class _DataFormState extends State<DataForm> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2025),
+      initialDate: DateTime(2016),
+      firstDate: DateTime(1920),
+      lastDate: DateTime(2016),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFFBCD3DC), // Picker background color
-              onPrimary: Color(0xFF233A43), // Text color
-              surface: Color(0xFF79A8B9), // Picker background color
-              onSurface: Color(0xFF233A43), // Text color
+              primary: FitColors.tertiary80,
+              onPrimary: FitColors.tertiary20,
+              surface: FitColors.tertiary60,
+              onSurface: FitColors.text10,
             ),
             textTheme: const TextTheme(
-              bodyLarge: TextStyle(color: Color(0xFF233A43)), // Text color
+              bodyLarge: TextStyle(color: FitColors.text10),
             ),
           ),
           child: child!,
