@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:fitrack/utils/customs/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import '../configures/color_theme.dart';
 import '../configures/text_style.dart';
@@ -6,7 +6,6 @@ import '../view_model/forgot_password.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
-
   @override
   State<ForgotPasswordView> createState() => _ForgotPasswordViewState();
 }
@@ -14,33 +13,14 @@ class ForgotPasswordView extends StatefulWidget {
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final TextEditingController _emailController = TextEditingController();
   final ForgotPasswordViewModel _viewModel = ForgotPasswordViewModel();
+  String _errorMessage = '';
+  String _successMessage = '';
+
 
   @override
   void dispose() {
     _emailController.dispose();
     super.dispose();
-  }
-
-  Future<void> _passwordReset() async {
-    String email = _emailController.text.trim();
-
-    try {
-      await _viewModel.resetPassword(email);
-      _showDialog('Password reset email has been sent to $email');
-    } catch (e) {
-      _showDialog(e.toString());
-    }
-  }
-
-  void _showDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text(message),
-        );
-      },
-    );
   }
 
   @override
@@ -50,8 +30,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         automaticallyImplyLeading: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => exit(0),
-          color: FitColors.text30,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          color: FitColors.primary30,
         ),
       ),
       body: Column(
@@ -64,12 +46,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               children: [
                 Container(
                   constraints: const BoxConstraints.tightFor(width: 180, height: 51),
-                  color: FitColors.background, // Adding background color to the container
+                  color: FitColors.background,
                   child: Center(
                     child: Text(
                       "Forgot password",
-                      style: TextStyles.titleLarge.copyWith(color: FitColors.text30),
-                      textAlign: TextAlign.center,
+                      style: TextStyles.titleLarge.copyWith(color: FitColors.primary30),
                     ),
                   ),
                 ),
@@ -77,7 +58,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             ),
           ),
           Container(
-            constraints: const BoxConstraints.tightFor(width: 319, height: 150),
+            constraints: const BoxConstraints.tightFor(width: 319, height: 60),
             child: Text(
               "Please enter your email to reset the password",
               style: TextStyles.labelLarge.copyWith(color: FitColors.placeholder),
@@ -88,10 +69,19 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                
-                const SizedBox(height: 20),
+                CustomTextField(lableText: 'Email', icon: null, obScureText: false, myController: _emailController),
+                const SizedBox(height: 5.0),
+                Text(
+                  _errorMessage,
+                  style: const TextStyle(color: FitColors.error50),
+                ),
+                Text(
+                  _successMessage,
+                  style: const TextStyle(color: FitColors.success50),
+                ),
+                const SizedBox(height: 5.0),
                 Container(
-                  width: 320,
+                  width: 200,
                   height: 47,
                   decoration: BoxDecoration(
                     color: FitColors.primary30,
@@ -101,13 +91,26 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                         color: Colors.black.withOpacity(0.2),
                         spreadRadius: 1,
                         blurRadius: 3,
-                        offset: const Offset(0, 3), // changes position of shadow
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
                   child: Center(
                     child: MaterialButton(
-                      onPressed: _passwordReset,
+                      onPressed: () async {
+                        try {
+                          await _viewModel.resetPassword(_emailController.text);
+                          setState(() {
+                            _successMessage = 'Password reset email has been sent';
+                            _errorMessage ='';
+                          });
+                        } catch (e) {
+                          setState(() {
+                            _errorMessage = e.toString();
+                            _successMessage ='';
+                          });
+                        }
+                      },
                       child: Text(
                         'Send',
                         style: TextStyles.labelLarge.copyWith(color: FitColors.primary95),
