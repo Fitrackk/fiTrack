@@ -2,29 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/utils/customs/custom_text_field.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitrack/view_model/sign_in.dart';
+import 'package:provider/provider.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
-
-  @override
-  _SignInState createState() => _SignInState();
-}
-
-class _SignInState extends State<SignIn> {
-  bool _obscureText = true;
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  String _errorMessage = '';
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
+class SignIn extends StatelessWidget {
+  const SignIn({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => SignInViewModel(), // Provide the SignInViewModel
+      child: SignInContent(),
+    );
+  }
+}
+
+class SignInContent extends StatefulWidget {
+  const SignInContent({Key? key}) : super(key: key);
+
+  @override
+  State<SignInContent> createState() => _SignInContentState();
+}
+
+class _SignInContentState extends State<SignInContent> {
+  Icon icon1 = const Icon(Icons.visibility_off, color: FitColors.text30);
+  bool obScureText1 = true;
+  int flag1 = 0;
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final signInVm = Provider.of<SignInViewModel>(context);
+
     return Scaffold(
       backgroundColor: FitColors.background,
       body: Center(
@@ -32,31 +43,44 @@ class _SignInState extends State<SignIn> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+
               const SizedBox(height: 5),
               Text("Sign in", style: TextStyles.displayLargeBold.copyWith(color: FitColors.text30)),
               const SizedBox(height: 50),
               Text("Welcome back again", style: TextStyles.titleMedium.copyWith(color: FitColors.text30)),
               const SizedBox(height: 30),
-              if (_errorMessage.isNotEmpty)
-                Text(_errorMessage, style: const TextStyle(color: FitColors.error50, fontSize: 16)),
-              const SizedBox(height: 10),
-
-
+              if (signInVm.errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(signInVm.errorMessage, style: const TextStyle(color: FitColors.error50)),
+                ),
               CustomTextField(
                 lableText: "Email or username",
                 icon: null,
                 obScureText: false,
-                myController: email,
+                myController: emailController,
               ),
               const SizedBox(height: 15),
               CustomTextField(
                 lableText: "Password",
                 icon: IconButton(
-                  icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: FitColors.primary30),
-                  onPressed: _togglePasswordVisibility,
+                  icon: icon1,
+                  onPressed: () {
+                    setState(() {
+                      if (flag1 == 1) {
+                        icon1 = const Icon(Icons.visibility, color: FitColors.text30);
+                        obScureText1 = false;
+                        flag1 = 0;
+                      } else {
+                        icon1 = const Icon(Icons.visibility_off, color: FitColors.text30);
+                        obScureText1 = true;
+                        flag1 = 1;
+                      }
+                    });
+                  },
                 ),
-                obScureText: _obscureText,
-                myController: password,
+                obScureText: obScureText1,
+                myController: passwordController,
               ),
               const SizedBox(height: 20),
               Align(
@@ -64,26 +88,14 @@ class _SignInState extends State<SignIn> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: InkWell(
-                    onTap: _onForgetPasswordTap,
+                    onTap: () => Navigator.pushNamed(context, '/forget_password'),
                     child: Text("Forget password?", style: TextStyles.bodysmall.copyWith(color: FitColors.secondary10)),
                   ),
                 ),
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () async {
-                  try {
-                    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: email.text.trim(),
-                      password: password.text.trim(),
-                    );
-                    Navigator.pushReplacementNamed(context, '/dashboard');
-                  } on FirebaseAuthException catch (e) {
-                    setState(() {
-                      _errorMessage = 'Incorrect email or password';
-                    });
-                  }
-                },
+                onPressed: () => signInVm.signIn(context, emailController.text, passwordController.text),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: FitColors.primary30,
                   minimumSize: const Size(380, 60),
@@ -99,9 +111,7 @@ class _SignInState extends State<SignIn> {
                 child: Text("Don’t have an account?", style: TextStyles.labelLarge.copyWith(color: FitColors.text30)),
               ),
               GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/signup');
-                },
+                onTap: () => Navigator.pushNamed(context, '/signup'),
                 child: const Text("Sign up", style: TextStyle(decoration: TextDecoration.underline, color: FitColors.text30)),
               ),
             ],
@@ -109,9 +119,5 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     );
-  }
-
-  void _onForgetPasswordTap() {
-    Navigator.pushNamed(context, '/forget_password');
   }
 }

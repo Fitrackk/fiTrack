@@ -20,7 +20,6 @@ class _SignUpState extends State<SignUp> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
-
   Icon icon1 = const Icon(Icons.visibility, color: FitColors.primary30);
   Icon icon2 = const Icon(Icons.visibility, color: FitColors.primary30);
   bool obScureText1 = false;
