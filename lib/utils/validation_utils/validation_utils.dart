@@ -22,7 +22,7 @@ class ValidationUtils {
     return urlRegExp.hasMatch(url);
   }
 
-  static bool isValidName(String username) {
+  static bool isValidUserName(String username) {
     final emailRegExp = RegExp(r'^[a-zA-Z0-9]+$');
     return emailRegExp.hasMatch(username);
   }

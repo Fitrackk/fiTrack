@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import '../configures/color_theme.dart';
 import '../configures/text_style.dart';
 import '../utils/customs/custom_text_field.dart';
-import '../view_model/forgot_password.dart';
+import '../view_models/reset_password.dart';
 
-class ForgotPasswordView extends StatefulWidget {
-  const ForgotPasswordView({Key? key}) : super(key: key);
+class ResetPassword extends StatefulWidget {
+  const ResetPassword({super.key});
 
   @override
-  State<ForgotPasswordView> createState() => _ForgotPasswordViewState();
+  State<ResetPassword> createState() => _ResetPasswordState();
 }
 
-class _ForgotPasswordViewState extends State<ForgotPasswordView> {
+class _ResetPasswordState extends State<ResetPassword> {
   final TextEditingController _emailController = TextEditingController();
-  final ForgotPasswordViewModel _viewModel = ForgotPasswordViewModel();
+  final ResetPasswordVM _viewModel = ResetPasswordVM();
 
   @override
   void dispose() {
@@ -46,7 +46,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               children: [
                 Container(
                   constraints:
-                  const BoxConstraints.tightFor(width: 180, height: 51),
+                      const BoxConstraints.tightFor(width: 180, height: 51),
                   color: FitColors.background,
                   child: Center(
                     child: Text(
@@ -64,7 +64,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             child: Text(
               "Please enter your email to reset the password",
               style:
-              TextStyles.labelLarge.copyWith(color: FitColors.placeholder),
+                  TextStyles.labelLarge.copyWith(color: FitColors.placeholder),
               textAlign: TextAlign.center,
             ),
           ),
@@ -73,10 +73,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomTextField(
-                  lableText: 'Email',
-                  icon: null,
-                  obScureText: false,
-                  myController: _emailController,
+                  labelText: 'Email',
+                  showIcon: false,
+                  obscureText: false,
+                  controller: _emailController,
                 ),
                 const SizedBox(height: 5.0),
                 Text(

@@ -23,21 +23,21 @@ class TextStyles {
     letterSpacing: 0,
   );
 
-  static final TextStyle displayMediumbold = GoogleFonts.lexendDeca(
+  static final TextStyle displayMediumBold = GoogleFonts.lexendDeca(
     fontSize: 45,
     fontWeight: FontWeight.w700,
     height: 1.156,
     letterSpacing: 0,
   );
 
-  static final TextStyle dispalySmall = GoogleFonts.lexendDeca(
+  static final TextStyle displaySmall = GoogleFonts.lexendDeca(
     fontSize: 36,
     fontWeight: FontWeight.w400,
     height: 1.0,
     letterSpacing: 0,
   );
 
-  static final TextStyle dispalySmallbold = GoogleFonts.lexendDeca(
+  static final TextStyle displaySmallBold = GoogleFonts.lexendDeca(
     fontSize: 35,
     fontWeight: FontWeight.w700,
     height: 1.0,
@@ -65,7 +65,7 @@ class TextStyles {
     letterSpacing: 0,
   );
 
-  static final TextStyle headingmediumbold = GoogleFonts.lexendDeca(
+  static final TextStyle headingMediumBold = GoogleFonts.lexendDeca(
     fontSize: 28,
     fontWeight: FontWeight.w700,
     height: 1.286,
@@ -79,7 +79,7 @@ class TextStyles {
     letterSpacing: 0,
   );
 
-  static final TextStyle headlinesmallbold = GoogleFonts.lexendDeca(
+  static final TextStyle headlineSmallBold = GoogleFonts.lexendDeca(
     fontSize: 24,
     fontWeight: FontWeight.w700,
     height: 1.0,
@@ -93,7 +93,7 @@ class TextStyles {
     letterSpacing: 0,
   );
 
-  static final TextStyle titlelargebold = GoogleFonts.lexendDeca(
+  static final TextStyle titleLargeBold = GoogleFonts.lexendDeca(
     fontSize: 22,
     fontWeight: FontWeight.w700,
     height: 1.0,
@@ -114,14 +114,14 @@ class TextStyles {
     letterSpacing: 0,
   );
 
-  static final TextStyle titlesmall = GoogleFonts.lexendDeca(
+  static final TextStyle titleSmall = GoogleFonts.lexendDeca(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     height: 1.0,
     letterSpacing: 0,
   );
 
-  static final TextStyle titleSmallbold = GoogleFonts.lexendDeca(
+  static final TextStyle titleSmallBold = GoogleFonts.lexendDeca(
     fontSize: 14,
     fontWeight: FontWeight.w700,
     height: 1.429,
@@ -135,37 +135,37 @@ class TextStyles {
     letterSpacing: 0.1,
   );
 
-  static final TextStyle lablelargebold = GoogleFonts.lexendDeca(
+  static final TextStyle labelLargeBold = GoogleFonts.lexendDeca(
     fontSize: 14,
     fontWeight: FontWeight.w700,
     height: 1.0,
     letterSpacing: 0,
   );
 
-  static final TextStyle labelmedium = GoogleFonts.lexendDeca(
+  static final TextStyle labelMedium = GoogleFonts.lexendDeca(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 1.333,
     letterSpacing: 0.5,
   );
 
-  static final TextStyle lablemedbold = GoogleFonts.lexendDeca(
+  static final TextStyle labelMediumBold = GoogleFonts.lexendDeca(
     fontSize: 12,
     fontWeight: FontWeight.w700,
     height: 1.0,
     letterSpacing: 0,
   );
 
-  static final TextStyle labelsmall = GoogleFonts.lexendDeca(
+  static final TextStyle labelSmall = GoogleFonts.lexendDeca(
     fontSize: 11,
     fontWeight: FontWeight.w400,
     height: 1.455,
     letterSpacing: 0.5,
   );
 
-  static final TextStyle labelsmallbold = GoogleFonts.lexendDeca(
-  fontSize: 11,
-  fontWeight: FontWeight.w700,
+  static final TextStyle labelSmallBold = GoogleFonts.lexendDeca(
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
     height: 1.0,
     letterSpacing: 0,
   );
@@ -177,7 +177,7 @@ class TextStyles {
     letterSpacing: 0,
   );
 
-  static final TextStyle bodyLargebold = GoogleFonts.lexendDeca(
+  static final TextStyle bodyLargeBold = GoogleFonts.lexendDeca(
     fontSize: 16,
     fontWeight: FontWeight.w700,
     height: 1.0,
@@ -191,28 +191,28 @@ class TextStyles {
     letterSpacing: 0,
   );
 
-  static final TextStyle bodymedbold = GoogleFonts.lexendDeca(
+  static final TextStyle bodyMediumBold = GoogleFonts.lexendDeca(
     fontSize: 14,
     fontWeight: FontWeight.w700,
     height: 1.0,
     letterSpacing: 0,
   );
 
-  static final TextStyle bodysmall = GoogleFonts.inter(
+  static final TextStyle bodySmall = GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 1.0,
     letterSpacing: 0,
   );
 
-  static final TextStyle bodysmallbold = GoogleFonts.lexendDeca(
+  static final TextStyle bodySmallBold = GoogleFonts.lexendDeca(
     fontSize: 12,
     fontWeight: FontWeight.w700,
     height: 1.0,
     letterSpacing: 0,
   );
 
-  static final TextStyle bodyxsmall = GoogleFonts.lexendDeca(
+  static final TextStyle bodyXSmall = GoogleFonts.lexendDeca(
     fontSize: 8,
     fontWeight: FontWeight.w400,
     height: 2.0,

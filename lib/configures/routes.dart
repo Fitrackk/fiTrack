@@ -1,12 +1,9 @@
-import 'package:fitrack/view/dashboard.dart';
-import 'package:fitrack/view/user_data.dart';
+import 'package:fitrack/views/dashboard_page.dart';
+import 'package:fitrack/views/reset_password_page.dart';
+import 'package:fitrack/views/sign_up_page.dart';
+import 'package:fitrack/views/signing_page.dart';
+import 'package:fitrack/views/user_data_page.dart';
 import 'package:flutter/material.dart';
-import 'package:fitrack/view/sign_in.dart';
-import 'package:fitrack/view/user_data.dart';
-import 'package:flutter/material.dart';
-
-import '../view/forgot_password.dart';
-import '../view/sign_up.dart';
 
 class Routes {
   static Map<String, WidgetBuilder> getRoutes(BuildContext context) {
@@ -14,8 +11,8 @@ class Routes {
       '/user_data_form': (context) => const UserData(),
       '/signup': (context) => const SignUp(),
       '/dashboard': (context) => const Dashboard(),
-      '/rest_password' : (context) => ForgotPasswordView()
-      '/signin': (context) => SignIn(),
+      '/reset_password': (context) => const ResetPassword(),
+      '/signing': (context) => const Signing(),
     };
   }
 }

@@ -3,7 +3,7 @@ import 'package:fitrack/configures/text_style.dart';
 import 'package:flutter/material.dart';
 
 import '../configures/routes.dart';
-import '../view_model/sign_up.dart';
+import '../view_models/registration.dart';
 
 class UserData extends StatelessWidget {
   const UserData({Key? key});
@@ -54,7 +54,7 @@ class _DataFormState extends State<DataForm> {
     super.dispose();
   }
 
-  final FirebaseAuthService _authService = FirebaseAuthService();
+  final Registration _authService = Registration();
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class _DataFormState extends State<DataForm> {
               offset: const Offset(0, -45),
               child: Text(
                 'To give you a better experience',
-                style: TextStyles.titlesmall.copyWith(color: FitColors.text20),
+                style: TextStyles.titleSmall.copyWith(color: FitColors.text20),
               ),
             ),
             const SizedBox(height: 20),
@@ -230,7 +230,7 @@ class _DataFormState extends State<DataForm> {
                 children: <Widget>[
                   Text(
                     'Gender: ',
-                    style: TextStyles.labelmedium.copyWith(
+                    style: TextStyles.labelMedium.copyWith(
                       color: FitColors.text10,
                     ),
                   ),
@@ -313,7 +313,7 @@ class _DataFormState extends State<DataForm> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Navigator.pushNamed(context, '/signin');
+                    Navigator.pushNamed(context, '/signing');
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: FitColors.tertiary50,

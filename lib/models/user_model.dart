@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class User {
   String? fullName;
   String? email;
-  String? username;
+  String? userName;
   int? age;
   String? gender;
   double? weight;
@@ -14,7 +14,7 @@ class User {
   User({
     required this.fullName,
     required this.email,
-    required this.username,
+    required this.userName,
     required this.age,
     required this.gender,
     required this.weight,
@@ -23,17 +23,17 @@ class User {
     required this.dateOfBirth,
   });
 
-  factory User.fromFirestore(DocumentSnapshot doc) {
+  factory User.fromFirestore(DocumentSnapshot data) {
     return User(
-      fullName: doc['fullName'] ?? '',
-      email: doc['email'] ?? '',
-      username: doc['username'] ?? '',
-      age: calculateAge(doc['dateOfBirth']),
-      gender: doc['gender'] ?? '',
-      weight: doc['weight'] ?? 40.0,
-      height: doc['height'] ?? 150.0,
-      score: doc['score'] ?? 10.0,
-      dateOfBirth: doc['dateOfBirth'] ?? '',
+      fullName: data['fullName'] ?? '',
+      email: data['email'] ?? '',
+      userName: data['username'] ?? '',
+      age: data['age'],
+      gender: data['gender'] ?? '',
+      weight: (data['weight'] ?? 40).toDouble(),
+      height: (data['height'] ?? 150).toDouble(),
+      score: (data['score'] ?? 10).toDouble(),
+      dateOfBirth: data['dateOfBirth'] ?? '',
     );
   }
 
@@ -41,7 +41,7 @@ class User {
     return {
       'fullName': fullName,
       'email': email,
-      'username': username,
+      'username': userName,
       'age': age,
       'gender': gender,
       'weight': weight,

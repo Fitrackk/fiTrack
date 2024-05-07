@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../utils/validation_utils/validation_utils.dart';
 
-class ForgotPasswordViewModel extends ChangeNotifier {
+class ResetPasswordVM extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -22,7 +22,6 @@ class ForgotPasswordViewModel extends ChangeNotifier {
 
   Future<void> resetPasswordWithEmail(String email) async {
     try {
-      // Validation
       if (email.isEmpty) {
         _emailError = 'Email is required';
         notifyListeners();

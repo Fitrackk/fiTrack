@@ -3,7 +3,7 @@ import 'package:fitrack/configures/text_style.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
-  final TextEditingController? myController;
+  final TextEditingController? controller;
   final String labelText;
   bool obscureText;
   final bool showIcon;
@@ -12,7 +12,7 @@ class CustomTextField extends StatefulWidget {
     Key? key,
     required this.labelText,
     required this.obscureText,
-    required this.myController,
+    required this.controller,
     required this.showIcon,
   }) : super(key: key);
 
@@ -44,7 +44,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle labelStyle = TextStyles.bodysmall.copyWith(
+    TextStyle labelStyle = TextStyles.bodySmall.copyWith(
       color: FitColors.placeholder,
     );
     return Container(
@@ -63,7 +63,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         borderRadius: BorderRadius.circular(50),
       ),
       child: TextField(
-        controller: widget.myController,
+        controller: widget.controller,
         obscureText: widget.obscureText,
         keyboardType: TextInputType.name,
         textInputAction: TextInputAction.next,

@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class FirebaseAuthService extends ChangeNotifier {
+class Registration extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _emailError = '';
   String _passwordError = '';
@@ -215,7 +215,7 @@ class FirebaseAuthService extends ChangeNotifier {
       return false;
     }
 
-    if (!ValidationUtils.isValidName(username)) {
+    if (!ValidationUtils.isValidUserName(username)) {
       _setError('username', 'Username must not contain special characters');
       return false;
     }
@@ -244,10 +244,6 @@ class FirebaseAuthService extends ChangeNotifier {
     if (fullname.length < 2 || fullname.length > 40) {
       _setError(
           'fullname', 'Full name must be between 2 and 40 characters long');
-      return false;
-    }
-    if (!ValidationUtils.isValidName(fullname)) {
-      _setError('fullname', 'Full name must not contain special characters');
       return false;
     }
     return true;

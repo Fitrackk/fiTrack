@@ -2,12 +2,12 @@ import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/utils/customs/custom_text_field.dart';
 import 'package:fitrack/utils/customs/google_icon.dart';
-import 'package:fitrack/view_model/sign_up.dart';
+import 'package:fitrack/view_models/registration.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+  const SignUp({super.key});
 
   @override
   State<SignUp> createState() => _SignUpState();
@@ -19,7 +19,7 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  final FirebaseAuthService _authService = FirebaseAuthService();
+  final Registration _authService = Registration();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class _SignUpState extends State<SignUp> {
                 Text(
                   "Enter profile details\n and start creating your account",
                   textAlign: TextAlign.center,
-                  style: TextStyles.titleSmallbold.copyWith(
+                  style: TextStyles.titleSmallBold.copyWith(
                     color: FitColors.text30,
                   ),
                 ),
@@ -53,7 +53,7 @@ class _SignUpState extends State<SignUp> {
                   labelText: 'Email',
                   showIcon: false,
                   obscureText: false,
-                  myController: emailController,
+                  controller: emailController,
                 ),
                 if (_authService.emailError.isNotEmpty)
                   Text(
@@ -64,7 +64,7 @@ class _SignUpState extends State<SignUp> {
                 CustomTextField(
                   labelText: 'Password',
                   obscureText: true,
-                  myController: passwordController,
+                  controller: passwordController,
                   showIcon: true,
                 ),
                 if (_authService.passwordError.isNotEmpty)
@@ -76,7 +76,7 @@ class _SignUpState extends State<SignUp> {
                 CustomTextField(
                   labelText: 'Confirm password',
                   obscureText: true,
-                  myController: confirmPasswordController,
+                  controller: confirmPasswordController,
                   showIcon: true,
                 ),
                 if (_authService.confirmPasswordError.isNotEmpty)
@@ -136,7 +136,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // Navigator.pushNamed(context, '/signin');
+                                Navigator.pushNamed(context, '/signing');
                               },
                           ),
                         ],
@@ -172,7 +172,7 @@ class _SignUpState extends State<SignUp> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                Container(
+                SizedBox(
                   width: currentWidth / 1.7,
                   child: ElevatedButton(
                     onPressed: () {
@@ -189,7 +189,7 @@ class _SignUpState extends State<SignUp> {
                         const SizedBox(width: 15),
                         Text(
                           "SIGN UP WITH GOOGLE",
-                          style: TextStyles.labelmedium
+                          style: TextStyles.labelMedium
                               .copyWith(color: FitColors.text10),
                         ),
                       ],

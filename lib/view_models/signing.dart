@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
-class SignInViewModel extends ChangeNotifier {
+class SignInVM extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -13,7 +13,8 @@ class SignInViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signIn(BuildContext context, String email, String password) async {
+  Future<void> signIn(
+      BuildContext context, String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       errorMessage = 'Email and password cannot be empty';
       return;
@@ -25,15 +26,17 @@ class SignInViewModel extends ChangeNotifier {
         password: password,
       );
 
-      final userDoc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
       if (userDoc.exists) {
-        Navigator.pushReplacementNamed(context, '/signup');
+        Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
         Navigator.pushReplacementNamed(context, '/user_data_form');
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       errorMessage = 'Incorrect email or password';
     }
   }
 }
-
