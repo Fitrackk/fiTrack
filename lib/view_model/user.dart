@@ -1,23 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user.dart';
 import '../services/firebase_api_client.dart';
 
-class UserViewModel extends ChangeNotifier {
+class UserVM extends ChangeNotifier {
   final FirebaseApiClient _firebaseApiClient = FirebaseApiClient();
 
   Future<User?> getUserData(String username) async {
     try {
       Map<String, dynamic> userData =
           await _firebaseApiClient.get('/users/$username');
-      if (userData != null) {
+      if (userData.isNotEmpty) {
         return User.fromFirestore(userData as DocumentSnapshot<Object?>);
       } else {
         return null;
       }
     } catch (e) {
-      print('Error fetching user data: $e');
+      if (kDebugMode) {
+        print('Error fetching user data: $e');
+      }
       return null;
     }
   }
@@ -26,7 +28,9 @@ class UserViewModel extends ChangeNotifier {
     try {
       await _firebaseApiClient.post('/users/${user.username}', user.toMap());
     } catch (e) {
-      print('Error adding user data: $e');
+      if (kDebugMode) {
+        print('Error adding user data: $e');
+      }
     }
   }
 
@@ -34,7 +38,9 @@ class UserViewModel extends ChangeNotifier {
     try {
       await _firebaseApiClient.put('/users/${user.username}', user.toMap());
     } catch (e) {
-      print('Error updating user data: $e');
+      if (kDebugMode) {
+        print('Error updating user data: $e');
+      }
     }
   }
 
@@ -42,7 +48,9 @@ class UserViewModel extends ChangeNotifier {
     try {
       await _firebaseApiClient.delete('/users/$userId');
     } catch (e) {
-      print('Error deleting user data: $e');
+      if (kDebugMode) {
+        print('Error deleting user data: $e');
+      }
     }
   }
 }
