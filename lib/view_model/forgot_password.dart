@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import '../utils/validation_utils/validation_utils.dart';
 
-class ForgotPasswordViewModel  extends ChangeNotifier {
+class ForgotPasswordVM  extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 

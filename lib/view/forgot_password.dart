@@ -12,7 +12,7 @@ class ForgotPasswordView extends StatefulWidget {
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final TextEditingController _emailController = TextEditingController();
-  final ForgotPasswordViewModel _viewModel = ForgotPasswordViewModel();
+  final ForgotPasswordVM _viewModel = ForgotPasswordVM();
   String _errorMessage = '';
   String _successMessage = '';
 
