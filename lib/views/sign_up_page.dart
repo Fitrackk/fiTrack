@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  const SignUp({Key? key}) : super(key: key);
 
   @override
   State<SignUp> createState() => _SignUpState();
@@ -49,41 +49,53 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 const SizedBox(height: 50),
-                CustomTextField(
-                  labelText: 'Email',
-                  showIcon: false,
-                  obscureText: false,
-                  controller: emailController,
+                Column(
+                  children: [
+                    if (_authService.emailError.isNotEmpty)
+                      Text(
+                        _authService.emailError,
+                        style: const TextStyle(color: FitColors.error50),
+                      ),
+                    CustomTextField(
+                      labelText: 'Email',
+                      showIcon: false,
+                      obscureText: false,
+                      controller: emailController,
+                    ),
+                  ],
                 ),
-                if (_authService.emailError.isNotEmpty)
-                  Text(
-                    _authService.emailError,
-                    style: const TextStyle(color: FitColors.error40),
-                  ),
                 const SizedBox(height: 15),
-                CustomTextField(
-                  labelText: 'Password',
-                  obscureText: true,
-                  controller: passwordController,
-                  showIcon: true,
+                Column(
+                  children: [
+                    if (_authService.passwordError.isNotEmpty)
+                      Text(
+                        _authService.passwordError,
+                        style: const TextStyle(color: FitColors.error50),
+                      ),
+                    CustomTextField(
+                      labelText: 'Password',
+                      obscureText: true,
+                      controller: passwordController,
+                      showIcon: true,
+                    ),
+                  ],
                 ),
-                if (_authService.passwordError.isNotEmpty)
-                  Text(
-                    _authService.passwordError,
-                    style: const TextStyle(color: FitColors.error40),
-                  ),
                 const SizedBox(height: 15),
-                CustomTextField(
-                  labelText: 'Confirm password',
-                  obscureText: true,
-                  controller: confirmPasswordController,
-                  showIcon: true,
+                Column(
+                  children: [
+                    if (_authService.confirmPasswordError.isNotEmpty)
+                      Text(
+                        _authService.confirmPasswordError,
+                        style: const TextStyle(color: FitColors.error50),
+                      ),
+                    CustomTextField(
+                      labelText: 'Confirm password',
+                      obscureText: true,
+                      controller: confirmPasswordController,
+                      showIcon: true,
+                    ),
+                  ],
                 ),
-                if (_authService.confirmPasswordError.isNotEmpty)
-                  Text(
-                    _authService.confirmPasswordError,
-                    style: const TextStyle(color: FitColors.error40),
-                  ),
                 const SizedBox(height: 15),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
