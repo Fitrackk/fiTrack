@@ -35,6 +35,18 @@ class FirebaseAuthService extends ChangeNotifier {
 
   String get dateOfBirthError => _dateOfBirthError;
 
+  void clearErrors() {
+    _emailError = '';
+    _passwordError = '';
+    _confirmPasswordError = '';
+    _usernameError = '';
+    _fullNameError = '';
+    _heightError = '';
+    _weightError = '';
+    _genderError = '';
+    _dateOfBirthError = '';
+  }
+
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<void> signUpWithGoogle(BuildContext context) async {

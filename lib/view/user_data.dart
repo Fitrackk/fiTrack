@@ -89,14 +89,13 @@ class _DataFormState extends State<DataForm> {
                 hintText: 'Enter your username',
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: FitColors.tertiary60, // Standard border color
+                    color: FitColors.tertiary60,
                     width: 1.1,
                   ),
                 ),
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: FitColors
-                        .primary30, // Color when the TextField is focused
+                    color: FitColors.primary30,
                     width: 1.1,
                   ),
                 ),
@@ -123,8 +122,7 @@ class _DataFormState extends State<DataForm> {
                 ),
                 focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: FitColors
-                        .primary30, // Color when the TextField is focused
+                    color: FitColors.primary30,
                     width: 1.1,
                   ),
                 ),
@@ -154,8 +152,7 @@ class _DataFormState extends State<DataForm> {
                       ),
                       focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: FitColors
-                              .primary30, // Color when the TextField is focused
+                          color: FitColors.primary30,
                           width: 1.1,
                         ),
                       ),
@@ -184,8 +181,7 @@ class _DataFormState extends State<DataForm> {
                       ),
                       focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: FitColors
-                              .primary30, // Color when the TextField is focused
+                          color: FitColors.primary30,
                           width: 1.1,
                         ),
                       ),
@@ -238,7 +234,7 @@ class _DataFormState extends State<DataForm> {
                       color: FitColors.text10,
                     ),
                   ),
-                  const SizedBox(width: 10), // Space between label and dropdown
+                  const SizedBox(width: 10),
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       value: _selectedGender,
@@ -252,7 +248,6 @@ class _DataFormState extends State<DataForm> {
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: FitColors.primary30,
-                            // Color when the TextField is focused
                             width: 1.1,
                           ),
                         ),
@@ -284,16 +279,19 @@ class _DataFormState extends State<DataForm> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  _authService.signUp(
-                    context,
-                    _fullNameController.text,
-                    _usernameController.text,
-                    _heightController.text,
-                    _weightController.text,
-                    _selectedGender ?? '',
-                    _dateOfBirthController.text,
-                  );
+                _authService.clearErrors();
+                _authService
+                    .signUp(
+                  context,
+                  _fullNameController.text,
+                  _usernameController.text,
+                  _heightController.text,
+                  _weightController.text,
+                  _selectedGender ?? '',
+                  _dateOfBirthController.text,
+                )
+                    .then((_) {
+                  setState(() {});
                 });
               },
               style: ElevatedButton.styleFrom(

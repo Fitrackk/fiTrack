@@ -57,9 +57,9 @@ class _SignUpState extends State<SignUp> {
                 ),
                 const SizedBox(height: 50),
                 CustomTextField(
-                  lableText: "Email",
-                  icon: null,
-                  obScureText: false,
+                  labelText: 'Email',
+                  showIcon: false,
+                  obscureText: false,
                   myController: emailController,
                 ),
                 if (_authService.emailError.isNotEmpty)
@@ -69,22 +69,10 @@ class _SignUpState extends State<SignUp> {
                   ),
                 const SizedBox(height: 15),
                 CustomTextField(
-                  lableText: "Password",
-                  icon: IconButton(
-                    icon: icon1,
-                    onPressed: () {
-                      setState(() {
-                        icon1 = obScureText1
-                            ? const Icon(Icons.visibility,
-                                color: FitColors.text30)
-                            : const Icon(Icons.visibility_off,
-                                color: FitColors.text30);
-                        obScureText1 = !obScureText1;
-                      });
-                    },
-                  ),
-                  obScureText: obScureText1,
+                  labelText: 'Password',
+                  obscureText: true,
                   myController: passwordController,
+                  showIcon: true,
                 ),
                 if (_authService.passwordError.isNotEmpty)
                   Text(
@@ -93,22 +81,10 @@ class _SignUpState extends State<SignUp> {
                   ),
                 const SizedBox(height: 15),
                 CustomTextField(
-                  lableText: "Confirm password",
-                  icon: IconButton(
-                    icon: icon2, // Change to icon2
-                    onPressed: () {
-                      setState(() {
-                        icon2 = obScureText2
-                            ? const Icon(Icons.visibility,
-                                color: FitColors.text30)
-                            : const Icon(Icons.visibility_off,
-                                color: FitColors.text30);
-                        obScureText2 = !obScureText2;
-                      });
-                    },
-                  ),
-                  obScureText: obScureText2,
+                  labelText: 'Confirm password',
+                  obscureText: true,
                   myController: confirmPasswordController,
+                  showIcon: true,
                 ),
                 if (_authService.confirmPasswordError.isNotEmpty)
                   Text(
@@ -122,14 +98,16 @@ class _SignUpState extends State<SignUp> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      setState(() {
-                        _authService.checkValidation(
-                          context,
-                          emailController.text,
-                          passwordController.text,
-                          confirmPasswordController
-                              .text, // Change this with actual full name
-                        );
+                      _authService.clearErrors();
+                      _authService
+                          .checkValidation(
+                        context,
+                        emailController.text,
+                        passwordController.text,
+                        confirmPasswordController.text,
+                      )
+                          .then((_) {
+                        setState(() {});
                       });
                     },
                     style: ButtonStyle(
@@ -202,7 +180,7 @@ class _SignUpState extends State<SignUp> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  width: currentWidth / 1.7, // Adjust the width as needed
+                  width: currentWidth / 1.7,
                   child: ElevatedButton(
                     onPressed: () {
                       _authService.signUpWithGoogle(context);
