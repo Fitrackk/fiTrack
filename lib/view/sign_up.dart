@@ -19,6 +19,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController userName = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
+
   Icon icon1 = const Icon(Icons.visibility, color: FitColors.primary30);
   Icon icon2 = const Icon(Icons.visibility, color: FitColors.primary30);
   bool obScureText1 = false;
@@ -142,6 +143,7 @@ class _SignUpState extends State<SignUp> {
                 child: ElevatedButton(
                   onPressed: () {
                     signUp();
+                    Navigator.pushReplacementNamed(context, '/user_data_form');
                   },
                   style: ButtonStyle(
                     backgroundColor:
@@ -177,7 +179,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                // Navigator.pushNamed(context, '/signin');
+                                Navigator.pushNamed(context, '/signin');
                               },
                           ),
                         ],
