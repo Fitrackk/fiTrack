@@ -19,13 +19,6 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  Icon icon1 = const Icon(Icons.visibility_off, color: FitColors.primary30);
-  Icon icon2 = const Icon(Icons.visibility_off, color: FitColors.primary30);
-  bool obScureText1 = true;
-  bool obScureText2 = true;
-  int flag1 = 0;
-  int flag2 = 0;
-
   final FirebaseAuthService _authService = FirebaseAuthService();
 
   @override
