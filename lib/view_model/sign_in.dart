@@ -32,7 +32,7 @@ class SignInViewModel extends ChangeNotifier {
         Navigator.pushReplacementNamed(context, '/user_data_form');
       }
     } on FirebaseAuthException catch (e) {
-      errorMessage = e.message ?? 'Failed to sign in';
+      errorMessage = 'Incorrect email or password';
     }
   }
 }
