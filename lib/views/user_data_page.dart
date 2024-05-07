@@ -104,7 +104,7 @@ class _DataFormState extends State<DataForm> {
             if (_authService.usernameError.isNotEmpty)
               Text(
                 _authService.usernameError,
-                style: const TextStyle(color: FitColors.error40),
+                style: const TextStyle(color: FitColors.error50),
               ),
             const SizedBox(height: 20),
             TextField(
@@ -131,7 +131,7 @@ class _DataFormState extends State<DataForm> {
             if (_authService.fullNameError.isNotEmpty)
               Text(
                 _authService.fullNameError,
-                style: const TextStyle(color: FitColors.error40),
+                style: const TextStyle(color: FitColors.error50),
               ),
             const SizedBox(height: 20),
             Row(
@@ -162,7 +162,7 @@ class _DataFormState extends State<DataForm> {
                 if (_authService.heightError.isNotEmpty)
                   Text(
                     _authService.heightError,
-                    style: const TextStyle(color: FitColors.error40),
+                    style: const TextStyle(color: FitColors.error50),
                   ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -191,7 +191,7 @@ class _DataFormState extends State<DataForm> {
                 if (_authService.weightError.isNotEmpty)
                   Text(
                     _authService.weightError,
-                    style: const TextStyle(color: FitColors.error40),
+                    style: const TextStyle(color: FitColors.error50),
                   ),
               ],
             ),
@@ -220,7 +220,7 @@ class _DataFormState extends State<DataForm> {
             if (_authService.dateOfBirthError.isNotEmpty)
               Text(
                 _authService.dateOfBirthError,
-                style: const TextStyle(color: FitColors.error40),
+                style: const TextStyle(color: FitColors.error50),
               ),
             const SizedBox(height: 20),
             Padding(
@@ -274,7 +274,7 @@ class _DataFormState extends State<DataForm> {
             if (_authService.genderError.isNotEmpty)
               Text(
                 _authService.genderError,
-                style: const TextStyle(color: FitColors.error40),
+                style: const TextStyle(color: FitColors.error50),
               ),
             const SizedBox(height: 20),
             ElevatedButton(
