@@ -1,62 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+
 import '../utils/validation_utils/validation_utils.dart';
 
-class ForgotPasswordVM  extends ChangeNotifier {
+class ForgotPasswordViewModel extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-   String _emailError = '';
+  String _emailError = '';
+  String _successMessage = '';
 
-  Future<bool> doesEmailExist(String email) async {
+  String get emailError => _emailError;
+  String get successMessage => _successMessage;
+
+  void clearErrors() {
+    _emailError = '';
+    _successMessage = '';
+    notifyListeners();
+  }
+
+  Future<void> resetPasswordWithEmail(String email) async {
     try {
+      // Validation
+      if (email.isEmpty) {
+        _emailError = 'Email is required';
+        notifyListeners();
+        return;
+      } else if (!ValidationUtils.isValidEmail(email)) {
+        _emailError = 'Invalid email format';
+        notifyListeners();
+        return;
+      }
+
+      // Check email existence
       QuerySnapshot<Map<String, dynamic>> userDocs = await _firestore
           .collection('users')
           .where('email', isEqualTo: email)
           .get();
 
-      return userDocs.docs.isNotEmpty;
-    } catch (e) {
-      print('Error checking email existence: $e');
-      return false;
-    }
-  }
-
-  bool validateEmail(String email) {
-    if (email.isEmpty) {
-      _emailError = 'Email is required';
-      notifyListeners();
-      return false;
-    }
-    if (!ValidationUtils.isValidEmail(email)) {
-      _emailError = 'Invalid email format';
-      notifyListeners();
-      return false;
-    }
-    _emailError = '';
-    notifyListeners();
-    return true;
-  }
-
-
-  Future<void> resetPassword(String email) async {
-    try {
-      if (validateEmail(email)) {
-        if (await doesEmailExist(email)) {
-          await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
-        } else {
-          throw 'Email does not exist';
-        }
-      } else {
-        throw 'Invalid email format';
+      if (userDocs.docs.isEmpty) {
+        _emailError = 'Email does not exist';
+        notifyListeners();
+        return;
       }
+
+      // Reset password
+      await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
+      _successMessage = 'Password reset email has been sent';
+      notifyListeners();
     } catch (e) {
-      throw '$e';
+      _emailError = 'Error: $e';
+      notifyListeners();
     }
   }
-
-
 }
-
-

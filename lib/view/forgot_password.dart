@@ -1,25 +1,25 @@
-import 'package:fitrack/utils/customs/custom_text_field.dart';
 import 'package:flutter/material.dart';
+
 import '../configures/color_theme.dart';
 import '../configures/text_style.dart';
+import '../utils/customs/custom_text_field.dart';
 import '../view_model/forgot_password.dart';
 
 class ForgotPasswordView extends StatefulWidget {
-  const ForgotPasswordView({super.key});
+  const ForgotPasswordView({Key? key}) : super(key: key);
+
   @override
   State<ForgotPasswordView> createState() => _ForgotPasswordViewState();
 }
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final TextEditingController _emailController = TextEditingController();
-  final ForgotPasswordVM _viewModel = ForgotPasswordVM();
-  String _errorMessage = '';
-  String _successMessage = '';
-
+  final ForgotPasswordViewModel _viewModel = ForgotPasswordViewModel();
 
   @override
   void dispose() {
     _emailController.dispose();
+    _viewModel.clearErrors();
     super.dispose();
   }
 
@@ -45,12 +45,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  constraints: const BoxConstraints.tightFor(width: 180, height: 51),
+                  constraints:
+                  const BoxConstraints.tightFor(width: 180, height: 51),
                   color: FitColors.background,
                   child: Center(
                     child: Text(
                       "Forgot password",
-                      style: TextStyles.titleLarge.copyWith(color: FitColors.primary30),
+                      style: TextStyles.titleLarge
+                          .copyWith(color: FitColors.primary30),
                     ),
                   ),
                 ),
@@ -61,7 +63,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             constraints: const BoxConstraints.tightFor(width: 319, height: 60),
             child: Text(
               "Please enter your email to reset the password",
-              style: TextStyles.labelLarge.copyWith(color: FitColors.placeholder),
+              style:
+              TextStyles.labelLarge.copyWith(color: FitColors.placeholder),
               textAlign: TextAlign.center,
             ),
           ),
@@ -69,14 +72,19 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomTextField(lableText: 'Email', icon: null, obScureText: false, myController: _emailController),
+                CustomTextField(
+                  lableText: 'Email',
+                  icon: null,
+                  obScureText: false,
+                  myController: _emailController,
+                ),
                 const SizedBox(height: 5.0),
                 Text(
-                  _errorMessage,
+                  _viewModel.emailError,
                   style: const TextStyle(color: FitColors.error50),
                 ),
                 Text(
-                  _successMessage,
+                  _viewModel.successMessage,
                   style: const TextStyle(color: FitColors.success50),
                 ),
                 const SizedBox(height: 5.0),
@@ -98,22 +106,15 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   child: Center(
                     child: MaterialButton(
                       onPressed: () async {
-                        try {
-                          await _viewModel.resetPassword(_emailController.text);
-                          setState(() {
-                            _successMessage = 'Password reset email has been sent';
-                            _errorMessage ='';
-                          });
-                        } catch (e) {
-                          setState(() {
-                            _errorMessage = e.toString();
-                            _successMessage ='';
-                          });
-                        }
+                        _viewModel.clearErrors();
+                        await _viewModel
+                            .resetPasswordWithEmail(_emailController.text);
+                        setState(() {});
                       },
                       child: Text(
                         'Send',
-                        style: TextStyles.labelLarge.copyWith(color: FitColors.primary95),
+                        style: TextStyles.labelLarge
+                            .copyWith(color: FitColors.primary95),
                       ),
                     ),
                   ),
