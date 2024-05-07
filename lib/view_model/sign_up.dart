@@ -215,6 +215,11 @@ class FirebaseAuthService extends ChangeNotifier {
       return false;
     }
 
+    if (!ValidationUtils.isValidName(username)) {
+      _setError('username', 'Username must not contain special characters');
+      return false;
+    }
+
     try {
       bool isUnique = await checkUsernameUniqueness(username);
       if (!isUnique) {
@@ -236,8 +241,13 @@ class FirebaseAuthService extends ChangeNotifier {
     if (!_validateField(fullname, 'fullname', 'Full Name is required')) {
       return false;
     }
-    if (fullname.length > 35) {
-      _setError('fullname', 'Full Name cannot be more than 35 characters long');
+    if (fullname.length < 2 || fullname.length > 40) {
+      _setError(
+          'fullname', 'Full name must be between 2 and 40 characters long');
+      return false;
+    }
+    if (!ValidationUtils.isValidName(fullname)) {
+      _setError('fullname', 'Full name must not contain special characters');
       return false;
     }
     return true;
