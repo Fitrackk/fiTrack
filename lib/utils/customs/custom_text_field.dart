@@ -30,7 +30,7 @@ class CustomTextField extends StatelessWidget {
           blurRadius: 6,
           offset: Offset(2, 4), // changes
         )
-      ], color: FitColors.primary100, borderRadius: BorderRadius.circular(50)),
+      ], color: FitColors.tertiary90, borderRadius: BorderRadius.circular(50)),
       child: TextField(
         controller: myController,
         obscureText: obScureText,

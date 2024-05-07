@@ -224,7 +224,7 @@ class _DataFormState extends State<DataForm> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Implement your sign up logic here
+                Navigator.pushNamed(context, '/signin');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: FitColors.primary95,
