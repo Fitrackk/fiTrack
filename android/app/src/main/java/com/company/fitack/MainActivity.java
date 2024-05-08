@@ -1,4 +1,4 @@
-package com.company.fitack;
+package com.company.fitrack;
 
 import io.flutter.embedding.android.FlutterActivity;
 

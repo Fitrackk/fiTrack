@@ -1,6 +1,11 @@
+import 'package:fitrack/configures/routes.dart';
+import 'package:fitrack/services/firebase_service.dart';
+import 'package:fitrack/views/sign_up_page.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseService.initializeFirebase();
   runApp(const MainApp());
 }
 
@@ -9,12 +14,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Fitrack!'),
-        ),
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const SignUp(),
+      routes: Routes.getRoutes(context),
     );
   }
 }

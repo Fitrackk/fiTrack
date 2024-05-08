@@ -1,4 +1,4 @@
-name: fitack
+name: fitrack
 description: "fitness app"
 publish_to: 'none'
 version: 0.1.0
@@ -7,9 +7,18 @@ environment:
   sdk: '>=3.3.1 <4.0.0'
 
 dependencies:
+  cloud_firestore: ^4.17.2
+  firebase_auth: ^4.19.4
+  firebase_core: ^2.30.1
+  firebase_messaging: ^14.9.1
+  firebase_storage: ^11.7.4
   flutter:
     sdk: flutter
   flutter_native_splash: ^2.4.0
+  google_fonts: ^6.2.1
+  google_sign_in: ^6.2.1
+  http: ^1.2.1
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
