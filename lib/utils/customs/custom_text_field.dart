@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +11,12 @@ class CustomTextField extends StatefulWidget {
   final bool showIcon;
 
   CustomTextField({
-    Key? key,
+    super.key,
     required this.labelText,
     required this.obscureText,
     required this.controller,
     required this.showIcon,
-  }) : super(key: key);
+  });
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -25,8 +27,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   void _updateIcon() {
     _icon = widget.obscureText
-        ? Icon(Icons.visibility_off, color: FitColors.primary30)
-        : Icon(Icons.visibility, color: FitColors.primary30);
+        ? const Icon(Icons.visibility_off, color: FitColors.primary30)
+        : const Icon(Icons.visibility, color: FitColors.primary30);
   }
 
   @override
@@ -37,8 +39,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   void _toggleObscureText() {
     setState(() {
-      widget.obscureText = !widget.obscureText;
-      _updateIcon();
+      if (widget.obscureText) {
+        widget.obscureText = false;
+        _updateIcon();
+        Timer(const Duration(seconds: 1), () {
+          if (mounted) {
+            setState(() {
+              widget.obscureText = true;
+              _updateIcon();
+            });
+          }
+        });
+      } else {
+        widget.obscureText = true;
+        _updateIcon();
+      }
     });
   }
 
@@ -48,10 +63,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       color: FitColors.placeholder,
     );
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: FitColors.placeholder,
             spreadRadius: 0.1,

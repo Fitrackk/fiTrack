@@ -74,7 +74,7 @@ class _SignInContentState extends State<SignInContent> {
                   padding: const EdgeInsets.only(right: 16.0),
                   child: InkWell(
                     onTap: () =>
-                        Navigator.pushNamed(context, '/forget_password'),
+                        Navigator.pushNamed(context, '/reset_password'),
                     child: Text("Forget password?",
                         style: TextStyles.bodySmall
                             .copyWith(color: FitColors.secondary10)),
