@@ -1,7 +1,34 @@
-import 'package:fitrack/configures/routes.dart';
+// import 'package:fitrack/configures/routes.dart';
+// import 'package:fitrack/services/firebase_service.dart';
+// import 'package:fitrack/views/get_started_page.dart';
+// import 'package:flutter/material.dart';
+//
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await FirebaseService.initializeFirebase();
+//   runApp(const MainApp());
+// }
+//
+// class MainApp extends StatelessWidget {
+//   const MainApp({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: const StartedPage(),
+//       routes: Routes.getRoutes(context),
+//     );
+//   }
+// }
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitrack/services/firebase_service.dart';
-import 'package:fitrack/views/sign_up_page.dart';
+import 'package:fitrack/views/dashboard_page.dart';
+import 'package:fitrack/views/get_started_page.dart';
 import 'package:flutter/material.dart';
+
+import 'configures/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -9,14 +36,31 @@ void main() async {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MainApp extends StatefulWidget {
+  const MainApp({Key? key}) : super(key: key);
+
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  late User? _user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SignUp(),
+      home: _user == null ? const StartedPage() : const Dashboard(),
       routes: Routes.getRoutes(context),
     );
   }
