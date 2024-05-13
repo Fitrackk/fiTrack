@@ -1,27 +1,3 @@
-// import 'package:fitrack/configures/routes.dart';
-// import 'package:fitrack/services/firebase_service.dart';
-// import 'package:fitrack/views/get_started_page.dart';
-// import 'package:flutter/material.dart';
-//
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await FirebaseService.initializeFirebase();
-//   runApp(const MainApp());
-// }
-//
-// class MainApp extends StatelessWidget {
-//   const MainApp({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: const StartedPage(),
-//       routes: Routes.getRoutes(context),
-//     );
-//   }
-// }
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitrack/services/firebase_service.dart';
 import 'package:fitrack/views/dashboard_page.dart';
