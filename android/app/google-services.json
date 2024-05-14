@@ -1,74 +1,73 @@
 {
   "project_info": {
-    "project_number": "651826951315",
-    "firebase_url": "https://fitrack-7ee93-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "fitrack-7ee93",
-    "storage_bucket": "fitrack-7ee93.appspot.com"
+    "project_number": "452751692808",
+    "project_id": "fitrackk-a39bb",
+    "storage_bucket": "fitrackk-a39bb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:651826951315:android:f1abd693e3f23fef300966",
+        "mobilesdk_app_id": "1:452751692808:android:3e1fa04dc2bf6905e22dbd",
         "android_client_info": {
-          "package_name": "com.company.fitrack"
+          "package_name": "com.company.fitrackk"
         }
       },
       "oauth_client": [
         {
-          "client_id": "651826951315-b4h02li93c45obmac73l7vr9u93dhq5g.apps.googleusercontent.com",
+          "client_id": "452751692808-0am7j20nae38u1agasrgb358rr3jt24k.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.company.fitrack",
-            "certificate_hash": "ae325676c2a18e0db8c79dd3046fcc755533ef94"
-          }
-        },
-        {
-          "client_id": "651826951315-j6tdli65emi496c5tvgmmpbk7cc8veog.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.company.fitrack",
-            "certificate_hash": "274e74134402b927389daf29caccf14976279972"
-          }
-        },
-        {
-          "client_id": "651826951315-k3tp047ahflk5082dm6unu0n88a8bg9v.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.company.fitrack",
-            "certificate_hash": "6499def578d66970e3230ad6d16cbc628ce532c0"
-          }
-        },
-        {
-          "client_id": "651826951315-sj39bhiino2m3641ueqj9885qpcu1qrv.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.company.fitrack",
+            "package_name": "com.company.fitrackk",
             "certificate_hash": "d336cff630b84e80f06c898f2acf92742bf670bc"
           }
         },
         {
-          "client_id": "651826951315-tt41caslv59k0ipcgog1442dpt9ok9mu.apps.googleusercontent.com",
+          "client_id": "452751692808-al97tgufbqbihfqejkklodt78a33hals.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.company.fitrack",
+            "package_name": "com.company.fitrackk",
+            "certificate_hash": "6499def578d66970e3230ad6d16cbc628ce532c0"
+          }
+        },
+        {
+          "client_id": "452751692808-i5j8f51bl1jpeli5mmahpbk2si3ql5rq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.fitrackk",
+            "certificate_hash": "274e74134402b927389daf29caccf14976279972"
+          }
+        },
+        {
+          "client_id": "452751692808-jfpvl4cc3oqjsesha11hf2ir3bkn4lat.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.fitrackk",
+            "certificate_hash": "ae325676c2a18e0db8c79dd3046fcc755533ef94"
+          }
+        },
+        {
+          "client_id": "452751692808-ngmdn4276cv0cpgvg8cuojllgce6s715.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.fitrackk",
             "certificate_hash": "cc24b29af81d721ebd6634a38fb81a66a1f3467b"
           }
         },
         {
-          "client_id": "651826951315-s7k9ls2fsetiti7f6qormqsulqjt2cku.apps.googleusercontent.com",
+          "client_id": "452751692808-ijfcr1lbhqo7vqiir3mtocsos8hdjoj6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAv3KeYMGVRgqKbbiQ3jIPHbLWlUYJ8KoY"
+          "current_key": "AIzaSyBhvtVpLha_mcw2C8jJnWaIp2BdkvMmPmY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "651826951315-s7k9ls2fsetiti7f6qormqsulqjt2cku.apps.googleusercontent.com",
+              "client_id": "452751692808-ijfcr1lbhqo7vqiir3mtocsos8hdjoj6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

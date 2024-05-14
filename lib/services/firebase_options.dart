@@ -2,11 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 
 class FirebaseOptionsProvider {
   static FirebaseOptions get firebaseOptions => const FirebaseOptions(
-        apiKey: "AIzaSyAv3KeYMGVRgqKbbiQ3jIPHbLWlUYJ8KoY",
+        apiKey: "AIzaSyBhvtVpLha_mcw2C8jJnWaIp2BdkvMmPmY",
         databaseURL:
-            "https://console.firebase.google.com/u/0/project/fitrack-7ee93/firestore/databases/-default-/data/~2F",
-        appId: "fitrack-7ee93",
-        messagingSenderId: '651826951315',
-        projectId: 'fitrack-7ee93',
+            "https://console.firebase.google.com/u/0/project/fitrackk-a39bb/firestore/databases/-default-/data/~2F",
+        appId: "fitrackk-a39bb",
+        messagingSenderId: '452751692808',
+        projectId: 'fitrackk-a39bb',
       );
 }

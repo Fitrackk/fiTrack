@@ -14,10 +14,22 @@
         "node_modules",
         ".git",
         "firebase-debug.log",
-        "firebase-debug.*.log"
+        "firebase-debug.*.log",
+        "*.local"
       ],
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    },
+    {
+      "source": "fitrack",
+      "codebase": "fitrack",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
       ]
     }
   ],
@@ -62,8 +74,6 @@
     },
     "singleProjectMode": true
   },
-  "remoteconfig": {
-    "template": "remoteconfig.template.json"
-  },
+  "remoteconfig": {},
   "extensions": {}
 }
