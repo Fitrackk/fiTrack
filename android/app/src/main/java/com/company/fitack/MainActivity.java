@@ -1,4 +1,4 @@
-package com.company.fitrackk;
+package com.company.fit;
 
 import io.flutter.embedding.android.FlutterActivity;
 

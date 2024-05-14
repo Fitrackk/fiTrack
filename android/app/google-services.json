@@ -1,73 +1,73 @@
 {
   "project_info": {
-    "project_number": "452751692808",
-    "project_id": "fitrackk-a39bb",
-    "storage_bucket": "fitrackk-a39bb.appspot.com"
+    "project_number": "222905056983",
+    "project_id": "fitrack-ar138",
+    "storage_bucket": "fitrack-ar138.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:452751692808:android:3e1fa04dc2bf6905e22dbd",
+        "mobilesdk_app_id": "1:222905056983:android:973d0f829bd61f8dab3a92",
         "android_client_info": {
-          "package_name": "com.company.fitrackk"
+          "package_name": "com.company.fit"
         }
       },
       "oauth_client": [
         {
-          "client_id": "452751692808-0am7j20nae38u1agasrgb358rr3jt24k.apps.googleusercontent.com",
+          "client_id": "222905056983-5jvc60bgr7v37mdhsoljftdjokg91v8h.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.company.fitrackk",
+            "package_name": "com.company.fit",
             "certificate_hash": "d336cff630b84e80f06c898f2acf92742bf670bc"
           }
         },
         {
-          "client_id": "452751692808-al97tgufbqbihfqejkklodt78a33hals.apps.googleusercontent.com",
+          "client_id": "222905056983-ded4trtab30uiib1eug05ibce153vlhm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.company.fitrackk",
-            "certificate_hash": "6499def578d66970e3230ad6d16cbc628ce532c0"
-          }
-        },
-        {
-          "client_id": "452751692808-i5j8f51bl1jpeli5mmahpbk2si3ql5rq.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.company.fitrackk",
-            "certificate_hash": "274e74134402b927389daf29caccf14976279972"
-          }
-        },
-        {
-          "client_id": "452751692808-jfpvl4cc3oqjsesha11hf2ir3bkn4lat.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.company.fitrackk",
+            "package_name": "com.company.fit",
             "certificate_hash": "ae325676c2a18e0db8c79dd3046fcc755533ef94"
           }
         },
         {
-          "client_id": "452751692808-ngmdn4276cv0cpgvg8cuojllgce6s715.apps.googleusercontent.com",
+          "client_id": "222905056983-e87t05o0g39qbnijaje6suhnnpts3t37.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.company.fitrackk",
+            "package_name": "com.company.fit",
+            "certificate_hash": "6499def578d66970e3230ad6d16cbc628ce532c0"
+          }
+        },
+        {
+          "client_id": "222905056983-k6b99qbcc1p88fjoa3v5avhc5apsa3h4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.fit",
             "certificate_hash": "cc24b29af81d721ebd6634a38fb81a66a1f3467b"
           }
         },
         {
-          "client_id": "452751692808-ijfcr1lbhqo7vqiir3mtocsos8hdjoj6.apps.googleusercontent.com",
+          "client_id": "222905056983-kajq1viftbeas6ats2i6bn0s4lsjo99u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.fit",
+            "certificate_hash": "274e74134402b927389daf29caccf14976279972"
+          }
+        },
+        {
+          "client_id": "222905056983-3763idu3ddphos679j5fa4678j8t7est.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBhvtVpLha_mcw2C8jJnWaIp2BdkvMmPmY"
+          "current_key": "AIzaSyBGCvxYZCX5stnP-r87wkVFQxWPY7sc4_8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "452751692808-ijfcr1lbhqo7vqiir3mtocsos8hdjoj6.apps.googleusercontent.com",
+              "client_id": "222905056983-3763idu3ddphos679j5fa4678j8t7est.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

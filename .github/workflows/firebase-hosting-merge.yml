@@ -16,4 +16,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITRACKK_A39BB }}
           channelId: live
-          projectId: fitrackk-a39bb
+          projectId: fitrack-ar138

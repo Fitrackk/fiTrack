@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.company.fitrackk"
+    namespace "com.company.fit"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -34,8 +34,8 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.company.fitrackk"
-        minSdkVersion 23
+        applicationId "com.company.fit"
+        minSdkVersion 28
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
