@@ -72,7 +72,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_none, size: 45)
+            icon: const Icon(Icons.notifications_none, size: 45),
             color: FitColors.primary30,
             onPressed: () {
               Navigator.push(
