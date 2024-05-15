@@ -198,7 +198,7 @@ class _SignUpState extends State<SignUp> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const GoogleLogo(),
-                        const SizedBox(width: 15),
+                        const SizedBox(width: 8),
                         Text(
                           "SIGN UP WITH GOOGLE",
                           style: TextStyles.labelMedium

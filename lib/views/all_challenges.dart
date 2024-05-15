@@ -3,7 +3,6 @@ import 'package:fitrack/utils/customs/custom_challenge_card.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
-
 import '../configures/color_theme.dart';
 import '../configures/text_style.dart';
 import '../models/user_model.dart';
@@ -99,62 +98,66 @@ class _AllChallengesState extends State<AllChallenges> {
               itemBuilder: (context, index) {
                 bool isJoined = false;
                 Challenge challenge = snapshot.data![index];
-                return Column(
-                  children: [
-                    StreamBuilder(
-                        stream: userData.getUserData().asStream(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            User? user = snapshot.data;
-                            if (user != null) {
-                              if (challenge.participantUsernames != null) {
-                                for (int i = 0; i < challenge.participantUsernames.length; i++) {
-                                  if (user.userName == challenge.participantUsernames[i]) {
-                                    isJoined = true;
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      StreamBuilder(
+                          stream: userData.getUserData().asStream(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              User? user = snapshot.data;
+                              if (user != null) {
+                                if (challenge.participantUsernames != null) {
+                                  for (int i = 0; i < challenge.participantUsernames.length; i++) {
+                                    if (user.userName == challenge.participantUsernames[i]) {
+                                      isJoined = true;
+                                    }
                                   }
                                 }
+                                return SingleChildScrollView(
+                                  child: Column(
+                                      children: [
+                                        CustomChallengeCard(
+                                          challengeId: challenge.challengeId,
+                                          challengeName: challenge.challengeName,
+                                          challengeOwner: challenge.challengeOwner,
+                                          challengeDate: challenge.challengeDate,
+                                          challengeProgress: "20%",
+                                          participations: challenge.participations,
+                                          challengeParticipantsImg: const [
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/girl.png",
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/girl.png",
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/Rectangle.png",
+                                            "assets/images/Rectangle.png",
+                                          ],
+                                          activityType: challenge.activityType,
+                                          distance: challenge.distance,
+                                          participantUsernames: challenge.participantUsernames,
+                                          challengeJoined: isJoined,
+                                        ),
+                                        SizedBox(height: 20,),
+                                      ]
+                                  ),
+                                );
+                              } else {
+                                return Text("User is null");
                               }
-                              return Column(
-                                  children: [
-                                    CustomChallengeCard(
-                                      challengeId: challenge.challengeId,
-                                      challengeName: challenge.challengeName,
-                                      challengeOwner: challenge.challengeOwner,
-                                      challengeDate: challenge.challengeDate,
-                                      challengeProgress: "20%",
-                                      participations: challenge.participations,
-                                      challengeParticipantsImg: const [
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/girl.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/girl.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                      ],
-                                      activityType: challenge.activityType,
-                                      distance: challenge.distance,
-                                      participantUsernames: challenge.participantUsernames,
-                                      challengeJoined: isJoined,
-                                    ),
-                                    SizedBox(height: 20,),
-                                  ]
-                              );
+                            } else if (snapshot.hasError) {
+                              return Text("Error: ${snapshot.error}");
                             } else {
-                              return Text("User is null");
+                              return Text("Loading...");
                             }
-                          } else if (snapshot.hasError) {
-                            return Text("Error: ${snapshot.error}");
-                          } else {
-                            return Text("Loading...");
                           }
-                        }
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 );
               },
             );
