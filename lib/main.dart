@@ -1,4 +1,3 @@
-import 'package:fitrack/configures/routes.dart';
 import 'package:fitrack/services/firebase_service.dart';
 import 'package:fitrack/utils/customs/bottom_nav.dart';
 import 'package:flutter/material.dart';

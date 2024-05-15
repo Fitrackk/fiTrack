@@ -27,40 +27,32 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const UserData()),
-                  );
-                },
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: FitColors.background,
-                  child: Stack(
-                    children: [
-                      const CircleAvatar(
-                        radius: 15,
-                        backgroundImage:
-                        AssetImage('assets/images/logo.png'), // Replace this with the user's profile image
-                      ),
-                      Positioned.fill(
-                        child: CustomPaint(
-                          painter: ProgressPainter(
-                            startAngle: startAngle,
-                            sweepAngle: sweepAngle,
-                            color: FitColors.primary30,
-                            strokeWidth: 5,
-                          ),
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: FitColors.background,
+                child: Stack(
+                  children: [
+                    const CircleAvatar(
+                      radius: 20,
+                      backgroundImage:
+                      AssetImage('assets/images/logo.png'),
+                    ),
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: ProgressPainter(
+                          startAngle: startAngle,
+                          sweepAngle: sweepAngle,
+                          color: FitColors.primary30,
+                          strokeWidth: 5,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               Positioned(
                 bottom: -5,
-                left: 20,
+                left: 30,
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
@@ -80,12 +72,12 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_none, size: 40), // Increase the icon size
+            icon: const Icon(Icons.notifications_none, size: 45)
             color: FitColors.primary30,
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const UserData()),
+                MaterialPageRoute(builder: (context) => const UserData()),//notifications
               );
             },
           ),
