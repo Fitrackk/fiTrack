@@ -1,5 +1,6 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
+import 'package:fitrack/view_models/challenges.dart';
 import 'package:fitrack/views/all_challenges.dart';
 import 'package:flutter/material.dart';
 

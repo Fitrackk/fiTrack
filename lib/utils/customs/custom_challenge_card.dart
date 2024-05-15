@@ -1,36 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
 
 class CustomChallengeCard extends StatefulWidget {
+  final String activityType;
+  final String challengeDate;
+  final int challengeId;
   final String challengeName;
   final String challengeOwner;
-  final String challengeDate;
-  final bool? challengeJoined;
-  final String? challengeProgress;
-  final int challengeParticipants;
+  final double distance;
+  final List<String> participantUsernames;
+  final int participations;
+  final bool? challengeJoined;// will come from userName
+  final String? challengeProgress;// will come from gyroscope
   final List<String> challengeParticipantsImg;
 
-  CustomChallengeCard(
-      {super.key,
-      required this.challengeName,
-      required this.challengeOwner,
-      required this.challengeDate,
-      this.challengeProgress,
-      required this.challengeParticipants,
-      required this.challengeJoined,
-      required this.challengeParticipantsImg});
+  CustomChallengeCard({
+    super.key,
+    required this.activityType,
+    required this.challengeDate,
+    required this.challengeId,
+    required this.challengeName,
+    required this.challengeOwner,
+    required this.distance,
+    required this.participantUsernames,
+    required this.participations,
+    required this.challengeJoined,
+    required this.challengeProgress,
+    required this.challengeParticipantsImg,
+  });
 
   @override
   State<CustomChallengeCard> createState() => _CustomChallengeCardState();
 }
 
 class _CustomChallengeCardState extends State<CustomChallengeCard> {
+
   @override
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
     double marginValue = 15;
-
     return Column(
       children: [
         Container(
@@ -61,7 +72,8 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "${widget.challengeName}.\n",
+                            text:
+                                "${widget.challengeName}.\n",
                             style: TextStyles.labelLargeBold.copyWith(
                               color: FitColors.text20,
                               shadows: [
@@ -87,11 +99,11 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                       ),
                     ),
                   ),
-                  if(widget.challengeJoined == true)
+                  if (widget.challengeJoined == true)
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 0, 20, 25),
                       child: Text(
-                        "${widget.challengeProgress}",
+                        "${widget.challengeJoined}",
                         style: TextStyles.labelMedium
                             .copyWith(color: FitColors.text20),
                       ),
@@ -101,11 +113,11 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
               Row(
                 children: [
                   Container(
-                    width: currentWidth/3,
+                    width: currentWidth / 3,
                     child: Stack(
                       children: [
                         for (int i = 1;
-                            i <= (widget.challengeParticipants);
+                            i <= (widget.participations);
                             i++, marginValue = marginValue + 15)
                           Container(
                             margin: EdgeInsets.fromLTRB(marginValue, 0, 0, 0),
@@ -121,7 +133,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                         Container(
                             margin: const EdgeInsets.fromLTRB(20, 35, 0, 0),
                             child: Text(
-                              "${widget.challengeParticipants} / 10 participants joined",
+                              "${widget.participations} / 10 participants joined",
                               style: TextStyles.bodyXSmall
                                   .copyWith(color: FitColors.placeholder),
                             ))
@@ -138,7 +150,14 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                           width: 100,
                           height: 35,
                           child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(
+                                    text: widget.challengeId.toString()));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('ID copied to clipboard')));
+                              },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
                                     FitColors.primary30),
@@ -153,7 +172,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                       color: FitColors.text95,
                                     ),
                                   ),
-                                  const Icon(
+                                  Icon(
                                     Icons.copy,
                                     size: 15,
                                     color: FitColors.primary80,
@@ -164,26 +183,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                         const SizedBox(
                           width: 5,
                         ),
-                        if(widget.challengeJoined == false)
-                            SizedBox(
-                            width: 90,
-                            height: 35,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    FitColors.primary30),
-                              ),
-                            child:
-                            Text(
-                                "Join",
-                                style: TextStyles.labelSmall.copyWith(
-                                  color: FitColors.primary95,
-                                ),
-                              ),
-                            ),
-                          ),
-                        if(widget.challengeJoined == true)
+                        if (widget.challengeJoined == false)
                           SizedBox(
                             width: 90,
                             height: 35,
@@ -193,8 +193,25 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                 backgroundColor: MaterialStateProperty.all(
                                     FitColors.primary30),
                               ),
-                              child:
-                              Text(
+                              child: Text(
+                                "Join",
+                                style: TextStyles.labelSmall.copyWith(
+                                  color: FitColors.primary95,
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (widget.challengeJoined == true)
+                          SizedBox(
+                            width: 90,
+                            height: 35,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    FitColors.primary30),
+                              ),
+                              child: Text(
                                 "Joined",
                                 style: TextStyles.labelSmall.copyWith(
                                   color: FitColors.primary95,
