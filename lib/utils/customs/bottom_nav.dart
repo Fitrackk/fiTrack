@@ -1,12 +1,12 @@
+import 'package:fitrack/configures/BottomNavBloc.dart';
+import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/views/challenges.dart';
 import 'package:fitrack/views/dashboard_page.dart';
 import 'package:fitrack/views/history_page.dart';
-import 'package:fitrack/views/sign_up_page.dart';
 import 'package:flutter/material.dart';
-import 'package:fitrack/configures/color_theme.dart';
-import 'package:fitrack/views/user_data_page.dart';
-import 'package:fitrack/configures/BottomNavBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../views/setting_page.dart';
 
 class BottomNav extends StatelessWidget {
   const BottomNav({super.key});
@@ -43,10 +43,15 @@ class _MainViewState extends State<MainView> {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
-          Dashboard(defaultChallengeTraveledDistance: 12, defaultChallengeBurnedCal: 34, defaultChallengeTraveledTimeHour: 1, defaultChallengeTraveledTimeMin: 30,),
+          Dashboard(
+            defaultChallengeTraveledDistance: 12,
+            defaultChallengeBurnedCal: 34,
+            defaultChallengeTraveledTimeHour: 1,
+            defaultChallengeTraveledTimeMin: 30,
+          ),
           history(),
           Challenges(),
-          SignUp(),
+          Setting(),
         ],
         onPageChanged: (index) {
           BlocProvider.of<BottomNavBloc>(context)
@@ -103,7 +108,7 @@ class _BottomNavViewState extends State<BottomNavView> {
           label: '・',
         ),
         BottomNavigationBarItem(
-          icon:  ImageIcon(
+          icon: ImageIcon(
             AssetImage('assets/images/challenge.png'),
             size: 35,
           ),
@@ -117,9 +122,12 @@ class _BottomNavViewState extends State<BottomNavView> {
           label: '・',
         ),
       ],
-      selectedIconTheme: const IconThemeData(color: FitColors.primary20, size: 30),
-      unselectedIconTheme: const IconThemeData(color: FitColors.primary30, size: 30),
-      selectedLabelStyle: const TextStyle(fontSize: 15 , fontWeight: FontWeight.bold), // Increase the font size
+      selectedIconTheme:
+          const IconThemeData(color: FitColors.primary20, size: 30),
+      unselectedIconTheme:
+          const IconThemeData(color: FitColors.primary30, size: 30),
+      selectedLabelStyle: const TextStyle(
+          fontSize: 15, fontWeight: FontWeight.bold), // Increase the font size
     );
   }
 }
