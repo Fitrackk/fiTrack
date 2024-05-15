@@ -1,7 +1,6 @@
 import 'package:fitrack/configures/color_theme.dart';
-import 'package:flutter/material.dart';
 import 'package:fitrack/configures/text_style.dart';
-
+import 'package:flutter/material.dart';
 
 class StartedPage extends StatelessWidget {
   const StartedPage({Key? key});
@@ -15,7 +14,6 @@ class StartedPage extends StatelessWidget {
             colors: [
               FitColors.primary30,
               FitColors.tertiary95,
-
             ],
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
@@ -27,22 +25,20 @@ class StartedPage extends StatelessWidget {
             children: <Widget>[
               Image.asset(
                 "assets/images/get_started.png",
-                width: 500, // Adjust the width as needed
+                width: 500, 
               ),
-              const SizedBox(height: 10), // Space between image and text
-                Padding(
-                padding: EdgeInsets.only(bottom:0),
-                child: Text(
-                  'Explore more',
-                  style: TextStyles.headlineLarge.copyWith(color: FitColors.primary30)
-                ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.only(bottom: 0),
+                child: Text('Explore more',
+                    style: TextStyles.headlineLarge
+                        .copyWith(color: FitColors.primary30)),
               ),
-              // Space between text elements
-               Text(
-                'Each step a new horizon',
-                  style: TextStyles.titleMedium.copyWith(color: FitColors.text30)
-              ),
-              const SizedBox(height: 60), // Space between text and button
+              
+              Text('Each step a new horizon',
+                  style:
+                      TextStyles.titleMedium.copyWith(color: FitColors.text30)),
+              const SizedBox(height: 60), 
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/signup');
@@ -54,12 +50,11 @@ class StartedPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(40),
                   ),
                 ),
-                child:  Text("I'm new here",
-                  style: TextStyles.titleMedium
-                      .copyWith(color: FitColors.primary30)),
+                child: Text("I'm new here",
+                    style: TextStyles.titleMedium
+                        .copyWith(color: FitColors.primary30)),
               ),
-              // Space between button and sign in text
-
+          
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: () => Navigator.pushNamed(context, '/signing'),
@@ -68,9 +63,6 @@ class StartedPage extends StatelessWidget {
                         decoration: TextDecoration.underline,
                         color: FitColors.text30)),
               ),
-
-
-
             ],
           ),
         ),
