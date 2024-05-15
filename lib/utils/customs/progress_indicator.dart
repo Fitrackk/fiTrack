@@ -5,73 +5,18 @@ import 'package:flutter/material.dart';
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
 
-//sample page
-// class Dashboard extends StatefulWidget {
-//   const Dashboard({super.key});
-//
-//   @override
-//   _DashboardState createState() => _DashboardState();
-// }
-//
-// class _DashboardState extends State<Dashboard> {
-//   late Future<User?> _userDataFuture;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _userDataFuture = UserVM().getUserData();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: FitColors.background,
-//       child: FutureBuilder<User?>(
-//         future: _userDataFuture,
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return const CircularProgressIndicator();
-//           } else if (snapshot.hasError) {
-//             return Text('Error: ${snapshot.error}');
-//           } else {
-//             final user = snapshot.data;
-//             return displayUserData(user);
-//           }
-//         },
-//       ),
-//     );
-//   }
-//
-//   Widget displayUserData(User? user) {
-//     if (user != null) {
-//       final String? username = user.userName;
-//       final String? email = user.email;
-//
-//       return Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Text(
-//             'Welcome, $username!',
-//             style: TextStyles.headlineMedium.copyWith(
-//               color: FitColors.text20,
-//             ),
-//           ),
-//           const SizedBox(height: 10),
-//           Text(
-//             'Email: $email',
-//             style: TextStyles.labelLarge.copyWith(
-//               color: FitColors.text20,
-//             ),
-//           ),
-//         ],
-//       );
-//     } else {
-//       return const Text('User data not found.');
-//     }
-//   }
-// }
 class CustomProgressIndicator extends StatefulWidget {
-  const CustomProgressIndicator({super.key});
+  final int defaultChallengeProgress;
+  final int defaultChallengeSteps;
+  final int defaultChallengeGoal;
+
+
+  const CustomProgressIndicator(
+      {super.key,
+      required this.defaultChallengeProgress,
+      required this.defaultChallengeSteps,
+      required this.defaultChallengeGoal,
+      });
 
   @override
   State<CustomProgressIndicator> createState() =>
@@ -91,15 +36,15 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "20%",
+                  "${widget.defaultChallengeProgress}%",
                   style:
-                  TextStyles.titleLarge.copyWith(color: FitColors.text20),
+                      TextStyles.titleLarge.copyWith(color: FitColors.text20),
                 ),
                 SizedBox(
                   height: 50,
                 ),
                 Text(
-                  "1582",
+                  "${widget.defaultChallengeSteps}",
                   style: TextStyles.displayLargeBold
                       .copyWith(color: FitColors.text20),
                 ),
@@ -107,7 +52,7 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
                   height: 30,
                 ),
                 Text(
-                  "Steps Goal : 10000",
+                  "Steps Goal : ${widget.defaultChallengeGoal}",
                   style: TextStyles.titleLarge
                       .copyWith(color: FitColors.placeholder),
                 ),
@@ -121,7 +66,7 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
                 totalSteps: 10000,
                 backgroundColor: const Color(0xFFBCD3DC),
                 progressColor:
-                const Color(0xFF176B87), // Progress color #176B87
+                    const Color(0xFF176B87), // Progress color #176B87
               ),
             ),
           )

@@ -22,7 +22,7 @@ class _ChallengesState extends State<Challenges> {
         backgroundColor: FitColors.background,
         appBar: AppBar(
           elevation: 0.0,
-          bottom: TabBar(tabs: [
+          bottom: TabBar(tabs: const [
             Tab(
               text: 'All Challenges',
             ),

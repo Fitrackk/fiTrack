@@ -37,7 +37,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: BottomNav(),
+      home: Signing(),
       routes: Routes.getRoutes(context),
     );
   }

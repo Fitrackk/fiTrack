@@ -103,7 +103,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 0, 20, 25),
                       child: Text(
-                        "${widget.challengeJoined}",
+                        "${widget.challengeProgress}",
                         style: TextStyles.labelMedium
                             .copyWith(color: FitColors.text20),
                       ),
