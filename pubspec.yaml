@@ -22,6 +22,8 @@ dependencies:
   provider: ^6.1.2
   sliding_clipped_nav_bar: ^3.1.1
   stator: ^0.0.24
+  sensors_plus: ^5.0.1
+  syncfusion_flutter_charts: ^25.2.4
 
 dev_dependencies:
   flutter_test:
@@ -39,3 +41,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/get_started.png
