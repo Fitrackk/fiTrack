@@ -1,7 +1,6 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/utils/customs/custom_text_field.dart';
-import 'package:fitrack/utils/customs/top_nav.dart';
 import 'package:fitrack/view_models/signing.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +33,6 @@ class _SignInContentState extends State<SignInContent> {
     final signInVm = Provider.of<SignInVM>(context);
 
     return Scaffold(
-      appBar: TopNav(),
       backgroundColor: FitColors.background,
       body: Center(
         child: SingleChildScrollView(
