@@ -49,18 +49,18 @@ class ActivityTrackerViewModel {
 
     _linearAccelerationSubscription =
         userAccelerometerEventStream().listen((UserAccelerometerEvent event) {
-      _lastLinearAccelerationEvent = event;
-      if (kDebugMode) {
-        print('Linear Acceleration Event received: $event');
-      }
-      _processSensorData();
-    });
+          _lastLinearAccelerationEvent = event;
+          if (kDebugMode) {
+            print('Linear Acceleration Event received: $event');
+          }
+          _processSensorData();
+        });
 
     _gyroscopeSubscription =
         gyroscopeEventStream().listen((GyroscopeEvent event) {
-      _lastGyroscopeEvent = event;
-      _processSensorData();
-    });
+          _lastGyroscopeEvent = event;
+          _processSensorData();
+        });
     _updateTimer = Timer.periodic(const Duration(minutes: 10), (timer) {
       _updateActivityDataInFirestore();
     });
@@ -72,7 +72,7 @@ class ActivityTrackerViewModel {
     String documentId = "$username-$todayDate";
 
     DocumentReference docRef =
-        _firestore.collection('ActivityData').doc(documentId);
+    _firestore.collection('ActivityData').doc(documentId);
 
     try {
       DocumentSnapshot docSnapshot = await docRef.get();
@@ -116,7 +116,7 @@ class ActivityTrackerViewModel {
       String todayDate = "${now.year}-${now.month}-${now.day}";
       String documentId = "$username-$todayDate";
       DocumentReference docRef =
-          _firestore.collection('ActivityData').doc(documentId);
+      _firestore.collection('ActivityData').doc(documentId);
 
       docRef.get().then((docSnapshot) {
         if (docSnapshot.exists) {

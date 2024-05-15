@@ -1,12 +1,15 @@
 import 'dart:math' as math;
+
+import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/views/user_data_page.dart';
 import 'package:flutter/material.dart';
-import 'package:fitrack/configures/color_theme.dart';
 
 class TopNav extends StatelessWidget implements PreferredSizeWidget {
   final int userLevel;
   final double userScore;
+
   const TopNav({super.key, this.userLevel = 15, this.userScore = 1580});
+
   @override
   Widget build(BuildContext context) {
     double progress = (userScore - (userLevel * 100)) / 100;
@@ -27,32 +30,40 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: FitColors.background,
-                child: Stack(
-                  children: [
-                    const CircleAvatar(
-                      radius: 20,
-                      backgroundImage:
-                      AssetImage('assets/images/logo.png'),
-                    ),
-                    Positioned.fill(
-                      child: CustomPaint(
-                        painter: ProgressPainter(
-                          startAngle: startAngle,
-                          sweepAngle: sweepAngle,
-                          color: FitColors.primary30,
-                          strokeWidth: 5,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const UserData()),
+                  );
+                },
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: FitColors.background,
+                  child: Stack(
+                    children: [
+                      const CircleAvatar(
+                        radius: 15,
+                        backgroundImage: AssetImage(
+                            'assets/images/logo.png'), // Replace this with the user's profile image
+                      ),
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: ProgressPainter(
+                            startAngle: startAngle,
+                            sweepAngle: sweepAngle,
+                            color: FitColors.primary30,
+                            strokeWidth: 5,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Positioned(
                 bottom: -5,
-                left: 30,
+                left: 20,
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
@@ -72,12 +83,13 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_none, size: 45),
+            icon: const Icon(Icons.notifications_none, size: 40),
+            // Increase the icon size
             color: FitColors.primary30,
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const UserData()),//notifications
+                MaterialPageRoute(builder: (context) => const UserData()),
               );
             },
           ),
@@ -112,7 +124,9 @@ class ProgressPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     canvas.drawArc(
-      Rect.fromCircle(center: Offset(size.width / 2, size.height / 2), radius: size.width / 2),
+      Rect.fromCircle(
+          center: Offset(size.width / 2, size.height / 2),
+          radius: size.width / 2),
       startAngle,
       sweepAngle,
       false,

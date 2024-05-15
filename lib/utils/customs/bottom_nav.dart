@@ -1,3 +1,4 @@
+import 'package:fitrack/views/challenges.dart';
 import 'package:fitrack/views/dashboard_page.dart';
 import 'package:fitrack/views/history_page.dart';
 import 'package:fitrack/views/sign_up_page.dart';
@@ -42,9 +43,9 @@ class _MainViewState extends State<MainView> {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
-          Dashboard(),
+          Dashboard(defaultChallengeTraveledDistance: 12, defaultChallengeBurnedCal: 34, defaultChallengeTraveledTimeHour: 1, defaultChallengeTraveledTimeMin: 30,),
           history(),
-          UserData(),
+          Challenges(),
           SignUp(),
         ],
         onPageChanged: (index) {
@@ -87,30 +88,30 @@ class _BottomNavViewState extends State<BottomNavView> {
             curve: Curves.easeInOut);
       },
       items: const [
-         BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: ImageIcon(
             AssetImage('assets/images/home.png'),
             size: 35,
           ),
           label: '・',
         ),
-         BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: ImageIcon(
             AssetImage('assets/images/chart.png'),
             size: 35,
           ),
           label: '・',
         ),
-         BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon:  ImageIcon(
             AssetImage('assets/images/challenge.png'),
             size: 35,
           ),
           label: '・',
         ),
-         BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: ImageIcon(
-             AssetImage('assets/images/setting.png'),
+            AssetImage('assets/images/setting.png'),
             size: 35,
           ),
           label: '・',
