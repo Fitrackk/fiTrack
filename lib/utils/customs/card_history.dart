@@ -63,184 +63,190 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
             tilePadding: EdgeInsets.zero,
             title: Padding(
               padding: const EdgeInsets.all(15.0),
-              child: Row(
-                children: [
-                  Text(
-                    '${widget.day}\n${widget.date}',
-                    style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
-                  ),
-                  const SizedBox(width: 36),
-                  Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 13.0),
-                        child: Image.asset(
-                          'assets/images/steps.png',
-                          color: FitColors.primary20,
-                          width: 20,
-                          height: 25,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 22.0, top: 20.0),
-                        child: Text(
-                          '${widget.steps}',
-                          style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 17.0, bottom: 30),
-                        child: Text(
-                          'steps',
-                          style: TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 30),
-                  Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 12.0),
-                        child: Image.asset(
-                          'assets/images/kcal.png',
-                          color: FitColors.primary20,
-                          width: 20,
-                          height: 25,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 23.0, top: 20.0),
-                        child: Text(
-                          '${widget.kcal}',
-                          style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 17.0, bottom: 30),
-                        child: Text(
-                          'Kcal',
-                          style: TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 30),
-                  Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 6.5),
-                        child: Image.asset(
-                          'assets/images/clock.png',
-                          width: 35,
-                          height: 40,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 24.0, top: 20.0),
-                        child: Text(
-                          ' ${widget.time.hour}:${widget.time.minute}',
-                          style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 17.0, bottom: 30),
-                        child: Text(
-                          'Active Time',
-                          style: TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+              child:  SingleChildScrollView(
+                scrollDirection:Axis.horizontal,
                 child: Row(
                   children: [
-                    const SizedBox(width: 65),
+                    Text(
+                      '${widget.day}\n${widget.date}',
+                      style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+                    ),
+                    const SizedBox(width: 36),
+                    Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 13.0),
+                          child: Image.asset(
+                            'assets/images/steps.png',
+                            color: FitColors.primary20,
+                            width: 20,
+                            height: 25,
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 22.0, top: 20.0),
+                          child: Text(
+                            '${widget.steps}',
+                            style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 17.0, bottom: 30),
+                          child: Text(
+                            'steps',
+                            style: TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 30),
                     Stack(
                       children: [
                         Container(
                           margin: const EdgeInsets.only(top: 12.0),
                           child: Image.asset(
-                            'assets/images/distans.png',
-                            width: 24,
-                            height: 24,
+                            'assets/images/kcal.png',
+                            color: FitColors.primary20,
+                            width: 20,
+                            height: 25,
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 23.0, top: 20.0),
+                          child: Text(
+                            '${widget.kcal}',
+                            style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 17.0, bottom: 30),
+                          child: Text(
+                            'Kcal',
+                            style: TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 30),
+                    Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 6.5),
+                          child: Image.asset(
+                            'assets/images/clock.png',
+                            width: 35,
+                            height: 40,
                           ),
                         ),
                         Container(
                           margin: const EdgeInsets.only(left: 24.0, top: 20.0),
                           child: Text(
-                            '${widget.distance}KM',
-                            style:
-                            TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+                            ' ${widget.time.hour}:${widget.time.minute}',
+                            style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
                           ),
                         ),
                         Container(
                           margin: const EdgeInsets.only(left: 17.0, bottom: 30),
                           child: Text(
-                            'distance',
-                            style:
-                            TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 33),
-                    Stack(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 14.0),
-                          child: Image.asset(
-                            'assets/images/challenge.png',
-                            color: FitColors.primary20,
-                            width: 22,
-                            height: 24,
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 25.0, top: 20.0),
-                          child: Text(
-                            '${widget.challGoal} KM',
-                            style:
-                            TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 17.0, bottom: 30),
-                          child: Text(
-                            '',
-                            style:
-                            TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 20),
-                    Stack(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 10.0, top: 20.0),
-                          child: Text(
-                            '${widget.progress}%',
-                            style:
-                            TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 17.0, bottom: 30),
-                          child: Text(
-                            '',
-                            style:
-                            TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
+                            'Active Time',
+                            style: TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
                           ),
                         ),
                       ],
                     ),
                   ],
+                ),
+              ),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 65),
+                      Stack(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 12.0),
+                            child: Image.asset(
+                              'assets/images/distans.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 24.0, top: 20.0),
+                            child: Text(
+                              '${widget.distance}KM',
+                              style:
+                              TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 17.0, bottom: 30),
+                            child: Text(
+                              'distance',
+                              style:
+                              TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 33),
+                      Stack(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 14.0),
+                            child: Image.asset(
+                              'assets/images/challenge.png',
+                              color: FitColors.primary20,
+                              width: 22,
+                              height: 24,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 25.0, top: 20.0),
+                            child: Text(
+                              '${widget.challGoal} KM',
+                              style:
+                              TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 17.0, bottom: 30),
+                            child: Text(
+                              '',
+                              style:
+                              TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      Stack(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 10.0, top: 20.0),
+                            child: Text(
+                              '${widget.progress}%',
+                              style:
+                              TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 17.0, bottom: 30),
+                            child: Text(
+                              '',
+                              style:
+                              TextStyles.bodyXSmall.copyWith(color: FitColors.placeholder),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               )
             ],
