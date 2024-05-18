@@ -72,7 +72,7 @@ class ActivityTrackerViewModel {
         _processSensorData();
       });
 
-      Timer(const Duration(minutes: 10), () {
+      Timer(const Duration(minutes: 1), () {
         checkLocalStorageData();
       });
     } else {
@@ -151,7 +151,7 @@ class ActivityTrackerViewModel {
               Map<String, double>.from(data['activityTypeDistance']);
           activityTypeDistance.forEach((key, value) {
             existingActivityTypeDistance[key] =
-                (existingActivityTypeDistance[key] ?? 0) + value;
+                (existingActivityTypeDistance[key] ?? 0) + value / 1000;
           });
           data['activityTypeDistance'] = existingActivityTypeDistance;
 
@@ -192,7 +192,7 @@ class ActivityTrackerViewModel {
     const double runningThreshold = 5;
 
     double strideLengthInMeters = calculateStrideLength(height);
-    double strideLengthInKilometers = strideLengthInMeters / 3000;
+    double strideLengthInKilometers = strideLengthInMeters / 1000;
 
     if (magnitude > runningThreshold) {
       activityTypeDistance['running'] =
@@ -214,7 +214,7 @@ class ActivityTrackerViewModel {
     _saveLocalActivityData(ActivityData(
       username: currentUser?.userName ?? '',
       date: DateTime.now(),
-      distanceTraveled: distanceTraveled,
+      distanceTraveled: distanceTraveled / 1000,
       stepsCount: stepsCount,
       activeTime: activeTimeInSeconds,
       caloriesBurned: caloriesBurned,
@@ -236,9 +236,9 @@ class ActivityTrackerViewModel {
       ActivityData activityData = ActivityData(
         username: currentUser?.userName ?? '',
         date: DateTime.now(),
-        distanceTraveled: distanceTraveled,
+        distanceTraveled: distanceTraveled / 1000,
         stepsCount: stepsCount,
-        activeTime: activeTimeInSeconds,
+        activeTime: activeTimeInMinutes,
         caloriesBurned: caloriesBurned,
         activityTypeDistance: activityTypeDistance,
       );
@@ -382,9 +382,9 @@ class ActivityTrackerViewModel {
             });
 
             docRef.update({
-              'distanceTraveled': localActivityData.distanceTraveled / 1000,
+              'distanceTraveled': localActivityData.distanceTraveled,
               'stepsCount': localActivityData.stepsCount,
-              'activeTime': localActivityData.activeTime ~/ 360,
+              'activeTime': localActivityData.activeTime,
               'activityTypeDistance': activityTypeDistanceInKilometers,
               'caloriesBurned': localActivityData.caloriesBurned,
             }).then((_) {
