@@ -72,7 +72,7 @@ class ActivityTrackerViewModel {
         _processSensorData();
       });
 
-      Timer(const Duration(minutes: 1), () {
+      Timer(const Duration(minutes: 120), () {
         checkLocalStorageData();
       });
     } else {
