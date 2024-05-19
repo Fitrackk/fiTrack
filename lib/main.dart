@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitrack/services/firebase_service.dart';
-import 'package:fitrack/views/dashboard_page.dart';
+import 'package:fitrack/view_models/challenges.dart';
+import 'package:fitrack/view_models/user.dart';
 import 'package:fitrack/views/get_started_page.dart';
-// import 'package:fitrack/services/firebase_service.dart';
 import 'package:fitrack/utils/customs/bottom_nav.dart';
 import 'package:flutter/material.dart';
+import 'package:stator/stator.dart';
 
 import 'configures/routes.dart';
 
@@ -27,6 +28,8 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
+    registerSingleton(UserVM());
+    registerSingleton(ChallengesVM());
     FirebaseAuth.instance.authStateChanges().listen((user) {
       setState(() {
         _user = user;

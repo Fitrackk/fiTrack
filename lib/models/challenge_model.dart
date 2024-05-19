@@ -9,7 +9,7 @@ class Challenge {
   final double distance;
   final List<String> participantUsernames;
   final int participations;
-  // final List<Timestamp> remindersTimes;
+  final String reminder;
 
   Challenge({
     required this.activityType,
@@ -20,23 +20,27 @@ class Challenge {
     required this.distance,
     required this.participantUsernames,
     required this.participations,
-    // required this.remindersTimes,
+    required this.reminder,
   });
 
   factory Challenge.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Challenge(
       activityType: data['activityType'] ?? '',
-      challengeDate: data['challengeDate'],
-      challengeId: data['challengeId'] ?? '',
+      challengeDate: data['challengeDate'] ?? '',
+      challengeId: data['challengeId'] ?? 0,
       challengeName: data['challengeName'] ?? '',
       challengeOwner: data['challengeOwner'] ?? '',
-      distance: (data['distance'] ?? 0).toDouble(),
-      participantUsernames: List<String>.from(data['participantUsernames'] ?? []),
+      distance: (data['distance'] is int)
+          ? (data['distance'] as int).toDouble()
+          : (data['distance'] as double? ?? 0.0),
+      participantUsernames:
+          List<String>.from(data['participantUsernames'] ?? []),
       participations: (data['participations'] ?? 0).toInt(),
-      // remindersTimes: [(data['remindersTimes'])],
+      reminder: data['reminder'] ?? '',
     );
   }
+
   Map<String, dynamic> toMap() {
     return {
       'activityType': activityType,
@@ -47,7 +51,7 @@ class Challenge {
       'distance': distance,
       'participantUsernames': participantUsernames,
       'participations': participations,
+      'reminder': reminder,
     };
   }
-
 }
