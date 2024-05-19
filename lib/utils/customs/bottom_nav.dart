@@ -43,12 +43,7 @@ class _MainViewState extends State<MainView> {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
-          Dashboard(
-            defaultChallengeTraveledDistance: 12,
-            defaultChallengeBurnedCal: 34,
-            defaultChallengeTraveledTimeHour: 1,
-            defaultChallengeTraveledTimeMin: 30,
-          ),
+          Dashboard(),
           history(),
           Challenges(),
           Setting(),
