@@ -1,31 +1,24 @@
-import 'dart:core';
+import 'dart:ffi';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
-import 'package:fitrack/models/challenge_model.dart';
 import 'package:fitrack/utils/customs/join_challenge_button.dart';
 import 'package:fitrack/utils/customs/joined_challenge_card.dart';
 import 'package:fitrack/utils/customs/progress_indicator.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
+import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
-import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:stator/stator.dart';
-
-import '../configures/color_theme.dart';
+import '../models/activity_data_model.dart';
+import '../models/challenge_model.dart';
 import '../models/user_model.dart';
 import '../view_models/user.dart';
 
 class Dashboard extends StatefulWidget {
-  final double defaultChallengeTraveledDistance;
-  final int defaultChallengeTraveledTimeHour;
-  final int defaultChallengeTraveledTimeMin;
-  final int defaultChallengeBurnedCal;
-  const Dashboard({
-    super.key,
-    required this.defaultChallengeTraveledDistance,
-    required this.defaultChallengeBurnedCal,
-    required this.defaultChallengeTraveledTimeHour,
-    required this.defaultChallengeTraveledTimeMin,
-  });
+  const Dashboard({Key? key}) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -34,32 +27,87 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final userData = getSingleton<UserVM>();
   final challengeData = getSingleton<ChallengesVM>();
+  final ActivityTrackerViewModel activityData = ActivityTrackerViewModel();
+  late ActivityData? _localActivityData;
   int flag = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchLocalActivityData();
+    _localActivityData = null;
+  }
+
+  Future<void> _fetchLocalActivityData() async {
+    final data = await activityData.fetchLocalActivityData();
+    setState(() {
+      _localActivityData = data;
+    });
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
+
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    String? todayDate = formatter.format(DateTime.now());
+    DateTime now = DateTime.now();
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    Duration remainingTime = endOfDay.difference(now);
+    String getCurrentTime() {
+      DateTime now = DateTime.now().toLocal(); // Ensure the time is local
+      String twoDigits(int n) => n.toString().padLeft(2, '0');
+
+      // Add 3 hours to the current time
+      DateTime futureTime = now.add(Duration(hours: 3));
+      String hours = twoDigits(futureTime.hour);
+      String minutes = twoDigits(futureTime.minute);
+      String seconds = twoDigits(futureTime.second);
+
+      return "$hours:$minutes:$seconds";
+    }
+    String formatDuration(Duration duration) {
+      String twoDigits(int n) => n.toString().padLeft(2, '0');
+      String hours = twoDigits(duration.inHours);
+      String minutes = twoDigits(duration.inMinutes.remainder(60));
+      String seconds = twoDigits(duration.inSeconds.remainder(60));
+      return "$hours h $minutes m $seconds s";
+    }
+    String getRemainingTime() {
+      String currentTime = getCurrentTime(); // Get current time
+      DateTime now = DateTime.now().toLocal(); // Ensure the time is local
+      DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+      Duration remainingTime = endOfDay.difference(now);
+
+      // Subtract 3 hours from remaining time
+      remainingTime -= Duration(hours: 3);
+
+      return formatDuration(remainingTime);
+    }
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
-    String getDate() {
-      DateTime now = DateTime.now();
-      String todayDate = "${now.day}-${now.month}-${now.year}";
-      return todayDate;
-    }
-
+    int defaultChallengeProgress = (_localActivityData != null
+        ? (_localActivityData!.stepsCount / 10000) * 100
+        : 0)
+        .toInt();
+    print("Current Time: ${getCurrentTime()}");
+    print("Remaining Time: ${getRemainingTime()}");
     return Scaffold(
-        appBar: TopNav(),
-        body: Center(
-            child: SingleChildScrollView(
+      appBar: TopNav(),
+      body: Center(
+        child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(
                 height: 30,
               ),
               CustomProgressIndicator(
-                defaultChallengeProgress: 20,
-                defaultChallengeSteps: 2500,
-                defaultChallengeGoal: 10000,
-              ),
+                  defaultChallengeProgress: defaultChallengeProgress,
+                  defaultChallengeSteps: _localActivityData != null
+                      ? _localActivityData!.stepsCount
+                      : 0,
+                  defaultChallengeGoal: 10000),
               SizedBox(
                 height: 100,
               ),
@@ -96,8 +144,9 @@ class _DashboardState extends State<Dashboard> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text:
-                                    "${widget.defaultChallengeTraveledDistance} \n",
+                                text: _localActivityData != null
+                                    ? "${_localActivityData!.distanceTraveled} \n"
+                                    : "",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
@@ -127,8 +176,9 @@ class _DashboardState extends State<Dashboard> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text:
-                                    "${widget.defaultChallengeTraveledTimeHour}h ${widget.defaultChallengeTraveledTimeMin}m \n",
+                                text: _localActivityData != null
+                                    ? "${_localActivityData!.activeTime} \n"
+                                    : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
@@ -158,7 +208,9 @@ class _DashboardState extends State<Dashboard> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: "${widget.defaultChallengeBurnedCal} \n",
+                                text: _localActivityData != null
+                                    ? "${_localActivityData!.caloriesBurned} \n"
+                                    : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
@@ -185,10 +237,10 @@ class _DashboardState extends State<Dashboard> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Challenge> challenges =
-                        snapshot.data as List<Challenge>;
+                    snapshot.data as List<Challenge>;
                     if (challenges.isNotEmpty) {
                       for (var challenge in challenges) {
-                        if (challenge.challengeDate == getDate()) {
+                        if (challenge.challengeDate == todayDate) {
                           return StreamBuilder<User?>(
                             stream: userData.getUserData().asStream(),
                             builder: (context, snapshot) {
@@ -196,22 +248,16 @@ class _DashboardState extends State<Dashboard> {
                                 User? user = snapshot.data;
                                 if (user != null) {
                                   if (challenge.participantUsernames != null) {
-                                    for (int i = 0;
-                                        i <
-                                            challenge
-                                                .participantUsernames.length;
-                                        i++) {
-                                      if (user.userName ==
-                                          challenge.participantUsernames[i]) {
-                                        print(
-                                            challenge.participantUsernames[i]);
+                                    for (int i = 0; i < challenge.participantUsernames.length; i++) {
+                                      if (user.userName == challenge.participantUsernames[i]) {
                                         flag = 1;
                                       }
                                     }
                                     if (flag == 1) {
                                       return JoinedChallengeCard(
-                                        defaultChallengeProgress: 34,
-                                        defaultChallengeGoal: 10000,
+                                        defaultChallengeProgress:
+                                        defaultChallengeProgress,
+                                        remainingTime: getRemainingTime(),
                                         challengeName: challenge.challengeName,
                                       );
                                     } else {
@@ -223,7 +269,7 @@ class _DashboardState extends State<Dashboard> {
                               } else if (snapshot.hasError) {
                                 return Text("Error: ${snapshot.error}");
                               } else {
-                                return Text("User is null");
+                                return Text("");
                               }
                               return Text("");
                             },
@@ -243,6 +289,8 @@ class _DashboardState extends State<Dashboard> {
               ),
             ],
           ),
-        )));
+        ),
+      ),
+    );
   }
 }

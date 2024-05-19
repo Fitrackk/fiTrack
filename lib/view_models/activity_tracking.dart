@@ -110,16 +110,16 @@ class ActivityTrackerViewModel {
         );
         await docRef.set(activityData.toMap());
         if (kDebugMode) {
-          print('Document created for today: $todayDate');
+          // print('Document created for today: $todayDate');
         }
       } else {
         if (kDebugMode) {
-          print('Document already exists for today: $todayDate');
+          // print('Document already exists for today: $todayDate');
         }
       }
     } catch (error) {
       if (kDebugMode) {
-        print('Error creating or retrieving document: $error');
+        // print('Error creating or retrieving document: $error');
       }
     }
   }
@@ -245,8 +245,9 @@ class ActivityTrackerViewModel {
 
       await _saveLocalActivityData(activityData);
       if (kDebugMode) {
-        print(
-            "Local activity data saved: ${json.encode(activityData.toMap())}");
+        // print(
+        //     "Local activity data saved: ${json.encode(activityData.toMap())}"
+        // );
       }
     }
   }
@@ -266,13 +267,13 @@ class ActivityTrackerViewModel {
       double speed = _calculateSpeed(stepsCount);
       caloriesBurned = _calculateCaloriesBurned(speed, weight);
       if (kDebugMode) {
-        print('Steps Count: $stepsCount');
+        // print('Steps Count: $stepsCount');
       }
       if (kDebugMode) {
-        print('Distance Traveled: $distanceTraveled meters');
+        // print('Distance Traveled: $distanceTraveled meters');
       }
       if (kDebugMode) {
-        print('Calories Burned: $caloriesBurned kcal');
+        // print('Calories Burned: $caloriesBurned kcal');
       }
     }
   }
@@ -309,7 +310,7 @@ class ActivityTrackerViewModel {
         await Future.delayed(const Duration(seconds: 1));
         activeTimeInSeconds += 1;
         if (kDebugMode) {
-          print('Active Time: $activeTimeInSeconds seconds');
+          // print('Active Time: $activeTimeInSeconds seconds');
         }
       }
     }

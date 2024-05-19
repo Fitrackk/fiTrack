@@ -13,9 +13,9 @@ class CustomProgressIndicator extends StatefulWidget {
 
   const CustomProgressIndicator(
       {super.key,
-      required this.defaultChallengeProgress,
-      required this.defaultChallengeSteps,
-      required this.defaultChallengeGoal,
+        required this.defaultChallengeProgress,
+        required this.defaultChallengeSteps,
+        required this.defaultChallengeGoal,
       });
 
   @override
@@ -38,7 +38,7 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
                 Text(
                   "${widget.defaultChallengeProgress}%",
                   style:
-                      TextStyles.titleLarge.copyWith(color: FitColors.text20),
+                  TextStyles.titleLarge.copyWith(color: FitColors.text20),
                 ),
                 SizedBox(
                   height: 50,
@@ -62,11 +62,11 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
           Center(
             child: Container(
               child: StepProgressIndicator(
-                currentStep: 1000,
+                currentStep: widget.defaultChallengeProgress,
                 totalSteps: 10000,
                 backgroundColor: const Color(0xFFBCD3DC),
                 progressColor:
-                    const Color(0xFF176B87), // Progress color #176B87
+                const Color(0xFF176B87), // Progress color #176B87
               ),
             ),
           )
