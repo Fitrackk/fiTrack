@@ -195,7 +195,7 @@ class _UserChallengesState extends State<UserChallenges> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child: Text(""),
                 );
               } else if (snapshot.hasError) {
                 return Center(
