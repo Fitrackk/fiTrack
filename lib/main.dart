@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitrack/services/firebase_service.dart';
-import 'package:fitrack/utils/customs/bottom_nav.dart';
-import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:fitrack/views/get_started_page.dart';
+import 'package:fitrack/utils/customs/bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
 
@@ -13,15 +12,11 @@ import 'configures/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FirebaseService.initializeFirebase();
-  final tracker = ActivityTrackerViewModel();
-  tracker.startTracking();
-  await tracker.checkLocalStorageData();
-  //tracker.stopTracking();
   runApp(const MainApp());
 }
 
 class MainApp extends StatefulWidget {
-  const MainApp({super.key});
+  const MainApp({Key? key}) : super(key: key);
 
   @override
   _MainAppState createState() => _MainAppState();

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
 
@@ -13,8 +12,8 @@ class CustomChallengeCard extends StatefulWidget {
   final double distance;
   final List<String> participantUsernames;
   final int participations;
-  final bool? challengeJoined;// will come from userName
-  final String? challengeProgress;// will come from gyroscope
+  final bool? challengeJoined;
+  final String? challengeProgress;
   final List<String> challengeParticipantsImg;
 
   CustomChallengeCard({
@@ -73,7 +72,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                         children: [
                           TextSpan(
                             text:
-                                "${widget.challengeName}.\n",
+                            "${widget.challengeName}.\n",
                             style: TextStyles.labelLargeBold.copyWith(
                               color: FitColors.text20,
                               shadows: [
@@ -112,13 +111,13 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
               ),
               Row(
                 children: [
-                  Container(
+                  SizedBox(
                     width: currentWidth / 3,
                     child: Stack(
                       children: [
                         for (int i = 1;
-                            i <= (widget.participations);
-                            i++, marginValue = marginValue + 15)
+                        i <= (widget.participations);
+                        i++, marginValue = marginValue + 15)
                           Container(
                             margin: EdgeInsets.fromLTRB(marginValue, 0, 0, 0),
                             child: ClipRRect(
@@ -156,7 +155,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                         content:
-                                            Text('ID copied to clipboard')));
+                                        Text('ID copied to clipboard')));
                               },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
@@ -164,7 +163,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "Copy ID",
@@ -172,7 +171,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                       color: FitColors.text95,
                                     ),
                                   ),
-                                  Icon(
+                                  const Icon(
                                     Icons.copy,
                                     size: 15,
                                     color: FitColors.primary80,
@@ -212,7 +211,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                     FitColors.primary30),
                               ),
                               child: Text(
-                                "Joined",
+                                "Unjoin",
                                 style: TextStyles.labelSmall.copyWith(
                                   color: FitColors.primary95,
                                 ),

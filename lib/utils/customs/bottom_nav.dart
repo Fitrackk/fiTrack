@@ -126,8 +126,8 @@ class _BottomNavViewState extends State<BottomNavView> {
           const IconThemeData(color: FitColors.primary20, size: 30),
       unselectedIconTheme:
           const IconThemeData(color: FitColors.primary30, size: 30),
-      selectedLabelStyle: const TextStyle(
-          fontSize: 15, fontWeight: FontWeight.bold), // Increase the font size
+      selectedLabelStyle:
+          const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
     );
   }
 }

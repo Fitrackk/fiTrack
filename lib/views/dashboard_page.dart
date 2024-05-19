@@ -1,14 +1,14 @@
+import 'dart:core';
+
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/models/challenge_model.dart';
+import 'package:fitrack/utils/customs/join_challenge_button.dart';
 import 'package:fitrack/utils/customs/joined_challenge_card.dart';
 import 'package:fitrack/utils/customs/progress_indicator.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
 import 'package:fitrack/view_models/challenges.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:stator/stator.dart';
-import 'dart:core';
 
 import '../configures/color_theme.dart';
 import '../models/user_model.dart';
@@ -70,7 +70,7 @@ class _DashboardState extends State<Dashboard> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: FitColors.tertiary90,
-                  boxShadow: ([
+                  boxShadow: (const [
                     BoxShadow(
                       color: FitColors.placeholder,
                       spreadRadius: 0.1,
@@ -196,102 +196,51 @@ class _DashboardState extends State<Dashboard> {
                                 User? user = snapshot.data;
                                 if (user != null) {
                                   if (challenge.participantUsernames != null) {
-                                    for (int i = 0; i < challenge.participantUsernames.length; i++) {
-                                      if (user.userName == challenge.participantUsernames[i]) {
-                                        print(challenge.participantUsernames[i]);
+                                    for (int i = 0;
+                                        i <
+                                            challenge
+                                                .participantUsernames.length;
+                                        i++) {
+                                      if (user.userName ==
+                                          challenge.participantUsernames[i]) {
+                                        print(
+                                            challenge.participantUsernames[i]);
                                         flag = 1;
                                       }
                                     }
                                     if (flag == 1) {
-                                      return JoinedChallengeCard(defaultChallengeProgress: 34, defaultChallengeGoal: 10000, challengeName: challenge.challengeName,);
-                                    }
-                                    else{
-                                      return Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 100),
-                                        width: double.infinity,
-                                        height: currentHeight / 14,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, '/challenge');
-                                          },
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                            MaterialStateProperty.all(
-                                                FitColors.primary30),
-                                          ),
-                                          child: Text(
-                                            "Join Challenge Now!",
-                                            style:
-                                            TextStyles.titleMedium.copyWith(
-                                              color: FitColors.primary95,
-                                            ),
-                                          ),
-                                        ),
+                                      return JoinedChallengeCard(
+                                        defaultChallengeProgress: 34,
+                                        defaultChallengeGoal: 10000,
+                                        challengeName: challenge.challengeName,
                                       );
+                                    } else {
+                                      JoinChallengeButton();
                                     }
                                   }
-                                  return Text("User is not null");
+                                  return JoinChallengeButton();
                                 }
-                              }else if (snapshot.hasError) {
+                              } else if (snapshot.hasError) {
                                 return Text("Error: ${snapshot.error}");
-                              }
-                              else {
+                              } else {
                                 return Text("User is null");
                               }
-                             return Text("RRr");
+                              return Text("");
                             },
                           );
                         }
                       }
-                      return Text("No challenge found for today");
+                      return JoinChallengeButton();
                     } else {
-                      return Text("List is empty");
+                      return const JoinChallengeButton();
                     }
                   } else if (snapshot.hasError) {
                     return Text("Error: ${snapshot.error}");
                   } else {
-                    return Text("Loading...");
+                    return const Text("");
                   }
                 },
               ),
-              // StreamBuilder<List<Challenge>>(
-              //   stream: challengeData.getChallengeData().asStream(),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.hasData) {
-              //       List<Challenge> challenges = snapshot.data as List<Challenge>;
-              //       if (challenges.isNotEmpty) {
-              //         for (var challenge in challenges) {
-              //           if (challenge.challengeDate == getDate()) {
-              //             return StreamBuilder<User?>(
-              //               stream: userData.getUserData().asStream(),
-              //               builder: (context, snapshot) {
-              //                 if (snapshot.hasData) {
-              //                   // Your existing code
-              //                 } else if (snapshot.hasError) {
-              //                   return Text("Error: ${snapshot.error}");
-              //                 } else {
-              //                   return const Text("Loading...");
-              //                 }
-              //                 return Text("data");
-              //               },
-              //             );
-              //           }
-              //         }
-              //         return Text("No challenge found for today");
-              //       } else {
-              //         return Text("List is empty");
-              //       }
-              //     } else if (snapshot.hasError) {
-              //       return Text("Error: ${snapshot.error}");
-              //     } else {
-              //       return const Text("Loading...");
-              //     }
-              //     // Add a return statement for the default case
-              //     return const Text("Loading..."); // Or use a generic Container widget
-              //   },
-              // ),
             ],
           ),
         )));

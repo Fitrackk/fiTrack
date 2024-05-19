@@ -24,7 +24,6 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: FitColors.background,
-      automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
