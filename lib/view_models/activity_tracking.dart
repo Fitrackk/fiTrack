@@ -9,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 import '../models/activity_data_model.dart';
+import '../models/challenge_progress.dart';
 import '../models/user_model.dart' as models;
 
 class ActivityTrackerViewModel {
@@ -27,6 +28,7 @@ class ActivityTrackerViewModel {
   late double distanceTraveled;
   late int activeTimeInSeconds;
   late double caloriesBurned;
+  late ActivityData data;
 
   int get activeTimeInMinutes => (activeTimeInSeconds ~/ 360);
   late DateTime lastUpdateTime;
@@ -142,8 +144,8 @@ class ActivityTrackerViewModel {
 
           data['distanceTraveled'] =
               (data['distanceTraveled'] ?? 0) + distanceTraveled / 1000;
-          data['stepsCount'] = (data['stepsCount'] ?? 0) + stepsCount;
-          data['activeTime'] = (data['activeTime'] ?? 0) + activeTimeInSeconds;
+          data['stepsCount'] = ((data['stepsCount'] ?? 0) + stepsCount);
+          data['activeTime'] = (data['activeTime'] ?? 0) + activeTimeInMinutes;
           data['caloriesBurned'] =
               (data['caloriesBurned'] ?? 0) + caloriesBurned;
 
@@ -216,7 +218,7 @@ class ActivityTrackerViewModel {
       date: DateTime.now(),
       distanceTraveled: distanceTraveled / 1000,
       stepsCount: stepsCount,
-      activeTime: activeTimeInSeconds,
+      activeTime: activeTimeInMinutes,
       caloriesBurned: caloriesBurned,
       activityTypeDistance: activityTypeDistance,
     ));
@@ -246,8 +248,7 @@ class ActivityTrackerViewModel {
       await _saveLocalActivityData(activityData);
       if (kDebugMode) {
         // print(
-        //     "Local activity data saved: ${json.encode(activityData.toMap())}"
-        // );
+        // "Local activity data saved: ${json.encode(activityData.toMap())}");
       }
     }
   }
@@ -259,13 +260,13 @@ class ActivityTrackerViewModel {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double threshold = 10.0;
+    const double threshold = 20.0;
 
     if (magnitude > threshold) {
       stepsCount++;
       distanceTraveled = calculateDistancePerStep(stepsCount);
       double speed = _calculateSpeed(stepsCount);
-      caloriesBurned = _calculateCaloriesBurned(speed, weight);
+      caloriesBurned += _calculateCaloriesBurned(speed, weight);
       if (kDebugMode) {
         // print('Steps Count: $stepsCount');
       }
@@ -322,6 +323,7 @@ class ActivityTrackerViewModel {
 
   Future<void> _saveLocalActivityData(ActivityData activityData) async {
     try {
+      _updateChallengeProgress(activityData);
       await _secureStorage.write(
         key: 'activityData',
         value: json.encode(activityData.toMap()),
@@ -374,7 +376,6 @@ class ActivityTrackerViewModel {
         String documentId = "$username-$todayDate";
         DocumentReference docRef =
             _firestore.collection('ActivityData').doc(documentId);
-
         docRef.get().then((docSnapshot) {
           if (docSnapshot.exists) {
             Map<String, double> activityTypeDistanceInKilometers = {};
@@ -417,5 +418,60 @@ class ActivityTrackerViewModel {
         print("Error updating Firestore with local data: $e");
       }
     }
+  }
+
+  Future<void> _updateChallengeProgress(ActivityData activityData) async {
+    DateTime now = DateTime.now();
+    String today = "${now.year}-${now.month}-${now.day}";
+
+    QuerySnapshot challengeSnapshot = await _firestore
+        .collection('challengeProgress')
+        .where('username', isEqualTo: activityData.username)
+        .where('challengeDate', isEqualTo: today)
+        .get();
+
+    for (var challengeDoc in challengeSnapshot.docs) {
+      ChallengeProgress challengeProgress =
+          ChallengeProgress.fromFirestore(challengeDoc);
+
+      double currentDistanceForType =
+          activityData.activityTypeDistance[challengeProgress.activityType] ??
+              0.0;
+
+      challengeProgress.progress =
+          (currentDistanceForType / challengeProgress.distance) * 100;
+
+      await _firestore
+          .collection('challengeProgress')
+          .doc(challengeDoc.id)
+          .update(challengeProgress.toFirestore());
+
+      if (challengeProgress.progress >= 100) {
+        _completeChallenge(challengeProgress);
+      }
+    }
+  }
+
+  Future<void> _completeChallenge(ChallengeProgress challengeProgress) async {
+    // Update the challenge as completed in Firestore
+    await _firestore
+        .collection('challengeProgress')
+        .doc(challengeProgress.challengeId as String?)
+        .update({
+      'progress': 100,
+      'completed': true,
+    });
+
+    DocumentReference userDoc =
+        _firestore.collection('users').doc(challengeProgress.username);
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot userSnapshot = await transaction.get(userDoc);
+      if (userSnapshot.exists) {
+        var userData = userSnapshot.data() as Map<String, dynamic>?;
+        double currentScore = userData?['score'] ?? 0;
+        transaction.update(
+            userDoc, {'score': currentScore + challengeProgress.distance});
+      }
+    });
   }
 }

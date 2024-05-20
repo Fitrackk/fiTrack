@@ -18,7 +18,6 @@ class _ChallengesState extends State<Challenges> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: FitColors.background,
         appBar: AppBar(
           elevation: 0.0,
           bottom: TabBar(
@@ -34,7 +33,7 @@ class _ChallengesState extends State<Challenges> {
               ),
             ],
             indicatorColor: FitColors.text20,
-            labelStyle: TextStyles.labelLargeBold,
+            labelStyle: TextStyles.labelMediumBold,
             unselectedLabelStyle: TextStyles.labelMedium,
             labelColor: FitColors.text20,
             unselectedLabelColor: FitColors.text20,
