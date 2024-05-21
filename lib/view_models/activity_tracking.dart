@@ -277,7 +277,7 @@ class ActivityTrackerViewModel {
         date: DateTime.now(),
         distanceTraveled: distanceTraveled / 1000,
         stepsCount: stepsCount,
-        activeTime: (activeTime + getActiveTimeInMinutes()),
+        activeTime: activeTime + getActiveTimeInMinutes(),
         caloriesBurned: caloriesBurned,
         activityTypeDistance: activityTypeDistance,
       );
@@ -427,37 +427,26 @@ class ActivityTrackerViewModel {
             Map<String, dynamic> data =
                 docSnapshot.data() as Map<String, dynamic>;
 
-            double existingDistanceTraveled =
-                (data['distanceTraveled'] ?? 0.0).toDouble();
             int existingStepsCount = (data['stepsCount'] ?? 0).toInt();
             int existingActiveTime = (data['activeTime'] ?? 0).toInt();
             double existingCaloriesBurned =
                 (data['caloriesBurned'] ?? 0.0).toDouble();
 
-            Map<String, double> existingActivityTypeDistance =
-                Map<String, double>.from(data['activityTypeDistance']);
-
-            double newDistanceTraveled =
-                existingDistanceTraveled + localActivityData.distanceTraveled;
             int newStepsCount =
                 localActivityData.stepsCount >= existingStepsCount
                     ? localActivityData.stepsCount
                     : existingStepsCount + localActivityData.stepsCount;
-            int newActiveTime =
-                existingActiveTime + localActivityData.activeTime;
+            int newActiveTime = localActivityData.activeTime;
             double newCaloriesBurned = existingCaloriesBurned +
                 (localActivityData.caloriesBurned - existingCaloriesBurned);
-
-            localActivityData.activityTypeDistance.forEach((key, value) {
-              existingActivityTypeDistance[key] =
-                  (existingActivityTypeDistance[key] ?? 0) + (value / 1000);
-            });
-
+            activeTime = newActiveTime;
+            startTime ??= DateTime.now();
             docRef.update({
-              'distanceTraveled': newDistanceTraveled,
+              'distanceTraveled': localActivityData.distanceTraveled,
               'stepsCount': newStepsCount,
               'activeTime': newActiveTime,
-              'activityTypeDistance': existingActivityTypeDistance,
+              'activityTypeDistance': localActivityData.activityTypeDistance
+                  .map((key, value) => MapEntry(key, value / 1000)),
               'caloriesBurned': newCaloriesBurned,
             }).then((_) {
               if (kDebugMode) {
