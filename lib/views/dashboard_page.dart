@@ -27,11 +27,13 @@ class _DashboardState extends State<Dashboard> {
   final challengeData = getSingleton<ChallengesVM>();
   final ActivityTrackerViewModel activityData = ActivityTrackerViewModel();
   late ActivityData? _localActivityData;
-  int flag = 0;
+  late DateTime _endTime;
+  late Duration _remainingDuration;
 
   @override
   void initState() {
     super.initState();
+    _calculateRemainingTime();
     _fetchLocalActivityData();
     _localActivityData = null;
   }
@@ -43,48 +45,61 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  String getCurrentTime() {
+    DateTime now = DateTime.now().toLocal();
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    DateTime futureTime = now.add(const Duration(hours: 3));
+    String hours = twoDigits(futureTime.hour);
+    String minutes = twoDigits(futureTime.minute);
+    String seconds = twoDigits(futureTime.second);
+    return "$hours:$minutes:$seconds";
+  }
+
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String hours = twoDigits(duration.inHours);
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$hours h $minutes m $seconds s";
+  }
+
+  String getRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    Duration remainingTime = endOfDay.difference(now);
+    if (remainingTime > const Duration(hours: 24)) {
+      remainingTime = const Duration(hours: 24);
+    }
+    return formatDuration(remainingTime);
+  }
+
+  void _calculateRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    _endTime = endOfDay;
+    _updateRemainingTime();
+  }
+
+  void _updateRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    _remainingDuration = _endTime.difference(now);
+    if (_remainingDuration.isNegative) {
+      _remainingDuration = Duration.zero;
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     String? todayDate = formatter.format(DateTime.now());
-    String getCurrentTime() {
-      DateTime now = DateTime.now().toLocal();
-      String twoDigits(int n) => n.toString().padLeft(2, '0');
-
-      DateTime futureTime = now.add(const Duration(hours: 3));
-      String hours = twoDigits(futureTime.hour);
-      String minutes = twoDigits(futureTime.minute);
-      String seconds = twoDigits(futureTime.second);
-
-      return "$hours:$minutes:$seconds";
-    }
-
-    String formatDuration(Duration duration) {
-      String twoDigits(int n) => n.toString().padLeft(2, '0');
-      String hours = twoDigits(duration.inHours);
-      String minutes = twoDigits(duration.inMinutes.remainder(60));
-      String seconds = twoDigits(duration.inSeconds.remainder(60));
-      return "$hours h $minutes m $seconds s";
-    }
-
-    String getRemainingTime() {
-      DateTime now = DateTime.now().toLocal();
-      DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
-      Duration remainingTime = endOfDay.difference(now);
-
-      remainingTime -= const Duration(hours: 3);
-
-      return formatDuration(remainingTime);
-    }
-
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
     int defaultChallengeProgress = (_localActivityData != null
             ? (_localActivityData!.stepsCount / 10000) * 100
             : 0)
         .toInt();
-    print("Current Time: ${getCurrentTime()}");
-    print("Remaining Time: ${getRemainingTime()}");
+
     return Scaffold(
       appBar: const TopNav(),
       body: Center(

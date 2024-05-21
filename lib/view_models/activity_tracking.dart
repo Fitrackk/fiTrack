@@ -23,6 +23,7 @@ class ActivityTrackerViewModel {
   late models.User? currentUser;
   double height = 160;
   double weight = 60;
+  late DateTime _currentDate;
   Timer? _updateTimer;
   late int stepsCount;
   late double distanceTraveled;
@@ -42,6 +43,29 @@ class ActivityTrackerViewModel {
     return DateTime.now().difference(startTime!).inMinutes;
   }
 
+  Future<void> checkDayTransition() async {
+    DateTime now = DateTime.now();
+    if (now.day != _currentDate.day) {
+      await _updateActivityDataInFirestore();
+      await deleteLocalActivityData(_currentDate.subtract(Duration(days: 1)));
+      _currentDate = now;
+      await _createDocumentForToday(currentUser!.userName!);
+    }
+  }
+
+  Future<void> deleteLocalActivityData(DateTime date) async {
+    try {
+      await _secureStorage.delete(key: 'activityData');
+      if (kDebugMode) {
+        print('Local activity data deleted for date: $date');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting local activity data: $e');
+      }
+    }
+  }
+
   Map<String, double> activityTypeDistance = {
     'walking': 0,
     'running': 0,
@@ -51,6 +75,7 @@ class ActivityTrackerViewModel {
   void startTracking() async {
     final models.User? currentUser = await _userVM.getUserData();
     ActivityData? localActivityData = await fetchLocalActivityData();
+    _currentDate = DateTime.now();
     if (localActivityData != null) {
       stepsCount = localActivityData.stepsCount;
       distanceTraveled = localActivityData.distanceTraveled;
@@ -284,6 +309,7 @@ class ActivityTrackerViewModel {
 
       await _saveLocalActivityData(activityData);
     }
+    await checkDayTransition();
   }
 
   void _calculateStepsCount(UserAccelerometerEvent event) {
@@ -428,7 +454,6 @@ class ActivityTrackerViewModel {
                 docSnapshot.data() as Map<String, dynamic>;
 
             int existingStepsCount = (data['stepsCount'] ?? 0).toInt();
-            int existingActiveTime = (data['activeTime'] ?? 0).toInt();
             double existingCaloriesBurned =
                 (data['caloriesBurned'] ?? 0.0).toDouble();
 
@@ -483,6 +508,8 @@ class ActivityTrackerViewModel {
     try {
       DateTime now = DateTime.now();
       String today = "${now.year}-${now.month}-${now.day}";
+      print(
+          "Querying challenge progress for username: ${activityData.username} on date: $today");
 
       QuerySnapshot challengeSnapshot = await _firestore
           .collection('challengeProgress')
@@ -490,18 +517,32 @@ class ActivityTrackerViewModel {
           .where('challengeDate', isEqualTo: today)
           .get();
 
+      if (challengeSnapshot.docs.isEmpty) {
+        print(
+            "No challenge progress documents found for the user on the given date.");
+        return;
+      }
+
       for (var challengeDoc in challengeSnapshot.docs) {
+        print("Processing challenge progress document ID: ${challengeDoc.id}");
+
         ChallengeProgress challengeProgress =
             ChallengeProgress.fromFirestore(challengeDoc);
 
         String normalizedActivityType =
             challengeProgress.activityType.toLowerCase();
         double currentDistanceForType =
-            activityData.activityTypeDistance[normalizedActivityType] ?? 0.0;
+            (activityData.activityTypeDistance[normalizedActivityType] ?? 0.0) /
+                1000;
+
+        print(
+            "Current distance for type $normalizedActivityType: $currentDistanceForType");
 
         double newProgress =
             (currentDistanceForType / challengeProgress.distance) * 100;
         challengeProgress.progress = newProgress;
+
+        print("New progress calculated: $newProgress");
 
         await _firestore
             .collection('challengeProgress')
