@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
+import '../../models/challenge_model.dart';
+import '../../models/user_model.dart';
+import '../../view_models/user.dart';
 
 class CustomChallengeCard extends StatefulWidget {
   final String activityType;
@@ -12,7 +16,7 @@ class CustomChallengeCard extends StatefulWidget {
   final double distance;
   final List<String> participantUsernames;
   final int participations;
-  final bool? challengeJoined;
+  final bool challengeJoined;
   final String? challengeProgress;
   final List<String> challengeParticipantsImg;
 
@@ -36,6 +40,14 @@ class CustomChallengeCard extends StatefulWidget {
 }
 
 class _CustomChallengeCardState extends State<CustomChallengeCard> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  bool _isChallengeJoined = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isChallengeJoined = widget.challengeJoined;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +83,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text:
-                            "${widget.challengeName}.\n",
+                            text: "${widget.challengeName}.\n",
                             style: TextStyles.labelLargeBold.copyWith(
                               color: FitColors.text20,
                               shadows: [
@@ -86,25 +97,25 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                           ),
                           TextSpan(
                             text: "${widget.challengeOwner}\n",
-                            style: TextStyles.bodyXSmall
-                                .copyWith(color: FitColors.placeholder),
+                            style: TextStyles.bodyXSmall.copyWith(
+                                color: FitColors.placeholder),
                           ),
                           TextSpan(
                             text: widget.challengeDate,
-                            style: TextStyles.labelSmall
-                                .copyWith(color: FitColors.text20),
+                            style: TextStyles.labelSmall.copyWith(
+                                color: FitColors.text20),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  if (widget.challengeJoined == true)
+                  if (_isChallengeJoined)
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 0, 20, 25),
                       child: Text(
                         "${widget.challengeProgress}",
-                        style: TextStyles.labelMedium
-                            .copyWith(color: FitColors.text20),
+                        style: TextStyles.labelMedium.copyWith(
+                            color: FitColors.text20),
                       ),
                     )
                 ],
@@ -115,9 +126,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                     width: currentWidth / 3,
                     child: Stack(
                       children: [
-                        for (int i = 1;
-                        i <= (widget.participations);
-                        i++, marginValue = marginValue + 15)
+                        for (int i = 1; i <= (widget.participations); i++, marginValue = marginValue + 15)
                           Container(
                             margin: EdgeInsets.fromLTRB(marginValue, 0, 0, 0),
                             child: ClipRRect(
@@ -133,8 +142,8 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                             margin: const EdgeInsets.fromLTRB(20, 35, 0, 0),
                             child: Text(
                               "${widget.participations} / 10 participants joined",
-                              style: TextStyles.bodyXSmall
-                                  .copyWith(color: FitColors.placeholder),
+                              style: TextStyles.bodyXSmall.copyWith(
+                                  color: FitColors.placeholder),
                             ))
                       ],
                     ),
@@ -162,8 +171,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                     FitColors.primary30),
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "Copy ID",
@@ -182,12 +190,46 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                         const SizedBox(
                           width: 5,
                         ),
-                        if (widget.challengeJoined == false)
+                        if (!_isChallengeJoined)
                           SizedBox(
                             width: 90,
                             height: 35,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                final UserVM userVM = UserVM();
+                                User? currentUser = await userVM.getUserData();
+                                if (currentUser != null && currentUser.userName != null) {
+                                  String? username = currentUser.userName;
+                                  String challengeName = widget.challengeName;
+                                  String challengeDate = widget.challengeDate;
+
+                                  firestore
+                                      .collection('challenges')
+                                      .where('challengeName', isEqualTo: challengeName)
+                                      .where('challengeDate', isEqualTo: challengeDate)
+                                      .get()
+                                      .then((QuerySnapshot querySnapshot) {
+                                    if (querySnapshot.docs.isNotEmpty) {
+                                      querySnapshot.docs.forEach((doc) {
+                                        Challenge challenge = Challenge.fromFirestore(doc);
+                                        if (!challenge.participantUsernames.contains(username)) {
+
+                                          List<String> updatedUsernames = List.from(challenge.participantUsernames)..add(username!);
+                                          doc.reference.update({'participantUsernames': updatedUsernames}).then((_) {
+                                            setState(() {
+                                              _isChallengeJoined = true;
+                                            });
+                                          });
+                                        }
+                                      });
+                                    } else {
+                                      print("No matching challenge found");
+                                    }
+                                  }).catchError((error) {
+                                    print("Error retrieving challenge: $error");
+                                  });
+                                }
+                              },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
                                     FitColors.primary30),
@@ -200,7 +242,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                               ),
                             ),
                           ),
-                        if (widget.challengeJoined == true)
+                        if (_isChallengeJoined)
                           SizedBox(
                             width: 90,
                             height: 35,
