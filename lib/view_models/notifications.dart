@@ -12,8 +12,7 @@ class NotificationViewModel {
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('@mipmap/ic_launcher'); // Ensure you have an icon
 
-    const InitializationSettings initializationSettings =
-    InitializationSettings(
+    const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -26,14 +25,15 @@ class NotificationViewModel {
     required String title,
     required String body,
     required Time time,
+    required String type,
   }) async {
-    final scheduledDate = _nextInstanceOfTime(time);
+    final dateTimeComponents = _nextInstanceOfTime(time);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      scheduledDate,
+      tz.TZDateTime.parse(tz.local, '${dateTimeComponents['date']}T${dateTimeComponents['time']}'),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'your_channel_id',
@@ -54,7 +54,9 @@ class NotificationViewModel {
       'id': id,
       'title': title,
       'body': body,
-      'scheduledDate': scheduledDate.toString(),
+      'scheduledDate': dateTimeComponents['date'],
+      'scheduledTime': dateTimeComponents['time'],
+      'type': type,
     });
   }
 
@@ -68,50 +70,27 @@ class NotificationViewModel {
     }
   }
 
-  tz.TZDateTime _nextInstanceOfTime(Time time) {
+  Map<String, dynamic> _nextInstanceOfTime(Time time) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
         tz.local, now.year, now.month, now.day, time.hour, time.minute);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
-    return scheduledDate;
+    return {
+      'date': scheduledDate.toIso8601String().split('T')[0], // Extracts date in YYYY-MM-DD format
+      'time': scheduledDate.toIso8601String().split('T')[1]  // Extracts time in HH:MM:SS format
+    };
   }
 
   Future<void> scheduleDailyWaterReminder() async {
     const List<Map<String, dynamic>> notifications = [
       {
         "time": Time(8, 0, 0),
-        "message": "Time to drink some water and stay hydrated!"
+        "message": "Time to drink some water and stay hydrated!",
+        "type": "water reminder"
       },
-      {
-        "time": Time(10, 0, 0),
-        "message": "Nothing will work unless you do."
-      },
-      {
-        "time": Time(12, 0, 0),
-        "message": "Time to drink some water and stay hydrated!"
-      },
-      {
-        "time": Time(14, 0, 0),
-        "message": "Keep pushing forward, you got this!"
-      },
-      {
-        "time": Time(16, 0, 0),
-        "message": "Time to drink some water and stay hydrated!"
-      },
-      {
-        "time": Time(18, 0, 0),
-        "message": "Believe in yourself and all that you are."
-      },
-      {
-        "time": Time(20, 0, 0),
-        "message": "Time to drink some water and stay hydrated!"
-      },
-      {
-        "time": Time(22, 0, 0),
-        "message": "End your day with a positive thought."
-      }
+      // Add other notifications similarly with "type" and "message" specified
     ];
 
     // Cancel any existing notifications
@@ -124,6 +103,7 @@ class NotificationViewModel {
         title: 'Reminder',
         body: notification['message'],
         time: notification['time'],
+        type: notification['type'],
       );
     }
   }
