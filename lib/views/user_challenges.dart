@@ -9,6 +9,7 @@ import 'package:stator/stator.dart';
 import '../configures/color_theme.dart';
 import '../configures/text_style.dart';
 import '../models/challenge_model.dart';
+import '../models/challenge_progress.dart';
 import '../models/user_model.dart';
 import '../utils/customs/custom_challenge_card.dart';
 import '../view_models/challenges.dart';
@@ -49,7 +50,7 @@ class _UserChallengesState extends State<UserChallenges> {
                 Text(
                   'New Challenge Setup',
                   style:
-                  TextStyles.titleMedBold.copyWith(color: FitColors.text10),
+                      TextStyles.titleMedBold.copyWith(color: FitColors.text10),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -57,7 +58,7 @@ class _UserChallengesState extends State<UserChallenges> {
                     Text('Activity type:',
                         style: TextStyles.bodyMediumBold
                             .copyWith(color: FitColors.text10)),
-                    SizedBox(width: 50),
+                    const SizedBox(width: 50),
                     ActivityDropDown(typeController: _typeController),
                   ],
                 ),
@@ -67,14 +68,14 @@ class _UserChallengesState extends State<UserChallenges> {
                     Text('Distance:',
                         style: TextStyles.bodyMediumBold
                             .copyWith(color: FitColors.text10)),
-                    SizedBox(width: 80),
+                    const SizedBox(width: 80),
                     SizedBox(
-                      width: 130,
+                      width: 100,
                       child: TextFormField(
                         controller: _distanceController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          hintText: 'Enter distance',
+                          hintText: 'KM',
                         ),
                       ),
                     ),
@@ -101,7 +102,7 @@ class _UserChallengesState extends State<UserChallenges> {
                     Text('Date:',
                         style: TextStyles.bodyMediumBold
                             .copyWith(color: FitColors.text10)),
-                    SizedBox(width: 100),
+                    const SizedBox(width: 100),
                     Date(dateController: _dateController),
                   ],
                 ),
@@ -111,7 +112,7 @@ class _UserChallengesState extends State<UserChallenges> {
                     Text('Enable Reminders:',
                         style: TextStyles.bodyMediumBold
                             .copyWith(color: FitColors.text10)),
-                    SizedBox(width: 80),
+                    const SizedBox(width: 80),
                     ReminderToggle(reminderController: _reminderController),
                   ],
                 ),
@@ -126,7 +127,7 @@ class _UserChallengesState extends State<UserChallenges> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content:
-                            Text('Distance must be between 1 and 20 km')),
+                                Text('Distance must be between 1 and 20 km')),
                       );
                     } else {
                       try {
@@ -183,11 +184,12 @@ class _UserChallengesState extends State<UserChallenges> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 20),
       child: Column(
         children: [
           FutureBuilder<List<Challenge>>(
@@ -213,49 +215,102 @@ class _UserChallengesState extends State<UserChallenges> {
                           children: [
                             StreamBuilder(
                               stream: userData.getUserData().asStream(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  User? user = snapshot.data;
+                              builder: (context, userSnapshot) {
+                                if (userSnapshot.hasData) {
+                                  User? user = userSnapshot.data;
                                   if (user != null) {
-                                    if (challenge.challengeOwner == user.userName) {
-                                      return SingleChildScrollView(
-                                        child: Column(
-                                          children: [
-                                            const SizedBox(height: 20),
-                                            CustomChallengeCard(
-                                              challengeId: challenge.challengeId,
-                                              challengeName: challenge.challengeName,
-                                              challengeOwner: challenge.challengeOwner,
-                                              challengeDate: challenge.challengeDate,
-                                              participations: challenge.participations,
-                                              challengeParticipantsImg: const [
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/girl.png",
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/girl.png",
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/Rectangle.png",
-                                                "assets/images/Rectangle.png",
-                                              ],
-                                              activityType: challenge.activityType,
-                                              distance: challenge.distance,
-                                              participantUsernames: challenge.participantUsernames,
-                                              challengeJoined: true, challengeProgress: '20%', // Assuming the owner is always joined
-                                            ),
-                                          ],
-                                        ),
+                                    if (challenge.challengeOwner ==
+                                        user.userName) {
+                                      return FutureBuilder<
+                                          List<ChallengeProgress>>(
+                                        future: ChallengesVM()
+                                            .getChallengeProgress(
+                                                challenge.challengeId),
+                                        builder: (context, progressSnapshot) {
+                                          if (progressSnapshot
+                                                  .connectionState ==
+                                              ConnectionState.waiting) {
+                                            return const Center(
+                                              child: Text(" "),
+                                            );
+                                          } else if (progressSnapshot
+                                              .hasError) {
+                                            return Center(
+                                              child: Text(
+                                                  'Error: ${progressSnapshot.error}'),
+                                            );
+                                          } else if (progressSnapshot.hasData) {
+                                            double totalProgress = 0;
+                                            progressSnapshot.data
+                                                ?.forEach((progress) {
+                                              totalProgress +=
+                                                  progress.progress;
+                                            });
+
+                                            double progressPercentage =
+                                                progressSnapshot.data!.isEmpty
+                                                    ? 0
+                                                    : totalProgress /
+                                                        progressSnapshot
+                                                            .data!.length;
+
+                                            return SingleChildScrollView(
+                                              child: Column(
+                                                children: [
+                                                  const SizedBox(height: 20),
+                                                  CustomChallengeCard(
+                                                    challengeId:
+                                                        challenge.challengeId,
+                                                    challengeName:
+                                                        challenge.challengeName,
+                                                    challengeOwner: challenge
+                                                        .challengeOwner,
+                                                    challengeDate:
+                                                        challenge.challengeDate,
+                                                    participations: challenge
+                                                        .participations,
+                                                    challengeParticipantsImg: const [
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/girl.png",
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/girl.png",
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/Rectangle.png",
+                                                      "assets/images/Rectangle.png",
+                                                    ],
+                                                    activityType:
+                                                        challenge.activityType,
+                                                    distance:
+                                                        challenge.distance,
+                                                    participantUsernames:
+                                                        challenge
+                                                            .participantUsernames,
+                                                    challengeJoined: true,
+                                                    challengeProgress:
+                                                        "${progressPercentage.toStringAsFixed(0)}%",
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          } else {
+                                            return const Center(
+                                              child: Text(
+                                                  'No progress data available'),
+                                            );
+                                          }
+                                        },
                                       );
                                     }
                                     return const SizedBox(); // Returning an empty SizedBox if the challenge doesn't belong to the current user
                                   } else {
                                     return const Text("User is null");
                                   }
-                                } else if (snapshot.hasError) {
-                                  return Text("Error: ${snapshot.error}");
+                                } else if (userSnapshot.hasError) {
+                                  return Text("Error: ${userSnapshot.error}");
                                 } else {
                                   return const SizedBox(); // Returning an empty SizedBox if snapshot has no data
                                 }
@@ -274,7 +329,9 @@ class _UserChallengesState extends State<UserChallenges> {
               }
             },
           ),
-SizedBox(height: 20,),
+          const SizedBox(
+            height: 20,
+          ),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),

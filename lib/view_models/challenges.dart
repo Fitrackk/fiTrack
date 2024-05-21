@@ -6,11 +6,13 @@ import 'package:fitrack/models/challenge_model.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../models/challenge_progress.dart';
 import '../models/user_model.dart';
 
 class ChallengesVM {
   final UserVM _userVM = UserVM();
-  late User? currentUser;
+  User? currentUser;
   String? username;
   final Random _random = Random();
 
@@ -32,9 +34,9 @@ class ChallengesVM {
   }
 
   Future<List<Challenge>> getChallengeData({String? filter}) async {
-    final User? currentUser = await _userVM.getUserData();
+    currentUser = await _userVM.getUserData();
     if (currentUser != null) {
-      username = currentUser.userName;
+      username = currentUser!.userName;
     }
     try {
       QuerySnapshot querySnapshot =
@@ -57,6 +59,63 @@ class ChallengesVM {
     }
   }
 
+  Future<List<Challenge>> getUserChallengeData({String? filter}) async {
+    currentUser = await _userVM.getUserData();
+    if (currentUser == null) {
+      return [];
+    }
+
+    username = currentUser!.userName;
+
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection("challenges")
+          .where('participantUsernames', arrayContains: username)
+          .get();
+
+      List<Challenge> challenges = querySnapshot.docs.map((doc) {
+        return Challenge.fromFirestore(doc);
+      }).toList();
+
+      if (filter != null && filter.isNotEmpty) {
+        challenges = challenges
+            .where((challenge) =>
+                challenge.activityType.toLowerCase() == filter.toLowerCase())
+            .toList();
+      }
+
+      return challenges;
+    } catch (e) {
+      print("Error fetching challenges: $e");
+      return [];
+    }
+  }
+
+  Future<List<ChallengeProgress>> getChallengeProgress(int challengeId) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('challengeProgress')
+          .where('challengeId', isEqualTo: challengeId)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return ChallengeProgress.fromFirestore(doc);
+      }).toList();
+    } catch (e) {
+      print("Error fetching challenge progress: $e");
+      return [];
+    }
+  }
+
+  Future<bool> hasChallengeOnDate(String username, String date) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('challenges')
+        .where('participantUsernames', arrayContains: username)
+        .where('challengeDate', isEqualTo: date)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
 
   Future<void> addChallenge(
     BuildContext context,
@@ -66,8 +125,16 @@ class ChallengesVM {
     String? date,
     String? reminder,
   ) async {
-    int challengeId = await generateUniqueChallengeId();
     try {
+      currentUser = await _userVM.getUserData();
+      if (currentUser == null) {
+        Navigator.pushNamed(context, '/signing');
+        return;
+      }
+
+      username = currentUser!.userName;
+
+      int challengeId = await generateUniqueChallengeId();
       final DateFormat formatter = DateFormat('yyyy-MM-dd');
       String? todayDate =
           date?.isNotEmpty == true ? date : formatter.format(DateTime.now());
@@ -78,6 +145,15 @@ class ChallengesVM {
       participants = participants?.isNotEmpty == true ? participants : '7';
       date = date?.isNotEmpty == true ? date : todayDate;
       reminder = reminder?.isNotEmpty == true ? reminder : 'true';
+
+      bool hasChallenge = await hasChallengeOnDate(username!, date!);
+      if (hasChallenge) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('You already have a challenge on this date.')),
+        );
+        return;
+      }
 
       await FirebaseFirestore.instance.collection('challenges').add({
         'activityType': activityType,
@@ -91,6 +167,9 @@ class ChallengesVM {
         'reminder': reminder,
       });
 
+      addChallengeProgress(username!, activityType!, double.parse(distance),
+          date, 0, challengeId);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Challenge created successfully!')),
       );
@@ -98,6 +177,32 @@ class ChallengesVM {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to create challenge: $e')),
       );
+    }
+  }
+
+  Future<void> addChallengeProgress(
+    String username,
+    String activityType,
+    double distance,
+    String challengeDate,
+    double progress,
+    int challengeId,
+  ) async {
+    try {
+      final challengeProgress = ChallengeProgress(
+        username: username,
+        activityType: activityType,
+        distance: distance,
+        challengeDate: challengeDate,
+        progress: progress,
+        challengeId: challengeId,
+      );
+
+      await FirebaseFirestore.instance
+          .collection('challengeProgress')
+          .add(challengeProgress.toFirestore());
+    } catch (e) {
+      print('Failed to add challenge progress: $e');
     }
   }
 }

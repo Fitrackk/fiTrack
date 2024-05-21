@@ -1,7 +1,3 @@
-import 'dart:ffi';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/utils/customs/join_challenge_button.dart';
@@ -10,15 +6,17 @@ import 'package:fitrack/utils/customs/progress_indicator.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
 import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stator/stator.dart';
+
 import '../models/activity_data_model.dart';
 import '../models/challenge_model.dart';
-import '../models/user_model.dart';
+import '../models/challenge_progress.dart';
 import '../view_models/user.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -29,11 +27,13 @@ class _DashboardState extends State<Dashboard> {
   final challengeData = getSingleton<ChallengesVM>();
   final ActivityTrackerViewModel activityData = ActivityTrackerViewModel();
   late ActivityData? _localActivityData;
-  int flag = 0;
+  late DateTime _endTime;
+  late Duration _remainingDuration;
 
   @override
   void initState() {
     super.initState();
+    _calculateRemainingTime();
     _fetchLocalActivityData();
     _localActivityData = null;
   }
@@ -45,61 +45,68 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  String getCurrentTime() {
+    DateTime now = DateTime.now().toLocal();
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    DateTime futureTime = now.add(const Duration(hours: 3));
+    String hours = twoDigits(futureTime.hour);
+    String minutes = twoDigits(futureTime.minute);
+    String seconds = twoDigits(futureTime.second);
+    return "$hours:$minutes:$seconds";
+  }
 
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String hours = twoDigits(duration.inHours);
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$hours h $minutes m $seconds s";
+  }
+
+  String getRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    Duration remainingTime = endOfDay.difference(now);
+    if (remainingTime > const Duration(hours: 24)) {
+      remainingTime = const Duration(hours: 24);
+    }
+    return formatDuration(remainingTime);
+  }
+
+  void _calculateRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    _endTime = endOfDay;
+    _updateRemainingTime();
+  }
+
+  void _updateRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    _remainingDuration = _endTime.difference(now);
+    if (_remainingDuration.isNegative) {
+      _remainingDuration = Duration.zero;
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-
     final DateFormat formatter = DateFormat('yyyy-MM-dd');
     String? todayDate = formatter.format(DateTime.now());
-    DateTime now = DateTime.now();
-    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
-    Duration remainingTime = endOfDay.difference(now);
-    String getCurrentTime() {
-      DateTime now = DateTime.now().toLocal(); // Ensure the time is local
-      String twoDigits(int n) => n.toString().padLeft(2, '0');
-
-      // Add 3 hours to the current time
-      DateTime futureTime = now.add(Duration(hours: 3));
-      String hours = twoDigits(futureTime.hour);
-      String minutes = twoDigits(futureTime.minute);
-      String seconds = twoDigits(futureTime.second);
-
-      return "$hours:$minutes:$seconds";
-    }
-    String formatDuration(Duration duration) {
-      String twoDigits(int n) => n.toString().padLeft(2, '0');
-      String hours = twoDigits(duration.inHours);
-      String minutes = twoDigits(duration.inMinutes.remainder(60));
-      String seconds = twoDigits(duration.inSeconds.remainder(60));
-      return "$hours h $minutes m $seconds s";
-    }
-    String getRemainingTime() {
-      String currentTime = getCurrentTime(); // Get current time
-      DateTime now = DateTime.now().toLocal(); // Ensure the time is local
-      DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
-      Duration remainingTime = endOfDay.difference(now);
-
-      // Subtract 3 hours from remaining time
-      remainingTime -= Duration(hours: 3);
-
-      return formatDuration(remainingTime);
-    }
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
     int defaultChallengeProgress = (_localActivityData != null
-        ? (_localActivityData!.stepsCount / 10000) * 100
-        : 0)
+            ? (_localActivityData!.stepsCount / 10000) * 100
+            : 0)
         .toInt();
-    print("Current Time: ${getCurrentTime()}");
-    print("Remaining Time: ${getRemainingTime()}");
+
     return Scaffold(
-      appBar: TopNav(),
+      appBar: const TopNav(),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               CustomProgressIndicator(
@@ -108,11 +115,11 @@ class _DashboardState extends State<Dashboard> {
                       ? _localActivityData!.stepsCount
                       : 0,
                   defaultChallengeGoal: 10000),
-              SizedBox(
+              const SizedBox(
                 height: 100,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 25),
+                padding: const EdgeInsets.symmetric(horizontal: 25),
                 width: currentWidth / 1.1,
                 height: currentHeight / 8,
                 decoration: BoxDecoration(
@@ -132,12 +139,12 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_pin,
                           size: 40,
                           color: FitColors.primary30,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
                         RichText(
@@ -145,8 +152,8 @@ class _DashboardState extends State<Dashboard> {
                             children: [
                               TextSpan(
                                 text: _localActivityData != null
-                                    ? "${_localActivityData!.distanceTraveled} \n"
-                                    : "",
+                                    ? "${_localActivityData!.distanceTraveled.toStringAsFixed(2)} \n"
+                                    : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
@@ -164,12 +171,12 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.access_time_rounded,
                           size: 40,
                           color: FitColors.primary30,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
                         RichText(
@@ -184,7 +191,7 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                               ),
                               TextSpan(
-                                text: "Time",
+                                text: "min",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text10,
                                 ),
@@ -196,12 +203,12 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.local_fire_department_rounded,
                           size: 40,
                           color: FitColors.primary30,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
                         RichText(
@@ -209,7 +216,7 @@ class _DashboardState extends State<Dashboard> {
                             children: [
                               TextSpan(
                                 text: _localActivityData != null
-                                    ? "${_localActivityData!.caloriesBurned} \n"
+                                    ? "${_localActivityData!.caloriesBurned.toInt()} \n"
                                     : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
@@ -229,54 +236,60 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               StreamBuilder<List<Challenge>>(
-                stream: challengeData.getChallengeData().asStream(),
+                stream: challengeData.getUserChallengeData().asStream(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Challenge> challenges =
-                    snapshot.data as List<Challenge>;
+                        snapshot.data as List<Challenge>;
                     if (challenges.isNotEmpty) {
                       for (var challenge in challenges) {
                         if (challenge.challengeDate == todayDate) {
-                          return StreamBuilder<User?>(
-                            stream: userData.getUserData().asStream(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                User? user = snapshot.data;
-                                if (user != null) {
-                                  if (challenge.participantUsernames != null) {
-                                    for (int i = 0; i < challenge.participantUsernames.length; i++) {
-                                      if (user.userName == challenge.participantUsernames[i]) {
-                                        flag = 1;
-                                      }
-                                    }
-                                    if (flag == 1) {
-                                      return JoinedChallengeCard(
-                                        defaultChallengeProgress:
-                                        defaultChallengeProgress,
-                                        remainingTime: getRemainingTime(),
-                                        challengeName: challenge.challengeName,
-                                      );
-                                    } else {
-                                      JoinChallengeButton();
-                                    }
-                                  }
-                                  return JoinChallengeButton();
-                                }
-                              } else if (snapshot.hasError) {
-                                return Text("Error: ${snapshot.error}");
+                          return FutureBuilder<List<ChallengeProgress>>(
+                            future: ChallengesVM()
+                                .getChallengeProgress(challenge.challengeId),
+                            builder: (context, progressSnapshot) {
+                              if (progressSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: Text(" "),
+                                );
+                              } else if (progressSnapshot.hasError) {
+                                return Center(
+                                  child:
+                                      Text('Error: ${progressSnapshot.error}'),
+                                );
+                              } else if (progressSnapshot.hasData) {
+                                double totalProgress = 0;
+                                progressSnapshot.data?.forEach((progress) {
+                                  totalProgress += progress.progress;
+                                });
+
+                                double progressPercentage =
+                                    progressSnapshot.data!.isEmpty
+                                        ? 0
+                                        : totalProgress /
+                                            progressSnapshot.data!.length;
+
+                                return JoinedChallengeCard(
+                                  defaultChallengeProgress:
+                                      progressPercentage.toInt(),
+                                  remainingTime: getRemainingTime(),
+                                  challengeName: challenge.challengeName,
+                                );
+                              } else if (progressSnapshot.hasError) {
+                                return Text("Error: ${progressSnapshot.error}");
                               } else {
-                                return Text("");
+                                return const Text(" ");
                               }
-                              return Text("");
                             },
                           );
                         }
                       }
-                      return JoinChallengeButton();
+                      return const JoinChallengeButton();
                     } else {
                       return const JoinChallengeButton();
                     }

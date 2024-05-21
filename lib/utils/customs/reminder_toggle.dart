@@ -18,21 +18,25 @@ class _ReminderToggleState extends State<ReminderToggle> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Switch(
-          value: _remindersEnabled,
-          onChanged: (bool value) {
-            setState(() {
-              _remindersEnabled = value;
-              widget.reminderController.text = _remindersEnabled.toString();
-              if (kDebugMode) {
-                print(widget.reminderController.text);
-              }
-            });
-          },
-          activeColor: FitColors.primary20,
-          activeTrackColor: FitColors.tertiary60,
-          inactiveThumbColor: FitColors.primary20,
-          inactiveTrackColor: FitColors.tertiary40,
+        Container(
+          width: 50,
+          height: 50,
+          child: Switch(
+            value: _remindersEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                _remindersEnabled = value;
+                widget.reminderController.text = _remindersEnabled.toString();
+                if (kDebugMode) {
+                  print(widget.reminderController.text);
+                }
+              });
+            },
+            activeColor: FitColors.primary20,
+            activeTrackColor: FitColors.tertiary60,
+            inactiveThumbColor: FitColors.primary20,
+            inactiveTrackColor: FitColors.tertiary40,
+          ),
         ),
         Container(
           width: 1,
