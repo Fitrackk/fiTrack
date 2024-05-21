@@ -26,12 +26,22 @@ class ActivityTrackerViewModel {
   Timer? _updateTimer;
   late int stepsCount;
   late double distanceTraveled;
-  late int activeTimeInSeconds;
+  late int activeTimeInMinutes;
+  late int activeTime;
   late double caloriesBurned;
   late ActivityData data;
+  int lastRecordedStepCount = 0;
+  DateTime? startTime;
 
-  int get activeTimeInMinutes => (activeTimeInSeconds ~/ 360);
-  late DateTime lastUpdateTime;
+  void startActivity() {
+    startTime ??= DateTime.now();
+  }
+
+  int getActiveTimeInMinutes() {
+    if (startTime == null) return 0;
+    return DateTime.now().difference(startTime!).inMinutes;
+  }
+
   Map<String, double> activityTypeDistance = {
     'walking': 0,
     'running': 0,
@@ -41,17 +51,20 @@ class ActivityTrackerViewModel {
   void startTracking() async {
     final models.User? currentUser = await _userVM.getUserData();
     ActivityData? localActivityData = await fetchLocalActivityData();
-    lastUpdateTime = DateTime.now();
-    stepsCount = localActivityData?.stepsCount ?? 0;
-    distanceTraveled = localActivityData?.distanceTraveled ?? 0;
-    activeTimeInSeconds = localActivityData?.activeTime ?? 0;
-    caloriesBurned = localActivityData?.caloriesBurned ?? 0;
-    activityTypeDistance = localActivityData?.activityTypeDistance ??
-        {
-          'walking': 0,
-          'running': 0,
-          'jogging': 0,
-        };
+    if (localActivityData != null) {
+      stepsCount = localActivityData.stepsCount;
+      distanceTraveled = localActivityData.distanceTraveled;
+      activeTimeInMinutes = localActivityData.activeTime;
+      caloriesBurned = localActivityData.caloriesBurned;
+      activityTypeDistance = localActivityData.activityTypeDistance;
+    } else {
+      stepsCount = 0;
+      distanceTraveled = 0.0;
+      activeTimeInMinutes = 0;
+      caloriesBurned = 0.0;
+      activityTypeDistance = {'walking': 0, 'running': 0, 'jogging': 0};
+    }
+    activeTime = activeTimeInMinutes;
 
     if (currentUser != null) {
       String? username = currentUser.userName;
@@ -139,19 +152,45 @@ class ActivityTrackerViewModel {
           Map<String, dynamic> data =
               docSnapshot.data() as Map<String, dynamic>;
 
-          data['distanceTraveled'] =
-              (data['distanceTraveled'] ?? 0) + distanceTraveled / 1000;
-          data['stepsCount'] = ((data['stepsCount'] ?? 0) + stepsCount);
-          data['activeTime'] = (data['activeTime'] ?? 0) + activeTimeInMinutes;
-          data['caloriesBurned'] =
-              (data['caloriesBurned'] ?? 0) + caloriesBurned;
+          double newDistanceTraveled = data['distanceTraveled'] ?? 0;
+          newDistanceTraveled += distanceTraveled;
+          if (newDistanceTraveled.isNaN || newDistanceTraveled.isInfinite) {
+            newDistanceTraveled = 0.0;
+          }
+
+          int newStepsCount = data['stepsCount'] ?? 0;
+          newStepsCount += stepsCount;
+          if (newStepsCount.isNaN || newStepsCount.isInfinite) {
+            newStepsCount = 0;
+          }
+
+          int newActiveTime = data['activeTime'] ?? 0;
+          newActiveTime += activeTimeInMinutes;
+          if (newActiveTime.isNaN || newActiveTime.isInfinite) {
+            newActiveTime = 0;
+          }
+          activeTime += newActiveTime;
+          double newCaloriesBurned = data['caloriesBurned'] ?? 0;
+          newCaloriesBurned += caloriesBurned;
+          if (newCaloriesBurned.isNaN || newCaloriesBurned.isInfinite) {
+            newCaloriesBurned = 0.0;
+          }
 
           Map<String, double> existingActivityTypeDistance =
               Map<String, double>.from(data['activityTypeDistance']);
           activityTypeDistance.forEach((key, value) {
-            existingActivityTypeDistance[key] =
+            double newValue =
                 (existingActivityTypeDistance[key] ?? 0) + value / 100;
+            if (newValue.isNaN || newValue.isInfinite) {
+              newValue = 0.0;
+            }
+            existingActivityTypeDistance[key] = newValue;
           });
+
+          data['distanceTraveled'] = newDistanceTraveled;
+          data['stepsCount'] = newStepsCount;
+          data['activeTime'] = newActiveTime;
+          data['caloriesBurned'] = newCaloriesBurned;
           data['activityTypeDistance'] = existingActivityTypeDistance;
 
           docRef.update(data).then((_) {
@@ -186,8 +225,8 @@ class ActivityTrackerViewModel {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double walkingThreshold = 3;
-    const double joggingThreshold = 4;
+    const double walkingThreshold = 2;
+    const double joggingThreshold = 3.5;
     const double runningThreshold = 5;
 
     double strideLengthInMeters = calculateStrideLength(height);
@@ -206,14 +245,14 @@ class ActivityTrackerViewModel {
   }
 
   double calculateStrideLength(double height) {
-    return height * 0.415;
+    return height * 0.7;
   }
 
   void stopTracking() {
     _saveLocalActivityData(ActivityData(
       username: currentUser?.userName ?? '',
       date: DateTime.now(),
-      distanceTraveled: distanceTraveled / 1000,
+      distanceTraveled: distanceTraveled,
       stepsCount: stepsCount,
       activeTime: activeTimeInMinutes,
       caloriesBurned: caloriesBurned,
@@ -231,13 +270,14 @@ class ActivityTrackerViewModel {
       _calculateStepsCount(_lastLinearAccelerationEvent!);
       _calculateActiveTime();
       _updateActivityTypeDistance(_lastGyroscopeEvent!);
+      distanceTraveled = activityTypeDistance.values.reduce((a, b) => a + b);
 
       ActivityData activityData = ActivityData(
         username: currentUser?.userName ?? '',
         date: DateTime.now(),
         distanceTraveled: distanceTraveled / 1000,
         stepsCount: stepsCount,
-        activeTime: activeTimeInMinutes,
+        activeTime: (activeTime + getActiveTimeInMinutes()),
         caloriesBurned: caloriesBurned,
         activityTypeDistance: activityTypeDistance,
       );
@@ -256,33 +296,40 @@ class ActivityTrackerViewModel {
     const double threshold = 12.0;
 
     if (magnitude > threshold) {
+      startActivity();
       stepsCount++;
-      distanceTraveled = calculateDistancePerStep(stepsCount);
-      double speed = _calculateSpeed(stepsCount);
-      caloriesBurned += _calculateCaloriesBurned(speed, weight);
+      int newSteps = stepsCount - lastRecordedStepCount;
+      lastRecordedStepCount = stepsCount;
+      _calculateCaloriesBurned(newSteps);
     }
-  }
-
-  double calculateDistancePerStep(int stepsCount) {
-    double heightInMeters = height / 100;
-    double stepLengthInMeters = heightInMeters * 0.414;
-    return stepsCount * stepLengthInMeters;
   }
 
   double _calculateSpeed(int stepsCount) {
     double strideLengthInMeters = 0.415 * height / 100;
-    double stepFrequency = stepsCount / activeTimeInSeconds;
-    return strideLengthInMeters * stepFrequency;
+    int activeTimeInMinutes = getActiveTimeInMinutes();
+    double stepFrequency =
+        (activeTimeInMinutes > 0) ? stepsCount / activeTimeInMinutes : 0;
+    double speed = strideLengthInMeters * stepFrequency;
+    return speed;
   }
 
-  double _calculateCaloriesBurned(double speed, double weight) {
+  void _calculateCaloriesBurned(int newSteps) {
+    double speed = _calculateSpeed(newSteps);
     double speedKmh = speed * 3.6;
-    double calories = 4.5 * speedKmh * weight / 1000;
-    return calories;
+    double calories = 4.5 * speedKmh * weight / 4000;
+
+    if (calories.isNaN || calories.isInfinite) {
+      calories = 0.0;
+    }
+    caloriesBurned += calories;
+  }
+
+  double _calculateMagnitude(double x, double y, double z) {
+    return sqrt(x * x + y * y + z * z);
   }
 
   Future<void> _calculateActiveTime() async {
-    const double movementThreshold = 1;
+    const double movementThreshold = 0.5;
 
     if (_lastLinearAccelerationEvent != null) {
       final double x = _lastLinearAccelerationEvent!.x;
@@ -293,22 +340,33 @@ class ActivityTrackerViewModel {
 
       if (magnitude > movementThreshold) {
         await Future.delayed(const Duration(seconds: 1));
-        activeTimeInSeconds += 1;
+        activeTimeInMinutes = getActiveTimeInMinutes();
       }
     }
   }
 
-  double _calculateMagnitude(double x, double y, double z) {
-    return sqrt(x * x + y * y + z * z);
-  }
-
   Future<void> _saveLocalActivityData(ActivityData activityData) async {
     try {
-      if (activityData.distanceTraveled.isNaN)
-        activityData.distanceTraveled = 0;
-      if (activityData.stepsCount.isNaN) activityData.stepsCount = 0;
-      if (activityData.activeTime.isNaN) activityData.activeTime = 0;
-      if (activityData.caloriesBurned.isNaN) activityData.caloriesBurned = 0;
+      if (activityData.distanceTraveled.isNaN ||
+          activityData.distanceTraveled.isInfinite) {
+        activityData.distanceTraveled = 0.0;
+      }
+      if (activityData.stepsCount.isNaN || activityData.stepsCount.isInfinite) {
+        activityData.stepsCount = 0;
+      }
+      if (activityData.activeTime.isNaN || activityData.activeTime.isInfinite) {
+        activityData.activeTime = 0;
+      }
+      if (activityData.caloriesBurned.isNaN ||
+          activityData.caloriesBurned.isInfinite) {
+        activityData.caloriesBurned = 0.0;
+      }
+
+      activityData.activityTypeDistance.forEach((key, value) {
+        if (value.isNaN || value.isInfinite) {
+          activityData.activityTypeDistance[key] = 0.0;
+        }
+      });
 
       await _secureStorage.write(
         key: 'activityData',
@@ -347,6 +405,7 @@ class ActivityTrackerViewModel {
     ActivityData? localActivityData = await fetchLocalActivityData();
     if (localActivityData != null) {
       await _updateActivityDataInFirestoreWithLocalData(localActivityData);
+      await _updateChallengeProgress(localActivityData);
     }
   }
 
@@ -377,25 +436,22 @@ class ActivityTrackerViewModel {
 
             Map<String, double> existingActivityTypeDistance =
                 Map<String, double>.from(data['activityTypeDistance']);
-            int newStepsCount = existingStepsCount;
-            double newDistanceTraveled = existingDistanceTraveled +
-                (localActivityData.distanceTraveled / 1000);
-            if (localActivityData.stepsCount < existingStepsCount) {
-              newStepsCount = existingStepsCount + localActivityData.stepsCount;
-            } else if (localActivityData.stepsCount > existingStepsCount) {
-              int newStepsCount = localActivityData.stepsCount;
-            }
+
+            double newDistanceTraveled =
+                existingDistanceTraveled + localActivityData.distanceTraveled;
+            int newStepsCount =
+                localActivityData.stepsCount >= existingStepsCount
+                    ? localActivityData.stepsCount
+                    : existingStepsCount + localActivityData.stepsCount;
             int newActiveTime =
                 existingActiveTime + localActivityData.activeTime;
-            double newCaloriesBurned =
-                existingCaloriesBurned + localActivityData.caloriesBurned;
+            double newCaloriesBurned = existingCaloriesBurned +
+                (localActivityData.caloriesBurned - existingCaloriesBurned);
 
             localActivityData.activityTypeDistance.forEach((key, value) {
               existingActivityTypeDistance[key] =
                   (existingActivityTypeDistance[key] ?? 0) + (value / 1000);
             });
-
-            _updateChallengeProgress(localActivityData);
 
             docRef.update({
               'distanceTraveled': newDistanceTraveled,
@@ -435,33 +491,41 @@ class ActivityTrackerViewModel {
   }
 
   Future<void> _updateChallengeProgress(ActivityData activityData) async {
-    DateTime now = DateTime.now();
-    String today = "${now.year}-${now.month}-${now.day}";
+    try {
+      DateTime now = DateTime.now();
+      String today = "${now.year}-${now.month}-${now.day}";
 
-    QuerySnapshot challengeSnapshot = await _firestore
-        .collection('challengeProgress')
-        .where('username', isEqualTo: activityData.username)
-        .where('challengeDate', isEqualTo: today)
-        .get();
-
-    for (var challengeDoc in challengeSnapshot.docs) {
-      ChallengeProgress challengeProgress =
-          ChallengeProgress.fromFirestore(challengeDoc);
-
-      double currentDistanceForType =
-          activityData.activityTypeDistance[challengeProgress.activityType] ??
-              0.0;
-
-      challengeProgress.progress =
-          (currentDistanceForType / challengeProgress.distance) * 100;
-
-      await _firestore
+      QuerySnapshot challengeSnapshot = await _firestore
           .collection('challengeProgress')
-          .doc(challengeDoc.id)
-          .update(challengeProgress.toFirestore());
+          .where('username', isEqualTo: activityData.username)
+          .where('challengeDate', isEqualTo: today)
+          .get();
 
-      if (challengeProgress.progress >= 100) {
-        _completeChallenge(challengeProgress);
+      for (var challengeDoc in challengeSnapshot.docs) {
+        ChallengeProgress challengeProgress =
+            ChallengeProgress.fromFirestore(challengeDoc);
+
+        String normalizedActivityType =
+            challengeProgress.activityType.toLowerCase();
+        double currentDistanceForType =
+            activityData.activityTypeDistance[normalizedActivityType] ?? 0.0;
+
+        double newProgress =
+            (currentDistanceForType / challengeProgress.distance) * 100;
+        challengeProgress.progress = newProgress;
+
+        await _firestore
+            .collection('challengeProgress')
+            .doc(challengeDoc.id)
+            .update(challengeProgress.toFirestore());
+
+        if (challengeProgress.progress >= 100) {
+          await _completeChallenge(challengeProgress);
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error updating challenge progress: $e");
       }
     }
   }

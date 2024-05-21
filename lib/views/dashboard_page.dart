@@ -138,7 +138,7 @@ class _DashboardState extends State<Dashboard> {
                               TextSpan(
                                 text: _localActivityData != null
                                     ? "${_localActivityData!.distanceTraveled.toStringAsFixed(2)} \n"
-                                    : "",
+                                    : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
@@ -268,7 +268,7 @@ class _DashboardState extends State<Dashboard> {
                               } else if (progressSnapshot.hasError) {
                                 return Text("Error: ${progressSnapshot.error}");
                               } else {
-                                return Text(" ");
+                                return const Text(" ");
                               }
                             },
                           );

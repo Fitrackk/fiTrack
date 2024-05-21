@@ -5,6 +5,9 @@ import 'package:fitrack/view_models/signing.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/customs/google_icon.dart';
+import '../view_models/registration.dart';
+
 class Signing extends StatelessWidget {
   const Signing({super.key});
 
@@ -27,6 +30,7 @@ class SignInContent extends StatefulWidget {
 class _SignInContentState extends State<SignInContent> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final Registration _authService = Registration();
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +113,60 @@ class _SignInContentState extends State<SignInContent> {
                     style: TextStyle(
                         decoration: TextDecoration.underline,
                         color: FitColors.text30)),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child: const Divider(
+                        thickness: 1.5,
+                        color: FitColors.text30,
+                        height: 50.0,
+                      ),
+                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width / 50),
+                    Text(
+                      "OR",
+                      style: TextStyles.titleMedBold
+                          .copyWith(color: FitColors.text30),
+                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width / 50),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2.2,
+                      child: const Divider(
+                        thickness: 1.5,
+                        color: FitColors.text30,
+                        height: 50.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 1.7,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _authService.signUpWithGoogle(context);
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(FitColors.primary99),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const GoogleLogo(),
+                      const SizedBox(width: 8),
+                      Text(
+                        "SIGN IN WITH GOOGLE",
+                        style: TextStyles.labelMedium
+                            .copyWith(color: FitColors.text10),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
