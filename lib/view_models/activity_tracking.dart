@@ -62,9 +62,6 @@ class ActivityTrackerViewModel {
       _linearAccelerationSubscription =
           userAccelerometerEventStream().listen((UserAccelerometerEvent event) {
         _lastLinearAccelerationEvent = event;
-        if (kDebugMode) {
-          //print('Linear Acceleration Event received: $event');
-        }
         _processSensorData();
       });
 
@@ -112,16 +109,16 @@ class ActivityTrackerViewModel {
         );
         await docRef.set(activityData.toMap());
         if (kDebugMode) {
-          // print('Document created for today: $todayDate');
+          print('Document created for today: $todayDate');
         }
       } else {
         if (kDebugMode) {
-          // print('Document already exists for today: $todayDate');
+          print('Document already exists for today: $todayDate');
         }
       }
     } catch (error) {
       if (kDebugMode) {
-        // print('Error creating or retrieving document: $error');
+        print('Error creating or retrieving document: $error');
       }
     }
   }
@@ -153,7 +150,7 @@ class ActivityTrackerViewModel {
               Map<String, double>.from(data['activityTypeDistance']);
           activityTypeDistance.forEach((key, value) {
             existingActivityTypeDistance[key] =
-                (existingActivityTypeDistance[key] ?? 0) + value / 1000;
+                (existingActivityTypeDistance[key] ?? 0) + value / 100;
           });
           data['activityTypeDistance'] = existingActivityTypeDistance;
 
@@ -246,10 +243,6 @@ class ActivityTrackerViewModel {
       );
 
       await _saveLocalActivityData(activityData);
-      if (kDebugMode) {
-        // print(
-        // "Local activity data saved: ${json.encode(activityData.toMap())}");
-      }
     }
   }
 
@@ -260,22 +253,13 @@ class ActivityTrackerViewModel {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double threshold = 20.0;
+    const double threshold = 12.0;
 
     if (magnitude > threshold) {
       stepsCount++;
       distanceTraveled = calculateDistancePerStep(stepsCount);
       double speed = _calculateSpeed(stepsCount);
       caloriesBurned += _calculateCaloriesBurned(speed, weight);
-      if (kDebugMode) {
-        // print('Steps Count: $stepsCount');
-      }
-      if (kDebugMode) {
-        // print('Distance Traveled: $distanceTraveled meters');
-      }
-      if (kDebugMode) {
-        // print('Calories Burned: $caloriesBurned kcal');
-      }
     }
   }
 
@@ -293,12 +277,12 @@ class ActivityTrackerViewModel {
 
   double _calculateCaloriesBurned(double speed, double weight) {
     double speedKmh = speed * 3.6;
-    double calories = 4.5 * speedKmh * weight / 100;
+    double calories = 4.5 * speedKmh * weight / 1000;
     return calories;
   }
 
   Future<void> _calculateActiveTime() async {
-    const double movementThreshold = 0.05;
+    const double movementThreshold = 1;
 
     if (_lastLinearAccelerationEvent != null) {
       final double x = _lastLinearAccelerationEvent!.x;
@@ -310,9 +294,6 @@ class ActivityTrackerViewModel {
       if (magnitude > movementThreshold) {
         await Future.delayed(const Duration(seconds: 1));
         activeTimeInSeconds += 1;
-        if (kDebugMode) {
-          // print('Active Time: $activeTimeInSeconds seconds');
-        }
       }
     }
   }
@@ -323,13 +304,18 @@ class ActivityTrackerViewModel {
 
   Future<void> _saveLocalActivityData(ActivityData activityData) async {
     try {
-      _updateChallengeProgress(activityData);
+      if (activityData.distanceTraveled.isNaN)
+        activityData.distanceTraveled = 0;
+      if (activityData.stepsCount.isNaN) activityData.stepsCount = 0;
+      if (activityData.activeTime.isNaN) activityData.activeTime = 0;
+      if (activityData.caloriesBurned.isNaN) activityData.caloriesBurned = 0;
+
       await _secureStorage.write(
         key: 'activityData',
         value: json.encode(activityData.toMap()),
       );
       if (kDebugMode) {
-        //print("Activity data saved locally: ${activityData.toMap()}");
+        print("Activity data saved locally: ${activityData.toMap()}");
       }
     } catch (e) {
       if (kDebugMode) {
@@ -376,19 +362,47 @@ class ActivityTrackerViewModel {
         String documentId = "$username-$todayDate";
         DocumentReference docRef =
             _firestore.collection('ActivityData').doc(documentId);
+
         docRef.get().then((docSnapshot) {
           if (docSnapshot.exists) {
-            Map<String, double> activityTypeDistanceInKilometers = {};
+            Map<String, dynamic> data =
+                docSnapshot.data() as Map<String, dynamic>;
+
+            double existingDistanceTraveled =
+                (data['distanceTraveled'] ?? 0.0).toDouble();
+            int existingStepsCount = (data['stepsCount'] ?? 0).toInt();
+            int existingActiveTime = (data['activeTime'] ?? 0).toInt();
+            double existingCaloriesBurned =
+                (data['caloriesBurned'] ?? 0.0).toDouble();
+
+            Map<String, double> existingActivityTypeDistance =
+                Map<String, double>.from(data['activityTypeDistance']);
+            int newStepsCount = existingStepsCount;
+            double newDistanceTraveled = existingDistanceTraveled +
+                (localActivityData.distanceTraveled / 1000);
+            if (localActivityData.stepsCount < existingStepsCount) {
+              newStepsCount = existingStepsCount + localActivityData.stepsCount;
+            } else if (localActivityData.stepsCount > existingStepsCount) {
+              int newStepsCount = localActivityData.stepsCount;
+            }
+            int newActiveTime =
+                existingActiveTime + localActivityData.activeTime;
+            double newCaloriesBurned =
+                existingCaloriesBurned + localActivityData.caloriesBurned;
+
             localActivityData.activityTypeDistance.forEach((key, value) {
-              activityTypeDistanceInKilometers[key.toString()] = value / 1000;
+              existingActivityTypeDistance[key] =
+                  (existingActivityTypeDistance[key] ?? 0) + (value / 1000);
             });
 
+            _updateChallengeProgress(localActivityData);
+
             docRef.update({
-              'distanceTraveled': localActivityData.distanceTraveled,
-              'stepsCount': localActivityData.stepsCount,
-              'activeTime': localActivityData.activeTime,
-              'activityTypeDistance': activityTypeDistanceInKilometers,
-              'caloriesBurned': localActivityData.caloriesBurned,
+              'distanceTraveled': newDistanceTraveled,
+              'stepsCount': newStepsCount,
+              'activeTime': newActiveTime,
+              'activityTypeDistance': existingActivityTypeDistance,
+              'caloriesBurned': newCaloriesBurned,
             }).then((_) {
               if (kDebugMode) {
                 print('Document updated successfully from local storage data');
@@ -453,13 +467,11 @@ class ActivityTrackerViewModel {
   }
 
   Future<void> _completeChallenge(ChallengeProgress challengeProgress) async {
-    // Update the challenge as completed in Firestore
     await _firestore
         .collection('challengeProgress')
         .doc(challengeProgress.challengeId as String?)
         .update({
       'progress': 100,
-      'completed': true,
     });
 
     DocumentReference userDoc =
@@ -469,8 +481,8 @@ class ActivityTrackerViewModel {
       if (userSnapshot.exists) {
         var userData = userSnapshot.data() as Map<String, dynamic>?;
         double currentScore = userData?['score'] ?? 0;
-        transaction.update(
-            userDoc, {'score': currentScore + challengeProgress.distance});
+        transaction.update(userDoc,
+            {'score': currentScore + (challengeProgress.distance * 10)});
       }
     });
   }
