@@ -17,6 +17,11 @@ class ChallengesVM {
   final Random _random = Random();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<User?> getCurrentUser() async {
+    final UserVM userVM = UserVM();
+    return await userVM.getUserData();
+  }
+
   Future<int> generateUniqueChallengeId() async {
     late int challengeId;
     bool exists = true;
@@ -206,7 +211,7 @@ class ChallengesVM {
     }
   }
 
-  Future<void> joinChallenge(BuildContext context, String id) async {
+  Future<void> joinChallengeById(BuildContext context, String id) async {
     try {
       currentUser = await _userVM.getUserData();
       if (currentUser == null) {
@@ -268,6 +273,108 @@ class ChallengesVM {
       }
     } catch (e) {
       print("Error joining challenge: $e");
+    }
+  }
+
+  Future<void> joinChallenge(BuildContext context, String challengeName,
+      String challengeDate, String username, Function(bool) updateState) async {
+    try {
+      // Ensure user is authenticated
+      currentUser = await _userVM.getUserData();
+      if (currentUser == null) {
+        Navigator.pushNamed(context, '/signing');
+        return;
+      }
+
+      username = currentUser!.userName!;
+
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('challenges')
+          .where('challengeName', isEqualTo: challengeName)
+          .where('challengeDate', isEqualTo: challengeDate)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          Challenge challenge = Challenge.fromFirestore(doc);
+
+          // Check if challenge date has passed
+          if (DateTime.parse(challenge.challengeDate)
+              .isBefore(DateTime.now())) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Sorry, you cannot join this challenge as its date has already passed.'),
+              ),
+            );
+            return;
+          }
+
+          // Check if the challenge is already full
+          if (challenge.participantUsernames.length >=
+              challenge.participations) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Sorry, this challenge is already full.'),
+              ),
+            );
+            return;
+          }
+
+          // Check if the user already has a challenge on this date
+          bool hasChallenge = await hasChallengeOnDate(username, challengeDate);
+          if (hasChallenge) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content:
+                    Text('Sorry, you already have a challenge on this date.'),
+              ),
+            );
+            return;
+          }
+
+          // Join the challenge if all validations pass
+          if (!challenge.participantUsernames.contains(username)) {
+            List<String> updatedUsernames =
+                List.from(challenge.participantUsernames)..add(username);
+            await doc.reference
+                .update({'participantUsernames': updatedUsernames});
+            updateState(true);
+          }
+        }
+      } else {
+        print("No matching challenge found");
+      }
+    } catch (error) {
+      print("Error joining challenge: $error");
+    }
+  }
+
+  Future<void> unjoinChallenge(String challengeName, String challengeDate,
+      String username, Function(bool) updateState) async {
+    try {
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('challenges')
+          .where('challengeName', isEqualTo: challengeName)
+          .where('challengeDate', isEqualTo: challengeDate)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          Challenge challenge = Challenge.fromFirestore(doc);
+          if (challenge.participantUsernames.contains(username)) {
+            List<String> updatedUsernames =
+                List.from(challenge.participantUsernames)..remove(username);
+            await doc.reference
+                .update({'participantUsernames': updatedUsernames});
+            updateState(false);
+          }
+        }
+      } else {
+        print("No matching challenge found");
+      }
+    } catch (error) {
+      print("Error unjoining challenge: $error");
     }
   }
 }

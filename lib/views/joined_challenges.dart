@@ -64,7 +64,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                       );
                     } else {
                       try {
-                        await challengeVM.joinChallenge(context, id);
+                        await challengeVM.joinChallengeById(context, id);
                         setState(() {});
                         Navigator.pop(context);
                       } catch (e) {
