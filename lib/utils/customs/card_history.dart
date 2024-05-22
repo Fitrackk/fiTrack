@@ -69,7 +69,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                     '${widget.day}\n${widget.date}',
                     style: TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
                   ),
-                  const SizedBox(width: 36),
+                  const SizedBox(width: 20),
                   Stack(
                     children: [
                       Container(
@@ -97,7 +97,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                       ),
                     ],
                   ),
-                  const SizedBox(width: 30),
+                  const SizedBox(width: 20),
                   Stack(
                     children: [
                       Container(
@@ -125,7 +125,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                       ),
                     ],
                   ),
-                  const SizedBox(width: 30),
+                  const SizedBox(width: 20),
                   Stack(
                     children: [
                       Container(
@@ -155,12 +155,14 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                 ],
               ),
             ),
+            iconColor: FitColors.primary20,
+            collapsedIconColor: FitColors.primary20,
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
                 child: Row(
                   children: [
-                    const SizedBox(width: 65),
+                    const SizedBox(width: 40),
                     Stack(
                       children: [
                         Container(
@@ -189,7 +191,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                         ),
                       ],
                     ),
-                    const SizedBox(width: 33),
+                    const SizedBox(width: 25),
                     Stack(
                       children: [
                         Container(
@@ -219,7 +221,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                         ),
                       ],
                     ),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 15),
                     Stack(
                       children: [
                         Container(
@@ -244,8 +246,6 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                 ),
               )
             ],
-            iconColor: FitColors.primary20,
-            collapsedIconColor: FitColors.primary20,
           ),
         ),
       ),
