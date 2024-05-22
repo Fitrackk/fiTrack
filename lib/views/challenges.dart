@@ -1,6 +1,7 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/views/all_challenges.dart';
+import 'package:fitrack/views/joined_challenges.dart';
 import 'package:flutter/material.dart';
 
 import 'user_challenges.dart';
@@ -42,7 +43,7 @@ class _ChallengesState extends State<Challenges> {
         body: const TabBarView(
           children: [
             AllChallenges(),
-            Text('Tab 2 content'),
+            JoinedChallenges(),
             UserChallenges(),
           ],
         ),
