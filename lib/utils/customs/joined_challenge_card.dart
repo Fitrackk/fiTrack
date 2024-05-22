@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../configures/color_theme.dart';
@@ -10,9 +9,9 @@ class JoinedChallengeCard extends StatefulWidget {
   final remainingTime;
   const JoinedChallengeCard(
       {super.key,
-        required this.defaultChallengeProgress,
-        required this.challengeName,
-        this.remainingTime});
+      required this.defaultChallengeProgress,
+      required this.challengeName,
+      this.remainingTime});
 
   @override
   State<JoinedChallengeCard> createState() => _JoinedChallengeCardState();
@@ -23,7 +22,6 @@ class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
-
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 30),
