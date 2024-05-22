@@ -47,7 +47,8 @@ class ActivityTrackerViewModel {
     DateTime now = DateTime.now();
     if (now.day != _currentDate.day) {
       await _updateActivityDataInFirestore();
-      await deleteLocalActivityData(_currentDate.subtract(Duration(days: 1)));
+      await deleteLocalActivityData(
+          _currentDate.subtract(const Duration(days: 1)));
       _currentDate = now;
       await _createDocumentForToday(currentUser!.userName!);
     }

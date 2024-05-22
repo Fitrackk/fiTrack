@@ -24,7 +24,7 @@ class _JoinChallengeButtonState extends State<JoinChallengeButton> {
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(FitColors.primary30),
           padding: MaterialStateProperty.all(
-            EdgeInsets.symmetric(horizontal: 16.0),
+            const EdgeInsets.symmetric(horizontal: 16.0),
           ),
           minimumSize: MaterialStateProperty.all(
             Size(double.infinity, currentHeight / 14),

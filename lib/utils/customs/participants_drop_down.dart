@@ -15,7 +15,7 @@ class _ParticipantsDropDownState extends State<ParticipantsDropDown> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 100,
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(

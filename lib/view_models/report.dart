@@ -119,8 +119,6 @@ class ActivityDataViewModel {
             ChallengeProgress challengeProgress =
                 progress.firstWhere((p) => p.challengeId == challengeId);
             progressValue = challengeProgress.progress;
-          } else {
-            print('No challenge progress found for challengeId: $challengeId');
           }
 
           num progressVal = progressValue is double

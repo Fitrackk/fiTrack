@@ -5,7 +5,7 @@ import '../../configures/color_theme.dart';
 
 class ReminderToggle extends StatefulWidget {
   final TextEditingController reminderController;
-  ReminderToggle({required this.reminderController});
+  const ReminderToggle({super.key, required this.reminderController});
 
   @override
   State<ReminderToggle> createState() => _ReminderToggleState();

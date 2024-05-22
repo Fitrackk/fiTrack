@@ -20,7 +20,6 @@ class JoinedChallengeCard extends StatefulWidget {
 class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
   @override
   Widget build(BuildContext context) {
-    double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
 
     return Container(
