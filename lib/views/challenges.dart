@@ -21,6 +21,11 @@ class _ChallengesState extends State<Challenges> {
       child: Scaffold(
         appBar: AppBar(
           elevation: 0.0,
+          centerTitle: true,
+          title: Text(
+            "Community",
+            style: TextStyles.titleLargeBold.copyWith(color: FitColors.text20),
+          ),
           bottom: TabBar(
             tabs: const [
               Tab(

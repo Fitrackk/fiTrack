@@ -30,7 +30,7 @@ class SignInContent extends StatefulWidget {
 class _SignInContentState extends State<SignInContent> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final Registration _authService = Registration();
+  final RegistrationVM _authService = RegistrationVM();
 
   @override
   Widget build(BuildContext context) {

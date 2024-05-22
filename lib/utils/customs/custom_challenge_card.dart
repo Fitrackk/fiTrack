@@ -166,10 +166,15 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(
                                     text: widget.challengeId.toString()));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('ID copied to clipboard')));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(
+                                    'ID copied to clipboard',
+                                    style: TextStyles.bodySmallBold
+                                        .copyWith(color: FitColors.text95),
+                                  ),
+                                  backgroundColor: FitColors.tertiary50,
+                                ));
                               },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
@@ -307,6 +312,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                                                 .userName;
                                                         await challengesVM
                                                             .unjoinChallenge(
+                                                          context,
                                                           widget.challengeName,
                                                           widget.challengeDate,
                                                           username!,

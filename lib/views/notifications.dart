@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
-import 'package:fitrack/utils/customs/notifications.dart';
-import 'package:fitrack/view_models/reminders.dart';
+import 'package:fitrack/utils/customs/notification_card.dart';
+import 'package:fitrack/view_models/get_reminders.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -14,7 +14,7 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  NotificationsVm notification = NotificationsVm();
+  NotificationsVM notification = NotificationsVM();
 
   String getCurrentDate() {
     DateTime now = DateTime.now();
@@ -127,7 +127,6 @@ class _NotificationPageState extends State<NotificationPage> {
                       },
                     );
                   }
-                  Text('sssssssssssssssssssssssss $flag');
                   return Center(child: CircularProgressIndicator());
                 },
               ),

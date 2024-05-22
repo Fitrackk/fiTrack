@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart';
 
-class ActivityDataViewModel {
+class ActivityDataVM {
   final UserVM _userVM = UserVM();
   late User? currentUser;
 

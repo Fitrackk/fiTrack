@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/models/challenge_model.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../configures/color_theme.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart';
 
@@ -154,8 +156,13 @@ class ChallengesVM {
       bool hasChallenge = await hasChallengeOnDate(username!, date!);
       if (hasChallenge) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('You already have a challenge on this date.')),
+          SnackBar(
+            content: Text(
+              'You already have a challenge on this date.',
+              style: TextStyles.bodySmallBold.copyWith(color: FitColors.text95),
+            ),
+            backgroundColor: FitColors.tertiary50,
+          ),
         );
         return;
       }
@@ -176,11 +183,23 @@ class ChallengesVM {
           date, 0, challengeId);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Challenge created successfully!')),
+        SnackBar(
+          content: Text(
+            'Challenge created successfully!',
+            style: TextStyles.bodySmallBold.copyWith(color: FitColors.text95),
+          ),
+          backgroundColor: FitColors.tertiary50,
+        ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create challenge: $e')),
+        SnackBar(
+          content: Text(
+            'Failed to create challenge: $e',
+            style: TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+          ),
+          backgroundColor: FitColors.tertiary50,
+        ),
       );
     }
   }
@@ -235,9 +254,13 @@ class ChallengesVM {
 
         if (DateTime.parse(challengeDate).isBefore(DateTime.now())) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                  'Sorry, you cannot join this challenge as its date has already passed.'),
+                'Sorry, you cannot join this challenge as its date has already passed.',
+                style:
+                    TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+              ),
+              backgroundColor: FitColors.tertiary50,
             ),
           );
           return;
@@ -247,8 +270,13 @@ class ChallengesVM {
             challengeDoc['participantUsernames'];
         if (participantUsernames.length >= participations) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Sorry, this challenge is already full.'),
+            SnackBar(
+              content: Text(
+                'Sorry, this challenge is already full.',
+                style:
+                    TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+              ),
+              backgroundColor: FitColors.tertiary50,
             ),
           );
           return;
@@ -257,9 +285,13 @@ class ChallengesVM {
         bool hasChallenge = await hasChallengeOnDate(username!, challengeDate);
         if (hasChallenge) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Sorry, you already have a challenge on this date.'),
+            SnackBar(
+              content: Text(
+                'Sorry, you already have a challenge on this date.',
+                style:
+                    TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+              ),
+              backgroundColor: FitColors.tertiary50,
             ),
           );
           return;
@@ -302,9 +334,13 @@ class ChallengesVM {
           if (DateTime.parse(challenge.challengeDate)
               .isBefore(DateTime.now())) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
+              SnackBar(
                 content: Text(
-                    'Sorry, you cannot join this challenge as its date has already passed.'),
+                  'Sorry, you cannot join this challenge as its date has already passed.',
+                  style: TextStyles.bodySmallBold
+                      .copyWith(color: FitColors.error40),
+                ),
+                backgroundColor: FitColors.tertiary50,
               ),
             );
             return;
@@ -314,8 +350,13 @@ class ChallengesVM {
           if (challenge.participantUsernames.length >=
               challenge.participations) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Sorry, this challenge is already full.'),
+              SnackBar(
+                content: Text(
+                  'Sorry, this challenge is already full.',
+                  style: TextStyles.bodySmallBold
+                      .copyWith(color: FitColors.error40),
+                ),
+                backgroundColor: FitColors.tertiary50,
               ),
             );
             return;
@@ -325,9 +366,13 @@ class ChallengesVM {
           bool hasChallenge = await hasChallengeOnDate(username, challengeDate);
           if (hasChallenge) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content:
-                    Text('Sorry, you already have a challenge on this date.'),
+              SnackBar(
+                content: Text(
+                  'Sorry, you already have a challenge on this date.',
+                  style: TextStyles.bodySmallBold
+                      .copyWith(color: FitColors.error40),
+                ),
+                backgroundColor: FitColors.tertiary50,
               ),
             );
             return;
@@ -350,8 +395,8 @@ class ChallengesVM {
     }
   }
 
-  Future<void> unjoinChallenge(String challengeName, String challengeDate,
-      String username, Function(bool) updateState) async {
+  Future<void> unjoinChallenge(BuildContext context, String challengeName,
+      String challengeDate, String username, Function(bool) updateState) async {
     try {
       final QuerySnapshot querySnapshot = await _firestore
           .collection('challenges')
@@ -363,6 +408,18 @@ class ChallengesVM {
         for (var doc in querySnapshot.docs) {
           Challenge challenge = Challenge.fromFirestore(doc);
           if (challenge.participantUsernames.contains(username)) {
+            if (username == challenge.challengeOwner) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'Sorry, ou are the challenge owner and cannot leave your own challenge.',
+                      style: TextStyles.bodySmallBold
+                          .copyWith(color: FitColors.error40)),
+                  backgroundColor: FitColors.tertiary50,
+                ),
+              );
+              return;
+            }
             List<String> updatedUsernames =
                 List.from(challenge.participantUsernames)..remove(username);
             await doc.reference

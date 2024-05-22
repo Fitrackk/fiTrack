@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../../configures/color_theme.dart';
 
-class Date extends StatefulWidget {
+class DatePicker extends StatefulWidget {
   final TextEditingController dateController;
-  Date({super.key, required this.dateController});
+  DatePicker({super.key, required this.dateController});
 
   @override
-  State<Date> createState() => _DateState();
+  State<DatePicker> createState() => _DatePickerState();
 }
 
-class _DateState extends State<Date> {
+class _DatePickerState extends State<DatePicker> {
   DateTime _selectedDate = DateTime.now();
 
   Future<void> _selectDate(BuildContext context) async {

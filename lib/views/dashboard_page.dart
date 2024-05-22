@@ -1,7 +1,7 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
+import 'package:fitrack/utils/customs/dash_challenge_card.dart';
 import 'package:fitrack/utils/customs/join_challenge_button.dart';
-import 'package:fitrack/utils/customs/joined_challenge_card.dart';
 import 'package:fitrack/utils/customs/progress_indicator.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
 import 'package:fitrack/view_models/activity_tracking.dart';
@@ -25,7 +25,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final userData = getSingleton<UserVM>();
   final challengeData = getSingleton<ChallengesVM>();
-  final ActivityTrackerViewModel activityData = ActivityTrackerViewModel();
+  final ActivityTrackerVM activityData = ActivityTrackerVM();
   late ActivityData? _localActivityData;
   late DateTime _endTime;
   late Duration _remainingDuration;

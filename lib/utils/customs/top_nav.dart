@@ -23,7 +23,6 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
     double sweepAngle = 2 * math.pi * progress;
 
     return AppBar(
-      backgroundColor: FitColors.background,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -40,12 +39,12 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                   );
                 },
                 child: CircleAvatar(
-                  radius: 20,
+                  radius: 30,
                   backgroundColor: FitColors.background,
                   child: Stack(
                     children: [
                       const CircleAvatar(
-                        radius: 15,
+                        radius: 20,
                         backgroundImage: AssetImage('assets/images/logo.png'),
                       ),
                       Positioned.fill(
@@ -63,8 +62,8 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               Positioned(
-                bottom: -5,
-                left: 20,
+                bottom: 0,
+                left: 34,
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
@@ -76,7 +75,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                     style: const TextStyle(
                       color: FitColors.primary30,
                       fontWeight: FontWeight.bold,
-                      fontSize: 10,
+                      fontSize: 15,
                     ),
                   ),
                 ),

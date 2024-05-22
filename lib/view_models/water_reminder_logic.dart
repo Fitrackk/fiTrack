@@ -6,7 +6,7 @@ import 'notifications.dart';
 
 class WaterReminderVM {
   final UserVM _userVM = UserVM();
-  final NotificationViewModel _notificationVM = NotificationViewModel();
+  final NotificationsVM _notificationVM = NotificationsVM();
 
   Future<void> initializeWaterReminder() async {
     await _notificationVM.initialize();

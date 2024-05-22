@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ActivityDataPage extends StatelessWidget {
-  final ActivityDataViewModel viewModel = ActivityDataViewModel();
+  final ActivityDataVM viewModel = ActivityDataVM();
 
   ActivityDataPage({Key? key}) : super(key: key);
 

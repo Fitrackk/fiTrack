@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class NotificationsVm {
+class NotificationsVM {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<QuerySnapshot<Object?>> getNotification() async {

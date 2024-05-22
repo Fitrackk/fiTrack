@@ -54,7 +54,7 @@ class _DataFormState extends State<DataForm> {
     super.dispose();
   }
 
-  final Registration _authService = Registration();
+  final RegistrationVM _authService = RegistrationVM();
 
   @override
   Widget build(BuildContext context) {
@@ -357,5 +357,4 @@ class _DataFormState extends State<DataForm> {
       });
     }
   }
-
 }

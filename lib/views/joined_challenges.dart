@@ -58,8 +58,13 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                     var id = _idController.text;
                     if (id.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a valid challenge ID'),
+                        SnackBar(
+                          content: Text(
+                            'Please enter a valid challenge ID',
+                            style: TextStyles.bodySmallBold
+                                .copyWith(color: FitColors.text95),
+                          ),
+                          backgroundColor: FitColors.tertiary50,
                         ),
                       );
                     } else {
@@ -71,7 +76,12 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                         print("Failed to join challenge: $e");
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Failed to join challenge: $e'),
+                            content: Text(
+                              'Failed to join challenge: $e',
+                              style: TextStyles.bodySmallBold
+                                  .copyWith(color: FitColors.error40),
+                            ),
+                            backgroundColor: FitColors.tertiary50,
                           ),
                         );
                       }

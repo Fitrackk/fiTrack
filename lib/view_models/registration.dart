@@ -5,7 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class Registration extends ChangeNotifier {
+import '../configures/color_theme.dart';
+import '../configures/text_style.dart';
+
+class RegistrationVM extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _emailError = '';
   String _passwordError = '';
@@ -75,9 +78,13 @@ class Registration extends ChangeNotifier {
         }
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error signing in with Google')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error signing in with Google',
+            style: TextStyles.bodySmallBold.copyWith(
+              color: FitColors.error40,
+            )),
+        backgroundColor: FitColors.tertiary50,
+      ));
     }
   }
 
@@ -410,9 +417,12 @@ class Registration extends ChangeNotifier {
         if (isUserDataStored) {
           Navigator.pushNamed(context, '/dashboard');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to store user data')),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to store user data',
+                style: TextStyles.bodySmallBold
+                    .copyWith(color: FitColors.error40)),
+            backgroundColor: FitColors.tertiary50,
+          ));
         }
       }
     } catch (e) {

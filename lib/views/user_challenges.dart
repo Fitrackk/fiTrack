@@ -1,5 +1,5 @@
 import 'package:fitrack/utils/customs/activity_drop_down.dart';
-import 'package:fitrack/utils/customs/date.dart';
+import 'package:fitrack/utils/customs/date_picker.dart';
 import 'package:fitrack/utils/customs/participants_drop_down.dart';
 import 'package:fitrack/utils/customs/reminder_toggle.dart';
 import 'package:flutter/foundation.dart';
@@ -103,7 +103,7 @@ class _UserChallengesState extends State<UserChallenges> {
                         style: TextStyles.bodyMediumBold
                             .copyWith(color: FitColors.text10)),
                     const SizedBox(width: 100),
-                    Date(dateController: _dateController),
+                    DatePicker(dateController: _dateController),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -125,9 +125,14 @@ class _UserChallengesState extends State<UserChallenges> {
                         print("Distance must be between 1 and 20 km");
                       }
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content:
-                                Text('Distance must be between 1 and 20 km')),
+                        SnackBar(
+                          content: Text(
+                            'Distance must be between 1 and 20 km',
+                            style: TextStyles.bodySmallBold
+                                .copyWith(color: FitColors.error40),
+                          ),
+                          backgroundColor: FitColors.tertiary50,
+                        ),
                       );
                     } else {
                       try {
@@ -147,7 +152,10 @@ class _UserChallengesState extends State<UserChallenges> {
                         }
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: Text('Failed to create challenge: $e')),
+                              content: Text('Failed to create challenge: $e',
+                                  style: TextStyles.bodySmallBold
+                                      .copyWith(color: FitColors.error40)),
+                              backgroundColor: FitColors.tertiary50),
                         );
                       }
                     }

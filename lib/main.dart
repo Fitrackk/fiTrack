@@ -14,12 +14,12 @@ import 'configures/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FirebaseService.initializeFirebase();
-  final tracker = ActivityTrackerViewModel();
+  final tracker = ActivityTrackerVM();
   tracker.startTracking();
   await tracker.checkLocalStorageData();
   //tracker.stopTracking();
 
-  NotificationViewModel notificationViewModel = NotificationViewModel();
+  NotificationsVM notificationViewModel = NotificationsVM();
   await notificationViewModel.initialize();
   await notificationViewModel.scheduleDailyWaterReminder();
 

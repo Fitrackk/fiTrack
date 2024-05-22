@@ -12,7 +12,7 @@ import '../models/activity_data_model.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart' as models;
 
-class ActivityTrackerViewModel {
+class ActivityTrackerVM {
   StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
   StreamSubscription<UserAccelerometerEvent>? _linearAccelerationSubscription;
   GyroscopeEvent? _lastGyroscopeEvent;

@@ -6,7 +6,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../models/user_model.dart';
 
-class NotificationViewModel {
+class NotificationsVM {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -98,49 +98,49 @@ class NotificationViewModel {
 
     List<Map<String, dynamic>> notifications = [
       {
-        "time": Time(8, 0, 0),
+        "time": Time(5, 0, 0),
         "message": "Time to drink some water and stay hydrated!",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
       },
       {
-        "time": Time(10, 0, 0),
-        "message": "Keep it up! Stay hydrated with another glass of water.",
+        "time": Time(7, 0, 0),
+        "message": "Keep it up! Stay hydrated with a glass of water.",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
       },
       {
-        "time": Time(12, 0, 0),
+        "time": Time(9, 0, 0),
         "message": "You're doing great! Have another glass of water.",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
       },
       {
-        "time": Time(14, 0, 0),
+        "time": Time(11, 0, 0),
         "message": "Don't forget to hydrate! Drink some water.",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
       },
       {
-        "time": Time(16, 0, 0),
+        "time": Time(13, 0, 0),
         "message": "Keep yourself hydrated with another glass of water.",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
       },
       {
-        "time": Time(18, 0, 0),
+        "time": Time(15, 0, 0),
         "message": "Time for a water break! Stay hydrated.",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
       },
       {
-        "time": Time(20, 0, 0),
+        "time": Time(17, 0, 0),
         "message": "You're doing awesome! Have a glass of water.",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
       },
       {
-        "time": Time(22, 0, 0),
+        "time": Time(19, 0, 0),
         "message": "End your day with a glass of water. Stay hydrated!",
         "type": "water",
         "username": currentUser?.userName ?? 'unknown'
