@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
-import '../../models/challenge_model.dart';
 import '../../models/user_model.dart';
-import '../../view_models/user.dart';
+import '../../view_models/custom_challenge_card_view_model.dart';
 
 class CustomChallengeCard extends StatefulWidget {
   final String activityType;
@@ -20,7 +18,7 @@ class CustomChallengeCard extends StatefulWidget {
   final String? challengeProgress;
   final List<String> challengeParticipantsImg;
 
-  CustomChallengeCard({
+  const CustomChallengeCard({
     super.key,
     required this.activityType,
     required this.challengeDate,
@@ -40,7 +38,7 @@ class CustomChallengeCard extends StatefulWidget {
 }
 
 class _CustomChallengeCardState extends State<CustomChallengeCard> {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final CustomChallengeCardViewModel viewModel = CustomChallengeCardViewModel();
   bool _isChallengeJoined = false;
 
   @override
@@ -162,9 +160,8 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                 Clipboard.setData(ClipboardData(
                                     text: widget.challengeId.toString()));
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content:
-                                        Text('ID copied to clipboard')));
+                                    const SnackBar(
+                                        content: Text('ID copied to clipboard')));
                               },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
@@ -196,37 +193,13 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                             height: 35,
                             child: ElevatedButton(
                               onPressed: () async {
-                                final UserVM userVM = UserVM();
-                                User? currentUser = await userVM.getUserData();
+                                User? currentUser = await viewModel.getCurrentUser();
                                 if (currentUser != null && currentUser.userName != null) {
                                   String? username = currentUser.userName;
-                                  String challengeName = widget.challengeName;
-                                  String challengeDate = widget.challengeDate;
-
-                                  firestore
-                                      .collection('challenges')
-                                      .where('challengeName', isEqualTo: challengeName)
-                                      .where('challengeDate', isEqualTo: challengeDate)
-                                      .get()
-                                      .then((QuerySnapshot querySnapshot) {
-                                    if (querySnapshot.docs.isNotEmpty) {
-                                      querySnapshot.docs.forEach((doc) {
-                                        Challenge challenge = Challenge.fromFirestore(doc);
-                                        if (!challenge.participantUsernames.contains(username)) {
-
-                                          List<String> updatedUsernames = List.from(challenge.participantUsernames)..add(username!);
-                                          doc.reference.update({'participantUsernames': updatedUsernames}).then((_) {
-                                            setState(() {
-                                              _isChallengeJoined = true;
-                                            });
-                                          });
-                                        }
-                                      });
-                                    } else {
-                                      print("No matching challenge found");
-                                    }
-                                  }).catchError((error) {
-                                    print("Error retrieving challenge: $error");
+                                  await viewModel.joinChallenge(widget.challengeName, widget.challengeDate, username!, (isJoined) {
+                                    setState(() {
+                                      _isChallengeJoined = isJoined;
+                                    });
                                   });
                                 }
                               },
@@ -247,7 +220,40 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                             width: 90,
                             height: 35,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Are you sure?'),
+                                      content: Text('Are you sure you want to unjoin the challenge "${widget.challengeName}"?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // Dismiss the dialog
+                                          },
+                                          child: const Text('No'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            User? currentUser = await viewModel.getCurrentUser();
+                                            if (currentUser != null && currentUser.userName != null) {
+                                              String? username = currentUser.userName;
+                                              await viewModel.unjoinChallenge(widget.challengeName, widget.challengeDate, username!, (isJoined) {
+                                                setState(() {
+                                                  _isChallengeJoined = isJoined;
+                                                });
+                                              });
+                                            }
+                                            Navigator.of(context).pop(); // Dismiss the dialog
+                                          },
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
                                     FitColors.primary30),
