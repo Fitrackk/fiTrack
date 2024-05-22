@@ -243,7 +243,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                         Container(
                           margin: const EdgeInsets.only(left: 10.0, top: 20.0),
                           child: Text(
-                            '${widget.progress}%',
+                            '${widget.progress.toStringAsFixed(1)}%',
                             style: TextStyles.bodySmallBold
                                 .copyWith(color: FitColors.primary20),
                           ),
