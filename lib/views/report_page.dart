@@ -1,9 +1,9 @@
-import 'package:fitrack/view_models/report.dart';
-import 'package:flutter/material.dart';
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
-import 'package:fitrack/utils/customs/card_history.dart';
+import 'package:fitrack/utils/customs/history_card.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
+import 'package:fitrack/view_models/report.dart';
+import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ActivityDataPage extends StatelessWidget {
@@ -18,7 +18,11 @@ class ActivityDataPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text("Week Report", style: TextStyles.headlineSmallBold),
+            Text(
+              "Week Report",
+              style: TextStyles.headlineSmallBold
+                  .copyWith(color: FitColors.primary20),
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
@@ -27,31 +31,44 @@ class ActivityDataPage extends StatelessWidget {
                   future: viewModel.fetchActivityData(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return Text(" ");
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     final data = snapshot.data;
                     final activityData = data?['activityData'] ?? [];
-                    final maxStepsCount = (data?['maxStepsCount'] ?? 0) + 1000.0;
+                    final maxStepsCount =
+                        (data?['maxStepsCount'] ?? 0) + 1000.0;
                     if (activityData.isEmpty) {
                       return Center(child: Text('No activity data found.'));
                     }
                     return SfCartesianChart(
-                      primaryXAxis: const CategoryAxis(),
+                      primaryXAxis: CategoryAxis(
+                        labelStyle: TextStyles.bodySmallBold
+                            .copyWith(color: FitColors.primary20),
+                      ),
                       primaryYAxis: NumericAxis(
                         minimum: 0,
                         maximum: maxStepsCount,
                         interval: 1000,
+                        labelStyle: TextStyles.bodySmall
+                            .copyWith(color: FitColors.primary20),
                       ),
                       series: <CartesianSeries>[
                         ColumnSeries<Map<String, dynamic>, String>(
                           dataSource: activityData,
                           xValueMapper: (data, _) => data['day'],
-                          yValueMapper: (data, _) => (data['stepsCount'] as int).toDouble(),
+                          yValueMapper: (data, _) =>
+                              (data['stepsCount'] as int).toDouble(),
                           name: 'Challenge Progress',
-                          color: FitColors.primary30,
+                          color: FitColors.tertiary80,
+                          borderColor: FitColors.primary30,
+                          animationDelay: 1,
+                          borderWidth: 3,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(50),
+                              topRight: Radius.circular(50)),
                         ),
                       ],
                     );
@@ -67,7 +84,8 @@ class ActivityDataPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       'History',
-                      style: TextStyles.labelLargeBold,
+                      style: TextStyles.labelLargeBold
+                          .copyWith(color: FitColors.primary20),
                     ),
                   ),
                 ],
@@ -77,7 +95,7 @@ class ActivityDataPage extends StatelessWidget {
               future: viewModel.fetchActivityData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return Text(" ");
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
@@ -94,15 +112,14 @@ class ActivityDataPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final activity = activityData[index];
                     return CustomHistoryCard(
-                      cal: activity['caloriesBurned'].toStringAsFixed(2),
-                      date: activity['date'],
+                      date: DateTime.parse(activity['date']),
                       day: activity['day'],
-                      steps: activity['stepsCount'].toStringAsFixed(2),
-                      kcal: activity['caloriesBurned'].toStringAsFixed(2),
+                      steps: activity['stepsCount'],
+                      kcal: activity['caloriesBurned'],
                       time: viewModel.stringToTimeOfDay(activity['activeTime']),
-                      distance: activity['distanceTraveled'].toStringAsFixed(2),
+                      distance: activity['distanceTraveled'],
                       challGoal: activity['challGoal'],
-                      progress: 100,
+                      progress: activity['progress'],
                     );
                   },
                 );

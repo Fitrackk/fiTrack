@@ -2,7 +2,7 @@ import 'package:fitrack/configures/BottomNavBloc.dart';
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/views/challenges.dart';
 import 'package:fitrack/views/dashboard_page.dart';
-import 'package:fitrack/views/history_page.dart';
+import 'package:fitrack/views/report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,14 +42,14 @@ class _MainViewState extends State<MainView> {
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: const [
+        children: [
           Dashboard(
             defaultChallengeTraveledDistance: 12,
             defaultChallengeBurnedCal: 34,
             defaultChallengeTraveledTimeHour: 1,
             defaultChallengeTraveledTimeMin: 30,
           ),
-          history(),
+          ActivityDataPage(),
           Challenges(),
           Setting(),
         ],
