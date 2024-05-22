@@ -26,6 +26,7 @@ class NotificationViewModel {
     required String body,
     required Time time,
     required String type,
+    required String username,
   }) async {
     final dateTimeComponents = _nextInstanceOfTime(time);
 
@@ -49,7 +50,7 @@ class NotificationViewModel {
       matchDateTimeComponents: DateTimeComponents.time,
     );
 
-    // Store notification in Firestore
+
     await firestore.collection('notifications').add({
       'id': id,
       'title': title,
@@ -57,6 +58,7 @@ class NotificationViewModel {
       'scheduledDate': dateTimeComponents['date'],
       'scheduledTime': dateTimeComponents['time'],
       'type': type,
+      'username': username,
     });
   }
 
@@ -88,9 +90,43 @@ class NotificationViewModel {
       {
         "time": Time(8, 0, 0),
         "message": "Time to drink some water and stay hydrated!",
-        "type": "water reminder"
+        "type": "water"
       },
-      // Add other notifications similarly with "type" and "message" specified
+      {
+        "time": Time(10, 0, 0),
+        "message": "Keep it up! Stay hydrated with another glass of water.",
+        "type": "water"
+      },
+      {
+        "time": Time(12, 0, 0),
+        "message": "You're doing great! Have another glass of water.",
+        "type": "water"
+      },
+      {
+        "time": Time(14, 0, 0),
+        "message": "Don't forget to hydrate! Drink some water.",
+        "type": "water"
+      },
+      {
+        "time": Time(16, 0, 0),
+        "message": "Keep yourself hydrated with another glass of water.",
+        "type": "water"
+      },
+      {
+        "time": Time(18, 0, 0),
+        "message": "Time for a water break! Stay hydrated.",
+        "type": "water"
+      },
+      {
+        "time": Time(20, 0, 0),
+        "message": "You're doing awesome! Have a glass of water.",
+        "type": "water"
+      },
+      {
+        "time": Time(22, 0, 0),
+        "message": "End your day with a glass of water. Stay hydrated!",
+        "type": "water"
+      },
     ];
 
     // Cancel any existing notifications
@@ -104,6 +140,7 @@ class NotificationViewModel {
         body: notification['message'],
         time: notification['time'],
         type: notification['type'],
+        username: notification['username'],
       );
     }
   }
