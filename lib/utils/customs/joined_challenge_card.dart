@@ -6,13 +6,13 @@ import '../../configures/text_style.dart';
 
 class JoinedChallengeCard extends StatefulWidget {
   final int defaultChallengeProgress;
-  final int defaultChallengeGoal;
   final String challengeName;
+  final remainingTime;
   const JoinedChallengeCard(
       {super.key,
-      required this.defaultChallengeProgress,
-      required this.defaultChallengeGoal,
-      required this.challengeName});
+        required this.defaultChallengeProgress,
+        required this.challengeName,
+        this.remainingTime});
 
   @override
   State<JoinedChallengeCard> createState() => _JoinedChallengeCardState();
@@ -23,6 +23,8 @@ class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
+
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 30),
       width: double.infinity,
@@ -81,8 +83,8 @@ class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "14h 30m 23s \n",
-                      style: TextStyles.labelMediumBold.copyWith(
+                      "${widget.remainingTime} \n",
+                      style: TextStyles.labelLargeBold.copyWith(
                         color: FitColors.text20,
                       ),
                     ),

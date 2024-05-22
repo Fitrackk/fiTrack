@@ -138,6 +138,7 @@ class _UserChallengesState extends State<UserChallenges> {
                           _dateController.text,
                           _reminderController.text,
                         );
+                        setState(() {});
                         Navigator.pop(context);
                       } catch (e) {
                         if (kDebugMode) {
@@ -185,7 +186,8 @@ class _UserChallengesState extends State<UserChallenges> {
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
-    return SingleChildScrollView(
+    return Container(
+      margin: EdgeInsets.only(bottom: 20),
       child: Column(
         children: [
           FutureBuilder<List<Challenge>>(
@@ -193,75 +195,77 @@ class _UserChallengesState extends State<UserChallenges> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child: Text(""),
                 );
               } else if (snapshot.hasError) {
                 return Center(
                   child: Text('Error: ${snapshot.error}'),
                 );
               } else if (snapshot.hasData) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data?.length,
-                  itemBuilder: (context, index) {
-                    Challenge challenge = snapshot.data![index];
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          StreamBuilder(
-                            stream: userData.getUserData().asStream(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                User? user = snapshot.data;
-                                if (user != null) {
-                                  if (challenge.challengeOwner == user.userName) {
-                                    return SingleChildScrollView(
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(height: 20),
-                                          CustomChallengeCard(
-                                            challengeId: challenge.challengeId,
-                                            challengeName: challenge.challengeName,
-                                            challengeOwner: challenge.challengeOwner,
-                                            challengeDate: challenge.challengeDate,
-                                            participations: challenge.participations,
-                                            challengeParticipantsImg: const [
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/girl.png",
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/girl.png",
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/Rectangle.png",
-                                              "assets/images/Rectangle.png",
-                                            ],
-                                            activityType: challenge.activityType,
-                                            distance: challenge.distance,
-                                            participantUsernames: challenge.participantUsernames,
-                                            challengeJoined: true, challengeProgress: '20%', // Assuming the owner is always joined
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                return Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data?.length,
+                    itemBuilder: (context, index) {
+                      Challenge challenge = snapshot.data![index];
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            StreamBuilder(
+                              stream: userData.getUserData().asStream(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  User? user = snapshot.data;
+                                  if (user != null) {
+                                    if (challenge.challengeOwner == user.userName) {
+                                      return SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(height: 20),
+                                            CustomChallengeCard(
+                                              challengeId: challenge.challengeId,
+                                              challengeName: challenge.challengeName,
+                                              challengeOwner: challenge.challengeOwner,
+                                              challengeDate: challenge.challengeDate,
+                                              participations: challenge.participations,
+                                              challengeParticipantsImg: const [
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/girl.png",
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/girl.png",
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/Rectangle.png",
+                                                "assets/images/Rectangle.png",
+                                              ],
+                                              activityType: challenge.activityType,
+                                              distance: challenge.distance,
+                                              participantUsernames: challenge.participantUsernames,
+                                              challengeJoined: true, challengeProgress: '20%', // Assuming the owner is always joined
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox(); // Returning an empty SizedBox if the challenge doesn't belong to the current user
+                                  } else {
+                                    return const Text("User is null");
                                   }
-                                  return const SizedBox(); // Returning an empty SizedBox if the challenge doesn't belong to the current user
+                                } else if (snapshot.hasError) {
+                                  return Text("Error: ${snapshot.error}");
                                 } else {
-                                  return const Text("User is null");
+                                  return const SizedBox(); // Returning an empty SizedBox if snapshot has no data
                                 }
-                              } else if (snapshot.hasError) {
-                                return Text("Error: ${snapshot.error}");
-                              } else {
-                                return const SizedBox(); // Returning an empty SizedBox if snapshot has no data
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 );
               } else {
                 return const Center(
@@ -270,9 +274,7 @@ class _UserChallengesState extends State<UserChallenges> {
               }
             },
           ),
-          SizedBox(
-            height: 20,
-          ),
+SizedBox(height: 20,),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),
