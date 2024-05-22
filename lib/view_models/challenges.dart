@@ -15,14 +15,14 @@ class ChallengesVM {
   User? currentUser;
   String? username;
   final Random _random = Random();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<int> generateUniqueChallengeId() async {
     late int challengeId;
     bool exists = true;
 
     while (exists) {
-      challengeId =
-          _random.nextInt(100000000); // Generate a random 8-digit number
+      challengeId = _random.nextInt(100000000);
       final QuerySnapshot result = await FirebaseFirestore.instance
           .collection('challenges')
           .where('challengeId', isEqualTo: challengeId)
@@ -203,6 +203,71 @@ class ChallengesVM {
           .add(challengeProgress.toFirestore());
     } catch (e) {
       print('Failed to add challenge progress: $e');
+    }
+  }
+
+  Future<void> joinChallenge(BuildContext context, String id) async {
+    try {
+      currentUser = await _userVM.getUserData();
+      if (currentUser == null) {
+        Navigator.pushNamed(context, '/signing');
+        return;
+      }
+
+      username = currentUser!.userName;
+
+      int challengeId = int.parse(id);
+
+      QuerySnapshot challengeSnapshot = await _firestore
+          .collection('challenges')
+          .where('challengeId', isEqualTo: challengeId)
+          .get();
+
+      if (challengeSnapshot.docs.isNotEmpty) {
+        DocumentSnapshot challengeDoc = challengeSnapshot.docs.first;
+
+        String challengeDate = challengeDoc['challengeDate'];
+
+        if (DateTime.parse(challengeDate).isBefore(DateTime.now())) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Sorry, you cannot join this challenge as its date has already passed.'),
+            ),
+          );
+          return;
+        }
+        int participations = challengeDoc['participations'];
+        List<dynamic> participantUsernames =
+            challengeDoc['participantUsernames'];
+        if (participantUsernames.length >= participations) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Sorry, this challenge is already full.'),
+            ),
+          );
+          return;
+        }
+
+        bool hasChallenge = await hasChallengeOnDate(username!, challengeDate);
+        if (hasChallenge) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('Sorry, you already have a challenge on this date.'),
+            ),
+          );
+          return;
+        }
+
+        await _firestore.collection('challenges').doc(challengeDoc.id).update({
+          'participantUsernames': FieldValue.arrayUnion([username]),
+        });
+      } else {
+        throw Exception('Challenge not found');
+      }
+    } catch (e) {
+      print("Error joining challenge: $e");
     }
   }
 }
