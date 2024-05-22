@@ -44,7 +44,7 @@ class _MainViewState extends State<MainView> {
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           Dashboard(),
-          history(),
+          ActivityDataPage(),
           Challenges(),
           Setting(),
         ],
