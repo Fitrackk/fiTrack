@@ -1,31 +1,22 @@
+import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
-import 'package:fitrack/models/challenge_model.dart';
+import 'package:fitrack/utils/customs/join_challenge_button.dart';
 import 'package:fitrack/utils/customs/joined_challenge_card.dart';
 import 'package:fitrack/utils/customs/progress_indicator.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
+import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:stator/stator.dart';
-import 'dart:core';
 
-import '../configures/color_theme.dart';
-import '../models/user_model.dart';
+import '../models/activity_data_model.dart';
+import '../models/challenge_model.dart';
+import '../models/challenge_progress.dart';
 import '../view_models/user.dart';
 
 class Dashboard extends StatefulWidget {
-  final double defaultChallengeTraveledDistance;
-  final int defaultChallengeTraveledTimeHour;
-  final int defaultChallengeTraveledTimeMin;
-  final int defaultChallengeBurnedCal;
-  const Dashboard({
-    super.key,
-    required this.defaultChallengeTraveledDistance,
-    required this.defaultChallengeBurnedCal,
-    required this.defaultChallengeTraveledTimeHour,
-    required this.defaultChallengeTraveledTimeMin,
-  });
+  const Dashboard({super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -34,43 +25,107 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final userData = getSingleton<UserVM>();
   final challengeData = getSingleton<ChallengesVM>();
-  int flag = 0;
+  final ActivityTrackerViewModel activityData = ActivityTrackerViewModel();
+  late ActivityData? _localActivityData;
+  late DateTime _endTime;
+  late Duration _remainingDuration;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateRemainingTime();
+    _fetchLocalActivityData();
+    _localActivityData = null;
+  }
+
+  Future<void> _fetchLocalActivityData() async {
+    final data = await activityData.fetchLocalActivityData();
+    setState(() {
+      _localActivityData = data;
+    });
+  }
+
+  String getCurrentTime() {
+    DateTime now = DateTime.now().toLocal();
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    DateTime futureTime = now.add(const Duration(hours: 3));
+    String hours = twoDigits(futureTime.hour);
+    String minutes = twoDigits(futureTime.minute);
+    String seconds = twoDigits(futureTime.second);
+    return "$hours:$minutes:$seconds";
+  }
+
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String hours = twoDigits(duration.inHours);
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$hours h $minutes m $seconds s";
+  }
+
+  String getRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    Duration remainingTime = endOfDay.difference(now);
+    if (remainingTime > const Duration(hours: 24)) {
+      remainingTime = const Duration(hours: 24);
+    }
+    return formatDuration(remainingTime);
+  }
+
+  void _calculateRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    DateTime endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    _endTime = endOfDay;
+    _updateRemainingTime();
+  }
+
+  void _updateRemainingTime() {
+    DateTime now = DateTime.now().toLocal();
+    _remainingDuration = _endTime.difference(now);
+    if (_remainingDuration.isNegative) {
+      _remainingDuration = Duration.zero;
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    String? todayDate = formatter.format(DateTime.now());
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
-    String getDate() {
-      DateTime now = DateTime.now();
-      String todayDate = "${now.day}-${now.month}-${now.year}";
-      return todayDate;
-    }
+    int defaultChallengeProgress = (_localActivityData != null
+            ? (_localActivityData!.stepsCount / 10000) * 100
+            : 0)
+        .toInt();
 
     return Scaffold(
-        appBar: TopNav(),
-        body: Center(
-            child: SingleChildScrollView(
+      appBar: const TopNav(),
+      body: Center(
+        child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               CustomProgressIndicator(
-                defaultChallengeProgress: 20,
-                defaultChallengeSteps: 2500,
-                defaultChallengeGoal: 10000,
-              ),
-              SizedBox(
+                  defaultChallengeProgress: defaultChallengeProgress,
+                  defaultChallengeSteps: _localActivityData != null
+                      ? _localActivityData!.stepsCount
+                      : 0,
+                  defaultChallengeGoal: 10000),
+              const SizedBox(
                 height: 100,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 25),
+                padding: const EdgeInsets.symmetric(horizontal: 25),
                 width: currentWidth / 1.1,
                 height: currentHeight / 8,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: FitColors.tertiary90,
-                  boxShadow: ([
+                  boxShadow: (const [
                     BoxShadow(
                       color: FitColors.placeholder,
                       spreadRadius: 0.1,
@@ -84,20 +139,21 @@ class _DashboardState extends State<Dashboard> {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_pin,
                           size: 40,
                           color: FitColors.primary30,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
                         RichText(
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text:
-                                    "${widget.defaultChallengeTraveledDistance} \n",
+                                text: _localActivityData != null
+                                    ? "${_localActivityData!.distanceTraveled.toStringAsFixed(2)} \n"
+                                    : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
@@ -115,26 +171,27 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.access_time_rounded,
                           size: 40,
                           color: FitColors.primary30,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
                         RichText(
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text:
-                                    "${widget.defaultChallengeTraveledTimeHour}h ${widget.defaultChallengeTraveledTimeMin}m \n",
+                                text: _localActivityData != null
+                                    ? "${_localActivityData!.activeTime} \n"
+                                    : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
                               ),
                               TextSpan(
-                                text: "Time",
+                                text: "min",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text10,
                                 ),
@@ -146,19 +203,21 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.local_fire_department_rounded,
                           size: 40,
                           color: FitColors.primary30,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
                         RichText(
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: "${widget.defaultChallengeBurnedCal} \n",
+                                text: _localActivityData != null
+                                    ? "${_localActivityData!.caloriesBurned.toInt()} \n"
+                                    : "0 \n",
                                 style: TextStyles.labelSmallBold.copyWith(
                                   color: FitColors.text20,
                                 ),
@@ -177,123 +236,74 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               StreamBuilder<List<Challenge>>(
-                stream: challengeData.getChallengeData().asStream(),
+                stream: challengeData.getUserChallengeData().asStream(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Challenge> challenges =
                         snapshot.data as List<Challenge>;
                     if (challenges.isNotEmpty) {
                       for (var challenge in challenges) {
-                        if (challenge.challengeDate == getDate()) {
-                          return StreamBuilder<User?>(
-                            stream: userData.getUserData().asStream(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                User? user = snapshot.data;
-                                if (user != null) {
-                                  if (challenge.participantUsernames != null) {
-                                    for (int i = 0; i < challenge.participantUsernames.length; i++) {
-                                      if (user.userName == challenge.participantUsernames[i]) {
-                                        print(challenge.participantUsernames[i]);
-                                        flag = 1;
-                                      }
-                                    }
-                                    if (flag == 1) {
-                                      return JoinedChallengeCard(defaultChallengeProgress: 34, defaultChallengeGoal: 10000, challengeName: challenge.challengeName,);
-                                    }
-                                    else{
-                                      return Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 100),
-                                        width: double.infinity,
-                                        height: currentHeight / 14,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, '/challenge');
-                                          },
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                            MaterialStateProperty.all(
-                                                FitColors.primary30),
-                                          ),
-                                          child: Text(
-                                            "Join Challenge Now!",
-                                            style:
-                                            TextStyles.titleMedium.copyWith(
-                                              color: FitColors.primary95,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                  return Text("User is not null");
-                                }
-                              }else if (snapshot.hasError) {
-                                return Text("Error: ${snapshot.error}");
+                        if (challenge.challengeDate == todayDate) {
+                          return FutureBuilder<List<ChallengeProgress>>(
+                            future: ChallengesVM()
+                                .getChallengeProgress(challenge.challengeId),
+                            builder: (context, progressSnapshot) {
+                              if (progressSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: Text(" "),
+                                );
+                              } else if (progressSnapshot.hasError) {
+                                return Center(
+                                  child:
+                                      Text('Error: ${progressSnapshot.error}'),
+                                );
+                              } else if (progressSnapshot.hasData) {
+                                double totalProgress = 0;
+                                progressSnapshot.data?.forEach((progress) {
+                                  totalProgress += progress.progress;
+                                });
+
+                                double progressPercentage =
+                                    progressSnapshot.data!.isEmpty
+                                        ? 0
+                                        : totalProgress /
+                                            progressSnapshot.data!.length;
+
+                                return JoinedChallengeCard(
+                                  defaultChallengeProgress:
+                                      progressPercentage.toInt(),
+                                  remainingTime: getRemainingTime(),
+                                  challengeName: challenge.challengeName,
+                                );
+                              } else if (progressSnapshot.hasError) {
+                                return Text("Error: ${progressSnapshot.error}");
+                              } else {
+                                return const Text(" ");
                               }
-                              else {
-                                return Text("User is null");
-                              }
-                             return Text("RRr");
                             },
                           );
                         }
                       }
-                      return Text("No challenge found for today");
+                      return const JoinChallengeButton();
                     } else {
-                      return Text("List is empty");
+                      return const JoinChallengeButton();
                     }
                   } else if (snapshot.hasError) {
                     return Text("Error: ${snapshot.error}");
                   } else {
-                    return Text("Loading...");
+                    return const Text("");
                   }
                 },
               ),
-              // StreamBuilder<List<Challenge>>(
-              //   stream: challengeData.getChallengeData().asStream(),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.hasData) {
-              //       List<Challenge> challenges = snapshot.data as List<Challenge>;
-              //       if (challenges.isNotEmpty) {
-              //         for (var challenge in challenges) {
-              //           if (challenge.challengeDate == getDate()) {
-              //             return StreamBuilder<User?>(
-              //               stream: userData.getUserData().asStream(),
-              //               builder: (context, snapshot) {
-              //                 if (snapshot.hasData) {
-              //                   // Your existing code
-              //                 } else if (snapshot.hasError) {
-              //                   return Text("Error: ${snapshot.error}");
-              //                 } else {
-              //                   return const Text("Loading...");
-              //                 }
-              //                 return Text("data");
-              //               },
-              //             );
-              //           }
-              //         }
-              //         return Text("No challenge found for today");
-              //       } else {
-              //         return Text("List is empty");
-              //       }
-              //     } else if (snapshot.hasError) {
-              //       return Text("Error: ${snapshot.error}");
-              //     } else {
-              //       return const Text("Loading...");
-              //     }
-              //     // Add a return statement for the default case
-              //     return const Text("Loading..."); // Or use a generic Container widget
-              //   },
-              // ),
             ],
           ),
-        )));
+        ),
+      ),
+    );
   }
 }

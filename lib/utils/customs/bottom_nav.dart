@@ -43,12 +43,7 @@ class _MainViewState extends State<MainView> {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
-          Dashboard(
-            defaultChallengeTraveledDistance: 12,
-            defaultChallengeBurnedCal: 34,
-            defaultChallengeTraveledTimeHour: 1,
-            defaultChallengeTraveledTimeMin: 30,
-          ),
+          Dashboard(),
           history(),
           Challenges(),
           Setting(),
@@ -126,8 +121,8 @@ class _BottomNavViewState extends State<BottomNavView> {
           const IconThemeData(color: FitColors.primary20, size: 30),
       unselectedIconTheme:
           const IconThemeData(color: FitColors.primary30, size: 30),
-      selectedLabelStyle: const TextStyle(
-          fontSize: 15, fontWeight: FontWeight.bold), // Increase the font size
+      selectedLabelStyle:
+          const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
     );
   }
 }

@@ -1,13 +1,13 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
-import 'package:fitrack/view_models/challenges.dart';
 import 'package:fitrack/views/all_challenges.dart';
+import 'package:fitrack/views/joined_challenges.dart';
 import 'package:flutter/material.dart';
 
-class Challenges extends StatefulWidget {
+import 'user_challenges.dart';
 
-  const Challenges(
-      {super.key});
+class Challenges extends StatefulWidget {
+  const Challenges({super.key});
 
   @override
   State<Challenges> createState() => _ChallengesState();
@@ -19,22 +19,22 @@ class _ChallengesState extends State<Challenges> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: FitColors.background,
         appBar: AppBar(
           elevation: 0.0,
-          bottom: TabBar(tabs: const [
-            Tab(
-              text: 'All Challenges',
-            ),
-            Tab(
-              text: 'Joined Challenges',
-            ),
-            Tab(
-              text: 'My Challenges',
-            ),
-          ],
+          bottom: TabBar(
+            tabs: const [
+              Tab(
+                text: 'All Challenges',
+              ),
+              Tab(
+                text: 'Joined Challenges',
+              ),
+              Tab(
+                text: 'My Challenges',
+              ),
+            ],
             indicatorColor: FitColors.text20,
-            labelStyle: TextStyles.labelLargeBold,
+            labelStyle: TextStyles.labelMediumBold,
             unselectedLabelStyle: TextStyles.labelMedium,
             labelColor: FitColors.text20,
             unselectedLabelColor: FitColors.text20,
@@ -43,8 +43,8 @@ class _ChallengesState extends State<Challenges> {
         body: const TabBarView(
           children: [
             AllChallenges(),
-            Text('Tab 2 content'),
-            Text('Tab 3 content'),
+            JoinedChallenges(),
+            UserChallenges(),
           ],
         ),
       ),
