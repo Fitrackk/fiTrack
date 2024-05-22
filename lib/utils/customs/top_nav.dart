@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:fitrack/configures/color_theme.dart';
+import 'package:fitrack/views/notifications.dart';
 import 'package:fitrack/views/user_data_page.dart';
 import 'package:flutter/material.dart';
 
@@ -89,7 +90,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const UserData()),
+                MaterialPageRoute(builder: (context) => const NotificationPage()),
               );
             },
           ),
