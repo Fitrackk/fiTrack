@@ -1,8 +1,3 @@
-import 'package:fitrack/utils/customs/activity_drop_down.dart';
-import 'package:fitrack/utils/customs/date.dart';
-import 'package:fitrack/utils/customs/participants_drop_down.dart';
-import 'package:fitrack/utils/customs/reminder_toggle.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
 
@@ -15,25 +10,21 @@ import '../utils/customs/custom_challenge_card.dart';
 import '../view_models/challenges.dart';
 import '../view_models/user.dart';
 
-class UserChallenges extends StatefulWidget {
-  const UserChallenges({super.key});
+class JoinedChallenges extends StatefulWidget {
+  const JoinedChallenges({super.key});
 
   @override
-  State<UserChallenges> createState() => _UserChallengesState();
+  State<JoinedChallenges> createState() => _JoinedChallengesState();
 }
 
-class _UserChallengesState extends State<UserChallenges> {
-  final TextEditingController _typeController = TextEditingController();
-  final TextEditingController _distanceController = TextEditingController();
-  final TextEditingController _participantsController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _reminderController = TextEditingController();
+class _JoinedChallengesState extends State<JoinedChallenges> {
+  final TextEditingController _idController = TextEditingController();
+
   final userData = getSingleton<UserVM>();
-  final challengeData = getSingleton<ChallengesVM>();
   bool isJoined = true;
   final ChallengesVM challengeVM = ChallengesVM();
 
-  void _showChallengeDialog() {
+  void _addChallengeDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -43,111 +34,45 @@ class _UserChallengesState extends State<UserChallenges> {
           ),
           backgroundColor: FitColors.tertiary90,
           content: SizedBox(
-            width: 300,
+            width: 200,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'New Challenge Setup',
-                  style:
-                      TextStyles.titleMedBold.copyWith(color: FitColors.text10),
-                ),
-                const SizedBox(height: 20),
                 Row(
                   children: [
-                    Text('Activity type:',
-                        style: TextStyles.bodyMediumBold
-                            .copyWith(color: FitColors.text10)),
-                    const SizedBox(width: 50),
-                    ActivityDropDown(typeController: _typeController),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text('Distance:',
-                        style: TextStyles.bodyMediumBold
-                            .copyWith(color: FitColors.text10)),
-                    const SizedBox(width: 80),
                     SizedBox(
-                      width: 100,
+                      width: 200,
                       child: TextFormField(
-                        controller: _distanceController,
+                        controller: _idController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          hintText: 'KM',
+                          hintText: 'Enter Challenge ID',
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Text('Each km earns participants 10 points',
-                    style: TextStyles.bodySmallBold
-                        .copyWith(color: FitColors.placeholder)),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text('Participants #:',
-                        style: TextStyles.bodyMediumBold
-                            .copyWith(color: FitColors.text10)),
-                    const SizedBox(width: 50),
-                    ParticipantsDropDown(
-                        participantsController: _participantsController),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text('Date:',
-                        style: TextStyles.bodyMediumBold
-                            .copyWith(color: FitColors.text10)),
-                    const SizedBox(width: 100),
-                    Date(dateController: _dateController),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text('Enable Reminders:',
-                        style: TextStyles.bodyMediumBold
-                            .copyWith(color: FitColors.text10)),
-                    const SizedBox(width: 80),
-                    ReminderToggle(reminderController: _reminderController),
-                  ],
-                ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    var distance = double.tryParse(_distanceController.text);
-                    if (distance == null || distance < 1 || distance > 20) {
-                      if (kDebugMode) {
-                        print("Distance must be between 1 and 20 km");
-                      }
+                    var id = _idController.text;
+                    if (id.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content:
-                                Text('Distance must be between 1 and 20 km')),
+                          content: Text('Please enter a valid challenge ID'),
+                        ),
                       );
                     } else {
                       try {
-                        await challengeData.addChallenge(
-                          context,
-                          _typeController.text,
-                          _distanceController.text,
-                          _participantsController.text,
-                          _dateController.text,
-                          _reminderController.text,
-                        );
+                        await challengeVM.joinChallengeById(context, id);
                         setState(() {});
                         Navigator.pop(context);
                       } catch (e) {
-                        if (kDebugMode) {
-                          print("Failed to create challenge: $e");
-                        }
+                        print("Failed to join challenge: $e");
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: Text('Failed to create challenge: $e')),
+                            content: Text('Failed to join challenge: $e'),
+                          ),
                         );
                       }
                     }
@@ -160,7 +85,7 @@ class _UserChallengesState extends State<UserChallenges> {
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      'Create !',
+                      'Join !',
                       style: TextStyles.titleMedium
                           .copyWith(color: FitColors.primary95),
                     ),
@@ -176,11 +101,7 @@ class _UserChallengesState extends State<UserChallenges> {
 
   @override
   void dispose() {
-    _typeController.dispose();
-    _dateController.dispose();
-    _distanceController.dispose();
-    _participantsController.dispose();
-    _reminderController.dispose();
+    _idController.dispose();
     super.dispose();
   }
 
@@ -219,8 +140,8 @@ class _UserChallengesState extends State<UserChallenges> {
                                 if (userSnapshot.hasData) {
                                   User? user = userSnapshot.data;
                                   if (user != null) {
-                                    if (challenge.challengeOwner ==
-                                        user.userName) {
+                                    if (challenge.participantUsernames
+                                        .contains(user.userName)) {
                                       return FutureBuilder<
                                           List<ChallengeProgress>>(
                                         future: ChallengesVM()
@@ -257,7 +178,7 @@ class _UserChallengesState extends State<UserChallenges> {
                                             return SingleChildScrollView(
                                               child: Column(
                                                 children: [
-                                                  const SizedBox(height: 20),
+                                                  const SizedBox(height: 15),
                                                   CustomChallengeCard(
                                                     challengeId:
                                                         challenge.challengeId,
@@ -292,6 +213,9 @@ class _UserChallengesState extends State<UserChallenges> {
                                                     challengeJoined: true,
                                                     challengeProgress:
                                                         "${progressPercentage.toStringAsFixed(0)}%",
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
                                                   ),
                                                 ],
                                               ),
@@ -330,7 +254,7 @@ class _UserChallengesState extends State<UserChallenges> {
             },
           ),
           const SizedBox(
-            height: 20,
+            height: 15,
           ),
           Container(
             decoration: BoxDecoration(
@@ -349,7 +273,7 @@ class _UserChallengesState extends State<UserChallenges> {
             width: currentWidth / 2,
             height: currentHeight / 14,
             child: ElevatedButton(
-              onPressed: _showChallengeDialog,
+              onPressed: _addChallengeDialog,
               style: ElevatedButton.styleFrom(
                 backgroundColor: FitColors.primary30,
                 elevation: 10,
@@ -358,7 +282,7 @@ class _UserChallengesState extends State<UserChallenges> {
               child: const FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  'Create A New Challenge !',
+                  'Join By Challenge ID Now!',
                   style: TextStyle(color: Colors.white),
                 ),
               ),

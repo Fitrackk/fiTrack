@@ -1,18 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitrack/view_models/user.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../models/user_model.dart';
 
 class NotificationViewModel {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
+  final UserVM _userVM = UserVM();
   Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher'); // Ensure you have an icon
+        AndroidInitializationSettings(
+            '@mipmap/ic_launcher'); // Ensure you have an icon
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -34,7 +39,8 @@ class NotificationViewModel {
       id,
       title,
       body,
-      tz.TZDateTime.parse(tz.local, '${dateTimeComponents['date']}T${dateTimeComponents['time']}'),
+      tz.TZDateTime.parse(tz.local,
+          '${dateTimeComponents['date']}T${dateTimeComponents['time']}'),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'your_channel_id',
@@ -46,10 +52,9 @@ class NotificationViewModel {
       ),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
-
 
     await firestore.collection('notifications').add({
       'id': id,
@@ -80,52 +85,66 @@ class NotificationViewModel {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
     return {
-      'date': scheduledDate.toIso8601String().split('T')[0], // Extracts date in YYYY-MM-DD format
-      'time': scheduledDate.toIso8601String().split('T')[1]  // Extracts time in HH:MM:SS format
+      'date': scheduledDate
+          .toIso8601String()
+          .split('T')[0], // Extracts date in YYYY-MM-DD format
+      'time': scheduledDate
+          .toIso8601String()
+          .split('T')[1] // Extracts time in HH:MM:SS format
     };
   }
 
   Future<void> scheduleDailyWaterReminder() async {
-    const List<Map<String, dynamic>> notifications = [
+    User? currentUser = await _userVM.getUserData();
+
+    List<Map<String, dynamic>> notifications = [
       {
         "time": Time(8, 0, 0),
         "message": "Time to drink some water and stay hydrated!",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
       {
         "time": Time(10, 0, 0),
         "message": "Keep it up! Stay hydrated with another glass of water.",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
       {
         "time": Time(12, 0, 0),
         "message": "You're doing great! Have another glass of water.",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
       {
         "time": Time(14, 0, 0),
         "message": "Don't forget to hydrate! Drink some water.",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
       {
         "time": Time(16, 0, 0),
         "message": "Keep yourself hydrated with another glass of water.",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
       {
         "time": Time(18, 0, 0),
         "message": "Time for a water break! Stay hydrated.",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
       {
         "time": Time(20, 0, 0),
         "message": "You're doing awesome! Have a glass of water.",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
       {
         "time": Time(22, 0, 0),
         "message": "End your day with a glass of water. Stay hydrated!",
-        "type": "water"
+        "type": "water",
+        "username": currentUser?.userName ?? 'unknown'
       },
     ];
 

@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/views/notifications.dart';
-import 'package:fitrack/views/user_data_page.dart';
 import 'package:flutter/material.dart';
 
 class TopNav extends StatelessWidget implements PreferredSizeWidget {
@@ -20,11 +19,12 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
       progress = 0.0;
     }
 
-    double startAngle = math.pi * 0.5; // 6 o'clock position in radians
-    double sweepAngle = 2 * math.pi * progress; // sweep angle based on progress
+    double startAngle = math.pi * 0.5;
+    double sweepAngle = 2 * math.pi * progress;
 
     return AppBar(
       backgroundColor: FitColors.background,
+      automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -35,7 +35,8 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const UserData()),
+                    MaterialPageRoute(
+                        builder: (context) => const NotificationPage()),
                   );
                 },
                 child: CircleAvatar(
@@ -45,8 +46,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       const CircleAvatar(
                         radius: 15,
-                        backgroundImage: AssetImage(
-                            'assets/images/logo.png'), // Replace this with the user's profile image
+                        backgroundImage: AssetImage('assets/images/logo.png'),
                       ),
                       Positioned.fill(
                         child: CustomPaint(
@@ -85,12 +85,12 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
           ),
           IconButton(
             icon: const Icon(Icons.notifications_none, size: 40),
-            // Increase the icon size
             color: FitColors.primary30,
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NotificationPage()),
+                MaterialPageRoute(
+                    builder: (context) => const NotificationPage()),
               );
             },
           ),

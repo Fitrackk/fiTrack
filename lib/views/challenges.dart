@@ -1,6 +1,7 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/views/all_challenges.dart';
+import 'package:fitrack/views/joined_challenges.dart';
 import 'package:flutter/material.dart';
 
 import 'user_challenges.dart';
@@ -18,7 +19,6 @@ class _ChallengesState extends State<Challenges> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: FitColors.background,
         appBar: AppBar(
           elevation: 0.0,
           bottom: TabBar(
@@ -34,7 +34,7 @@ class _ChallengesState extends State<Challenges> {
               ),
             ],
             indicatorColor: FitColors.text20,
-            labelStyle: TextStyles.labelLargeBold,
+            labelStyle: TextStyles.labelMediumBold,
             unselectedLabelStyle: TextStyles.labelMedium,
             labelColor: FitColors.text20,
             unselectedLabelColor: FitColors.text20,
@@ -43,7 +43,7 @@ class _ChallengesState extends State<Challenges> {
         body: const TabBarView(
           children: [
             AllChallenges(),
-            Text('Tab 2 content'),
+            JoinedChallenges(),
             UserChallenges(),
           ],
         ),

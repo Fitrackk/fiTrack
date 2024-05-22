@@ -3,11 +3,11 @@ import 'package:fitrack/services/firebase_service.dart';
 import 'package:fitrack/utils/customs/bottom_nav.dart';
 import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
+import 'package:fitrack/view_models/notifications.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:fitrack/views/get_started_page.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
-import 'package:fitrack/view_models/notifications.dart';
 
 import 'configures/routes.dart';
 

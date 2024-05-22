@@ -5,7 +5,6 @@ import '../../configures/text_style.dart';
 
 class JoinChallengeButton extends StatefulWidget {
   const JoinChallengeButton({super.key});
-
   @override
   State<JoinChallengeButton> createState() => _JoinChallengeButtonState();
 }
@@ -24,11 +23,22 @@ class _JoinChallengeButtonState extends State<JoinChallengeButton> {
         },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(FitColors.primary30),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16.0),
+          ),
+          minimumSize: MaterialStateProperty.all(
+            Size(double.infinity, currentHeight / 14),
+          ),
         ),
-        child: Text(
-          "Join Challenge Now!",
-          style: TextStyles.titleMedium.copyWith(
-            color: FitColors.primary95,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            "Join Challenge Now!",
+            style: TextStyles.titleMedium.copyWith(
+              color: FitColors.primary95,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),
