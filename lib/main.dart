@@ -7,6 +7,7 @@ import 'package:fitrack/view_models/notifications.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:fitrack/views/get_started_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stator/stator.dart';
 
 import 'configures/routes.dart';
@@ -17,7 +18,6 @@ void main() async {
   final tracker = ActivityTrackerVM();
   tracker.startTracking();
   await tracker.checkLocalStorageData();
-  //tracker.stopTracking();
 
   NotificationsVM notificationViewModel = NotificationsVM();
   await notificationViewModel.initialize();
@@ -34,7 +34,8 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  late User? _user = FirebaseAuth.instance.currentUser;
+  User? _user;
+  static const platform = MethodChannel('com.company.fit/alarm_permission');
 
   @override
   void initState() {
@@ -46,6 +47,21 @@ class _MainAppState extends State<MainApp> {
         _user = user;
       });
     });
+    _requestExactAlarmPermission();
+  }
+
+  Future<void> _requestExactAlarmPermission() async {
+    try {
+      final bool result =
+          await platform.invokeMethod('requestExactAlarmPermission');
+      if (!result) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Exact alarm permission is required.')),
+        );
+      }
+    } on PlatformException catch (e) {
+      print("Failed to request exact alarm permission: '${e.message}'.");
+    }
   }
 
   @override
