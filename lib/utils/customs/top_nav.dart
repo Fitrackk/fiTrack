@@ -1,100 +1,129 @@
 import 'dart:math' as math;
 
-import 'package:fitrack/configures/color_theme.dart';
-import 'package:fitrack/views/notifications.dart';
 import 'package:flutter/material.dart';
 
-class TopNav extends StatelessWidget implements PreferredSizeWidget {
-  final int userLevel;
-  final double userScore;
+import '../../configures/color_theme.dart';
+import '../../view_models/top_nav.dart';
+import '../../views/notifications.dart';
 
-  const TopNav({super.key, this.userLevel = 15, this.userScore = 1580});
+class TopNav extends StatelessWidget implements PreferredSizeWidget {
+  final TopNavViewModel _viewModel = TopNavViewModel();
 
   @override
   Widget build(BuildContext context) {
-    double progress = (userScore - (userLevel * 100)) / 100;
-    if (progress > 1.0) {
-      progress = 1.0;
-    } else if (progress < 0) {
-      progress = 0.0;
-    }
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _viewModel.fetchUserData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(' '),
+          );
+        } else {
+          if (snapshot.hasError || snapshot.data == null) {
+            return AppBar(
+              automaticallyImplyLeading: false,
+              title: Text('Error fetching data'),
+            );
+          }
 
-    double startAngle = math.pi * 0.5;
-    double sweepAngle = 2 * math.pi * progress;
+          final userData = snapshot.data!;
+          final int userScore = userData['score'] ?? 0;
+          int userLevel = ((userScore / 100) + 1).toInt();
+          if (userScore < 100) userLevel = 1;
+          final profileImageUrl =
+              userData['profileImageUrl'] as String?; // Cast to String or null
+          final profileImage = profileImageUrl != null
+              ? NetworkImage(profileImageUrl)
+              : AssetImage('assets/images/unknown.png');
 
-    return AppBar(
-      automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NotificationPage()),
-                  );
-                },
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: FitColors.background,
-                  child: Stack(
-                    children: [
-                      const CircleAvatar(
-                        radius: 20,
-                        backgroundImage: AssetImage('assets/images/logo.png'),
+          double progress = (userScore % 100) / 100;
+          if (progress > 1.0) {
+            progress = 1.0;
+          } else if (progress < 0) {
+            progress = 0.0;
+          }
+
+          // Calculate start and sweep angles for progress arc
+          double startAngle = math.pi * 0.5;
+          double sweepAngle = 2 * math.pi * progress;
+
+          return AppBar(
+            automaticallyImplyLeading: false,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const NotificationPage()),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.transparent,
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundImage: profileImage as ImageProvider,
+                            ),
+                            Positioned.fill(
+                              child: CustomPaint(
+                                painter: ProgressPainter(
+                                  startAngle: startAngle,
+                                  sweepAngle: sweepAngle,
+                                  color: FitColors.primary30,
+                                  strokeWidth: 5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      Positioned.fill(
-                        child: CustomPaint(
-                          painter: ProgressPainter(
-                            startAngle: startAngle,
-                            sweepAngle: sweepAngle,
+                    ),
+                    Positioned(
+                      bottom: -1,
+                      left: 34,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: FitColors.background,
+                        ),
+                        child: Text(
+                          userLevel.toString(),
+                          style: const TextStyle(
                             color: FitColors.primary30,
-                            strokeWidth: 5,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    )
+                  ],
                 ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 34,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: FitColors.background,
-                  ),
-                  child: Text(
-                    userLevel.toString(),
-                    style: const TextStyle(
-                      color: FitColors.primary30,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.notifications_none, size: 40),
+                  color: FitColors.primary30,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const NotificationPage()),
+                    );
+                  },
                 ),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_none, size: 40),
-            color: FitColors.primary30,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationPage()),
-              );
-            },
-          ),
-        ],
-      ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 

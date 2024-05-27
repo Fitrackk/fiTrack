@@ -128,15 +128,17 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                       width: 100,
                       child: Stack(
                         children: [
-                          for (int i = 1;
-                              i <= (widget.participations);
-                              i++, marginValue = marginValue + 15)
+                          for (int i = 0;
+                              i < widget.participantUsernames.length;
+                              i++)
                             Container(
                               margin: EdgeInsets.fromLTRB(marginValue, 0, 0, 0),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.asset(
-                                  widget.challengeParticipantsImg[i - 1],
+                                borderRadius: BorderRadius.circular(50.0),
+                                child: Image.network(
+                                  widget.challengeParticipantsImg.length > i
+                                      ? widget.challengeParticipantsImg[i]
+                                      : 'assets/images/unknown.png',
                                   width: 30,
                                   height: 30,
                                 ),
@@ -177,7 +179,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                 ));
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
+                                backgroundColor: WidgetStateProperty.all(
                                     FitColors.primary30),
                               ),
                               child: Row(
@@ -225,7 +227,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                   }
                                 },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                       FitColors.primary30),
                                 ),
                                 child: Text(
@@ -358,7 +360,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                   );
                                 },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                       FitColors.primary30),
                                 ),
                                 child: Text(

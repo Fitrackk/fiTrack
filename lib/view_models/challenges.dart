@@ -45,13 +45,32 @@ class ChallengesVM {
     if (currentUser != null) {
       username = currentUser!.userName;
     }
+
     try {
       QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection("challenges").get();
+          await FirebaseFirestore.instance.collection('challenges').get();
 
-      List<Challenge> challenges = querySnapshot.docs.map((doc) {
-        return Challenge.fromFirestore(doc);
-      }).toList();
+      List<Challenge> challenges = [];
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        Challenge challenge = Challenge.fromFirestore(doc);
+        List<String> participantUsernames = challenge.participantUsernames;
+
+        List<String> participantImages = [];
+        for (String username in participantUsernames) {
+          // Fetch user data for each participant by username
+          User? participantData = await _userVM.getUserByUsername(username);
+          if (participantData != null) {
+            participantImages.add(participantData.profileImageUrl ?? "");
+          } else {
+            // If user data not found, use placeholder or default image
+            participantImages.add("");
+          }
+        }
+
+        challenge.participantImages = participantImages;
+        challenges.add(challenge);
+      }
 
       if (filter != null && filter.isNotEmpty) {
         challenges = challenges
@@ -177,6 +196,7 @@ class ChallengesVM {
         'distance': double.parse(distance!),
         'participations': int.parse(participants!),
         'reminder': reminder,
+        'participantImages': [currentUser?.profileImageUrl ?? ""]
       });
 
       addChallengeProgress(username!, activityType!, double.parse(distance),
@@ -239,6 +259,7 @@ class ChallengesVM {
       }
 
       username = currentUser!.userName;
+      String? userImage = currentUser!.profileImageUrl;
 
       int challengeId = int.parse(id);
 
@@ -299,6 +320,7 @@ class ChallengesVM {
 
         await _firestore.collection('challenges').doc(challengeDoc.id).update({
           'participantUsernames': FieldValue.arrayUnion([username]),
+          'participantImages': FieldValue.arrayUnion([userImage]),
         });
       } else {
         throw Exception('Challenge not found');
@@ -319,6 +341,8 @@ class ChallengesVM {
       }
 
       username = currentUser!.userName!;
+      String? userImage = currentUser!
+          .profileImageUrl; // Assuming profileImage is the field name
 
       final QuerySnapshot querySnapshot = await _firestore
           .collection('challenges')
@@ -340,7 +364,6 @@ class ChallengesVM {
                   style: TextStyles.bodySmallBold
                       .copyWith(color: FitColors.error40),
                 ),
-                backgroundColor: FitColors.tertiary50,
               ),
             );
             return;
@@ -382,8 +405,13 @@ class ChallengesVM {
           if (!challenge.participantUsernames.contains(username)) {
             List<String> updatedUsernames =
                 List.from(challenge.participantUsernames)..add(username);
-            await doc.reference
-                .update({'participantUsernames': updatedUsernames});
+            List<String> updatedImages = List.from(challenge.participantImages)
+              ..add(userImage!);
+
+            await doc.reference.update({
+              'participantUsernames': updatedUsernames,
+              'challengeParticipantsImg': updatedImages,
+            });
             updateState(true);
           }
         }
