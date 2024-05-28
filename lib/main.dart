@@ -12,6 +12,8 @@ import 'package:stator/stator.dart';
 
 import 'configures/routes.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FirebaseService.initializeFirebase();
@@ -55,7 +57,7 @@ class _MainAppState extends State<MainApp> {
       final bool result =
           await platform.invokeMethod('requestExactAlarmPermission');
       if (!result) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
           SnackBar(content: Text('Exact alarm permission is required.')),
         );
       }
@@ -67,8 +69,14 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       home: _user == null ? const StartedPage() : const BottomNav(),
+      builder: (context, child) {
+        return Scaffold(
+          body: child,
+        );
+      },
       routes: Routes.getRoutes(context),
     );
   }

@@ -29,7 +29,7 @@ class WaterReminderVM {
             await _notificationVM.scheduleDailyWaterReminder();
           } else {
             // Cancel existing notifications if water reminders are disabled
-            await _notificationVM.cancelAllNotifications();
+            await _notificationVM.cancelUserNotifications(username!);
           }
         } else {
           print("Error: Preference document does not exist");

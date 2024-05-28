@@ -27,21 +27,21 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     return GestureDetector(
       onTap: () => _selectDate(context),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.calendar_today, color: Colors.black),
-                SizedBox(width: 8),
+                const Icon(Icons.calendar_today, color: Colors.black),
+                const SizedBox(width: 8),
                 Text(
                   DateFormat('yyyy-MM-dd').format(_selectedDate),
-                  style: TextStyle(fontSize: 16, color: Colors.black),
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
               height: 1,
               color: Colors.black,
