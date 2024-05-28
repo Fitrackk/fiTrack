@@ -10,13 +10,12 @@ class CustomProgressIndicator extends StatefulWidget {
   final int defaultChallengeSteps;
   final int defaultChallengeGoal;
 
-
-  const CustomProgressIndicator(
-      {super.key,
-        required this.defaultChallengeProgress,
-        required this.defaultChallengeSteps,
-        required this.defaultChallengeGoal,
-      });
+  const CustomProgressIndicator({
+    super.key,
+    required this.defaultChallengeProgress,
+    required this.defaultChallengeSteps,
+    required this.defaultChallengeGoal,
+  });
 
   @override
   State<CustomProgressIndicator> createState() =>
@@ -38,19 +37,15 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
                 Text(
                   "${widget.defaultChallengeProgress}%",
                   style:
-                  TextStyles.titleLarge.copyWith(color: FitColors.text20),
+                      TextStyles.titleLarge.copyWith(color: FitColors.text20),
                 ),
-                SizedBox(
-                  height: 50,
-                ),
+                const SizedBox(height: 50),
                 Text(
                   "${widget.defaultChallengeSteps}",
                   style: TextStyles.displayLargeBold
                       .copyWith(color: FitColors.text20),
                 ),
-                SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30),
                 Text(
                   "Steps Goal : ${widget.defaultChallengeGoal}",
                   style: TextStyles.titleLarge
@@ -60,16 +55,13 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
             ),
           ),
           Center(
-            child: Container(
-              child: StepProgressIndicator(
-                currentStep: widget.defaultChallengeProgress,
-                totalSteps: 10000,
-                backgroundColor: const Color(0xFFBCD3DC),
-                progressColor:
-                const Color(0xFF176B87), // Progress color #176B87
-              ),
+            child: StepProgressIndicator(
+              currentStep: widget.defaultChallengeSteps,
+              totalSteps: widget.defaultChallengeGoal,
+              backgroundColor: const Color(0xFFBCD3DC),
+              progressColor: const Color(0xFF176B87),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -84,11 +76,11 @@ class StepProgressIndicator extends StatelessWidget {
   final Color backgroundColor;
   final Color progressColor;
 
-  StepProgressIndicator({
+  const StepProgressIndicator({
     required this.currentStep,
     required this.totalSteps,
     this.width = 200.0,
-    this.height = 100.0,
+    this.height = 200.0,
     required this.backgroundColor,
     required this.progressColor,
   });
@@ -133,10 +125,17 @@ class _ProgressPainter extends CustomPainter {
     double radius = size.width / 1.2 - strokeWidth / 2;
     Offset center = Offset(size.width / 2, size.height / 2);
     canvas.drawCircle(center, radius, backgroundPaint);
-    // Adjust starting angle for 6 o'clock position (3 * PI / 2)
+
+    double startAngle = math.pi / 2;
     double sweepAngle = 2 * math.pi * progressPercentage;
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), math.pi / 2,
-        sweepAngle, false, progressPaint);
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweepAngle,
+      false,
+      progressPaint,
+    );
   }
 
   @override

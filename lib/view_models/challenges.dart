@@ -242,9 +242,12 @@ class ChallengesVM {
         challengeId: challengeId,
       );
 
+      final docId = '${challengeId}_$username';
+
       await FirebaseFirestore.instance
           .collection('challengeProgress')
-          .add(challengeProgress.toFirestore());
+          .doc(docId)
+          .set(challengeProgress.toFirestore());
     } catch (e) {
       print('Failed to add challenge progress: $e');
     }
@@ -322,11 +325,39 @@ class ChallengesVM {
           'participantUsernames': FieldValue.arrayUnion([username]),
           'participantImages': FieldValue.arrayUnion([userImage]),
         });
+
+        await addChallengeProgress(
+          username!,
+          challengeDoc['activityType'],
+          challengeDoc['distance'],
+          challengeDate,
+          0,
+          challengeId,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Successfully joined the challenge!',
+              style: TextStyles.bodySmallBold.copyWith(color: FitColors.text95),
+            ),
+            backgroundColor: FitColors.tertiary50,
+          ),
+        );
       } else {
         throw Exception('Challenge not found');
       }
     } catch (e) {
       print("Error joining challenge: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to join challenge: $e',
+            style: TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+          ),
+          backgroundColor: FitColors.tertiary50,
+        ),
+      );
     }
   }
 
@@ -362,6 +393,7 @@ class ChallengesVM {
                   style: TextStyles.bodySmallBold
                       .copyWith(color: FitColors.error40),
                 ),
+                backgroundColor: FitColors.tertiary50,
               ),
             );
             return;
@@ -410,6 +442,16 @@ class ChallengesVM {
               'participantUsernames': updatedUsernames,
               'participantImages': updatedImages,
             });
+
+            await addChallengeProgress(
+              username,
+              challenge.activityType,
+              challenge.distance,
+              challenge.challengeDate,
+              0,
+              challenge.challengeId,
+            );
+
             updateState(true);
           }
         }
@@ -441,9 +483,10 @@ class ChallengesVM {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                      'Sorry, you are the challenge owner and cannot leave your own challenge.',
-                      style: TextStyles.bodySmallBold
-                          .copyWith(color: FitColors.error40)),
+                    'Sorry, you are the challenge owner and cannot leave your own challenge.',
+                    style: TextStyles.bodySmallBold
+                        .copyWith(color: FitColors.error40),
+                  ),
                   backgroundColor: FitColors.tertiary50,
                 ),
               );
@@ -452,12 +495,22 @@ class ChallengesVM {
 
             int index = challenge.participantUsernames.indexOf(username);
 
-            if (index != -1) {
-              // Remove the username and the corresponding image
+            if (index != -1 && index < challenge.participantUsernames.length) {
+              // Remove the username and the corresponding image if they exist at the same index
               List<String> updatedUsernames =
-                  List.from(challenge.participantUsernames)..removeAt(index);
+                  List.from(challenge.participantUsernames);
+              updatedUsernames.removeAt(index);
+
               List<String> updatedImages =
-                  List.from(challenge.participantImages ?? [])..removeAt(index);
+                  List.from(challenge.participantImages);
+              if (index < updatedImages.length) {
+                updatedImages.removeAt(index);
+              }
+              // Delete the progress document associated with the user
+              await FirebaseFirestore.instance
+                  .collection('challengeProgress')
+                  .doc('${challenge.challengeId}_$username')
+                  .delete();
 
               await doc.reference.update({
                 'participantUsernames': updatedUsernames,
@@ -465,6 +518,19 @@ class ChallengesVM {
               });
 
               updateState(false);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Successfully unjoined the challenge!',
+                    style: TextStyles.bodySmallBold
+                        .copyWith(color: FitColors.text95),
+                  ),
+                  backgroundColor: FitColors.tertiary50,
+                ),
+              );
+            } else {
+              throw Exception('User not found in participants');
             }
           }
         }
@@ -473,6 +539,15 @@ class ChallengesVM {
       }
     } catch (error) {
       print("Error unjoining challenge: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to unjoin challenge: $error',
+            style: TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+          ),
+          backgroundColor: FitColors.tertiary50,
+        ),
+      );
     }
   }
 }

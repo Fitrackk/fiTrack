@@ -28,7 +28,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
           }
 
           final userData = snapshot.data!;
-          final int userScore = userData['score'] ?? 0;
+          final double userScore = userData['score'] ?? 0;
           int userLevel = ((userScore / 100) + 1).toInt();
           if (userScore < 100) userLevel = 1;
           final profileImageUrl = userData['profileImageUrl'] as String?;
