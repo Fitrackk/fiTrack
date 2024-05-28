@@ -8,15 +8,15 @@ import '../models/user_model.dart';
 
 class NotificationsVM {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final UserVM _userVM = UserVM();
   Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const InitializationSettings initializationSettings =
-        InitializationSettings(
+    InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -51,7 +51,7 @@ class NotificationsVM {
       ),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
 
@@ -66,11 +66,14 @@ class NotificationsVM {
     });
   }
 
-  Future<void> cancelAllNotifications() async {
+  Future<void> cancelUserNotifications(String username) async {
     await flutterLocalNotificationsPlugin.cancelAll();
 
-    // Optionally, clear the notifications collection in Firestore
-    var snapshots = await firestore.collection('notifications').get();
+    // Clear only the notifications for the specified user
+    var snapshots = await firestore
+        .collection('notifications')
+        .where('username', isEqualTo: username)
+        .get();
     for (var doc in snapshots.docs) {
       await doc.reference.delete();
     }
@@ -148,7 +151,6 @@ class NotificationsVM {
     ];
 
     // Cancel any existing notifications
-    await cancelAllNotifications();
 
     for (var i = 0; i < notifications.length; i++) {
       final notification = notifications[i];
