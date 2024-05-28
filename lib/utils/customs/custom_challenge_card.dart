@@ -177,7 +177,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                 ));
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
+                                backgroundColor: WidgetStateProperty.all(
                                     FitColors.primary30),
                               ),
                               child: Row(
@@ -225,7 +225,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                   }
                                 },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                       FitColors.primary30),
                                 ),
                                 child: Text(
@@ -358,7 +358,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                   );
                                 },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                       FitColors.primary30),
                                 ),
                                 child: Text(
