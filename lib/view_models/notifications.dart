@@ -42,9 +42,9 @@ class NotificationsVM {
           '${dateTimeComponents['date']}T${dateTimeComponents['time']}'),
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'your_channel_id',
-          'your_channel_name',
-          channelDescription: 'your_channel_description',
+          'fitrack',
+          'fitrack',
+          channelDescription: 'water & challenges reminders',
           importance: Importance.max,
           priority: Priority.high,
         ),

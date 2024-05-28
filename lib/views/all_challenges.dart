@@ -158,19 +158,8 @@ class _AllChallengesState extends State<AllChallenges> {
                                       challengeProgress:
                                           "${progressPercentage.toStringAsFixed(0)}%",
                                       participations: challenge.participations,
-                                      challengeParticipantsImg: const [
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/girl.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/girl.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                        "assets/images/Rectangle.png",
-                                      ],
+                                      challengeParticipantsImg:
+                                          challenge.participantImages,
                                       activityType: challenge.activityType,
                                       distance: challenge.distance,
                                       participantUsernames:

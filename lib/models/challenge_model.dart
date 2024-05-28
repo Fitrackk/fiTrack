@@ -10,6 +10,7 @@ class Challenge {
   final List<String> participantUsernames;
   final int participations;
   final String reminder;
+  List<String> participantImages;
 
   Challenge({
     required this.activityType,
@@ -21,6 +22,7 @@ class Challenge {
     required this.participantUsernames,
     required this.participations,
     required this.reminder,
+    required this.participantImages,
   });
 
   factory Challenge.fromFirestore(DocumentSnapshot doc) {
@@ -38,6 +40,7 @@ class Challenge {
           List<String>.from(data['participantUsernames'] ?? []),
       participations: (data['participations'] ?? 0).toInt(),
       reminder: data['reminder'] ?? '',
+      participantImages: List<String>.from(data['participantImages'] ?? []),
     );
   }
 
@@ -52,6 +55,7 @@ class Challenge {
       'participantUsernames': participantUsernames,
       'participations': participations,
       'reminder': reminder,
+      'participantImages': participantImages
     };
   }
 }

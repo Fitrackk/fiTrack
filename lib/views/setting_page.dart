@@ -1,8 +1,6 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/view_models/settings.dart';
-import 'package:fitrack/views/change_password_page.dart';
-import 'package:fitrack/views/edit_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -82,12 +80,7 @@ class SettingsPage extends StatelessWidget {
                     trailing: Icon(Icons.arrow_forward_ios,
                         color: FitColors.primary30),
                     onTap: () {
-                      // Navigate to Edit Profile Page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditProfilePage()),
-                      );
+                      Navigator.pushNamed(context, '/edit_profile');
                     },
                   ),
                   ListTile(
@@ -97,12 +90,7 @@ class SettingsPage extends StatelessWidget {
                     trailing: Icon(Icons.arrow_forward_ios,
                         color: FitColors.primary30),
                     onTap: () {
-                      // Navigate to Change Password Page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChangePasswordPage()),
-                      );
+                      Navigator.pushNamed(context, '/change_password');
                     },
                   ),
                 ],

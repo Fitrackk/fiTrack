@@ -14,7 +14,7 @@ class ActivityDataPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TopNav(),
+      appBar: TopNav(),
       body: SingleChildScrollView(
         child: Column(
           children: [

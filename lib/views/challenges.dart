@@ -23,7 +23,7 @@ class _ChallengesState extends State<Challenges> {
           elevation: 0.0,
           centerTitle: true,
           title: Text(
-            "Community",
+            "FiTrack Community",
             style: TextStyles.titleLargeBold.copyWith(color: FitColors.text20),
           ),
           bottom: TabBar(

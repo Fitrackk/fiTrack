@@ -47,7 +47,9 @@ class _MainAppState extends State<MainApp> {
         _user = user;
       });
     });
-    _requestExactAlarmPermission();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _requestExactAlarmPermission();
+    });
   }
 
   Future<void> _requestExactAlarmPermission() async {
@@ -68,7 +70,9 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: _user == null ? const StartedPage() : const BottomNav(),
+      home: Scaffold(
+        body: _user == null ? const StartedPage() : const BottomNav(),
+      ),
       routes: Routes.getRoutes(context),
     );
   }
