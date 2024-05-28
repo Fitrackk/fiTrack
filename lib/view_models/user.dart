@@ -75,4 +75,24 @@ class UserVM extends ChangeNotifier {
       }
     }
   }
+
+  Future<models.User?> getUserByUsername(String username) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // If user with given username exists, return the user data
+        return models.User?.fromFirestore(querySnapshot.docs.first);
+      } else {
+        // If no user found, return null
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching user by username: $e');
+      return null;
+    }
+  }
 }

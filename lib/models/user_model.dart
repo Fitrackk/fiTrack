@@ -10,6 +10,7 @@ class User {
   double? height;
   double? score;
   String? dateOfBirth;
+  String? profileImageUrl;
 
   User({
     required this.fullName,
@@ -21,6 +22,7 @@ class User {
     required this.height,
     required this.score,
     required this.dateOfBirth,
+    this.profileImageUrl,
   });
 
   factory User.fromFirestore(DocumentSnapshot data) {
@@ -34,6 +36,7 @@ class User {
       height: (data['height'] ?? 150).toDouble(),
       score: (data['score'] ?? 10).toDouble(),
       dateOfBirth: data['dateOfBirth'] ?? '',
+      profileImageUrl: data['profileImageUrl'] ?? 'assets/images/unknown.png',
     );
   }
 
@@ -48,6 +51,7 @@ class User {
       'height': height,
       'score': score,
       'dateOfBirth': dateOfBirth,
+      'profileImageUrl': profileImageUrl,
     };
   }
 
