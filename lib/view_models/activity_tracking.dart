@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-
 import '../models/activity_data_model.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart' as models;
 
 class ActivityTrackerVM {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
   StreamSubscription<UserAccelerometerEvent>? _linearAccelerationSubscription;
   GyroscopeEvent? _lastGyroscopeEvent;
@@ -608,5 +609,86 @@ class ActivityTrackerVM {
             {'score': currentScore + (challengeProgress.distance * 10)});
       }
     });
+  }
+
+  Future<models.User?> getUserData() async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
+            .get();
+        if (userDoc.exists) {
+          return models.User.fromFirestore(userDoc);
+        }
+      }
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching user data: $e');
+      }
+      return null;
+    }
+  }
+
+  Future<void> checkStepsCount() async {
+    try {
+      final UserVM userVM = UserVM();
+      final models.User? currentUser = await userVM.getUserData();
+      if (currentUser != null) {
+        final DateTime now = DateTime.now();
+        final String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+        print("The username is: ${currentUser.userName}");
+        final userDocs = await FirebaseFirestore.instance
+            .collection('ActivityData')
+            .where('username', isEqualTo: currentUser.userName)
+            .where('date', isGreaterThanOrEqualTo: "$formattedDate 00:00:00.000000")
+            .where('date', isLessThanOrEqualTo: "$formattedDate 23:59:59.999999")
+            .get();
+        if (userDocs.docs.isNotEmpty) {
+          final data = userDocs.docs.first.data();
+          if (data['stepsCount'] != null) {
+            int stepsCount = data['stepsCount'];
+            if (stepsCount >= 10000) {
+              final userQuery = await FirebaseFirestore.instance
+                  .collection('users')
+                  .where('username', isEqualTo: currentUser.userName)
+                  .get();
+              if (userQuery.docs.isNotEmpty) {
+                final userDoc = userQuery.docs.first.reference;
+                final userSnapshot = await userDoc.get();
+                final userData = userSnapshot.data() as Map<String, dynamic>;
+                final currentScore = userData['score'] as int;
+
+                // Check if bonus has already been added
+                final bonusAdded = userData['bonusAdded'] as bool? ?? false;
+                if (!bonusAdded) {
+                  await userDoc.update({
+                    'score': currentScore + 50,
+                    'bonusAdded': true,
+                  });
+                  print('Score updated for user with username: ${currentUser.userName}');
+                } else {
+                  print('Bonus score already added for today');
+                }
+              }
+            } else {
+              print('Steps count is less than 10,000: $stepsCount');
+            }
+          } else {
+            print('No steps count found in the document');
+          }
+        } else {
+          print('No document found for the current user in ActivityData with today\'s date');
+        }
+      } else {
+        print('No current user logged in');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error checking steps count: $e');
+      }
+    }
   }
 }
