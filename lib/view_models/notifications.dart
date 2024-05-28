@@ -114,6 +114,7 @@ class NotificationsVM {
       print("Today's notifications already exist for user: $username");
       return;
     }
+    if (currentUser?.waterReminder == "false") return;
 
     List<Map<String, dynamic>> notifications = [
       {

@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/view_models/settings.dart';
-import 'package:fitrack/views/change_password_page.dart';
-import 'package:fitrack/views/edit_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +25,6 @@ class _SettingsPageState extends State<SettingsPage> {
             style: TextStyles.titleLargeBold.copyWith(color: FitColors.text20),
           ),
         ),
-
         body: Consumer<SettingsVM>(
           builder: (context, viewModel, child) {
             final user = viewModel.user;
@@ -43,7 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
             waterReminder = user.waterReminder == 'true';
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -54,7 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         backgroundImage: user.profileImageUrl != null
                             ? NetworkImage(user.profileImageUrl!)
                             : AssetImage('assets/images/p.png')
-                        as ImageProvider,
+                                as ImageProvider,
                       ),
                       SizedBox(width: 20),
                       Column(
@@ -74,7 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   Row(
                     children: [
                       Icon(Icons.person, color: FitColors.primary30),
