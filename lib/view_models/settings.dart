@@ -56,4 +56,14 @@ class SettingsVM extends ChangeNotifier {
       print('Error updating water reminder: $e');
     }
   }
+
+  Future<void> logOut() async {
+    try {
+      await _auth.signOut();
+      _user = null;
+      notifyListeners();
+    } catch (e) {
+      print('Error logging out: $e');
+    }
+  }
 }
