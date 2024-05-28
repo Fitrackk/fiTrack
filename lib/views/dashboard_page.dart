@@ -101,7 +101,7 @@ class _DashboardState extends State<Dashboard> {
         .toInt();
 
     return Scaffold(
-      appBar: const TopNav(),
+      appBar: TopNav(),
       body: Center(
         child: SingleChildScrollView(
           child: Column(

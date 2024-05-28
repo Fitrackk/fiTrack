@@ -200,19 +200,9 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                                                         challenge.challengeDate,
                                                     participations: challenge
                                                         .participations,
-                                                    challengeParticipantsImg: const [
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/girl.png",
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/girl.png",
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/Rectangle.png",
-                                                      "assets/images/Rectangle.png",
-                                                    ],
+                                                    challengeParticipantsImg:
+                                                        challenge
+                                                            .participantImages,
                                                     activityType:
                                                         challenge.activityType,
                                                     distance:
