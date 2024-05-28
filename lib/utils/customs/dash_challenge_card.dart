@@ -2,22 +2,42 @@ import 'package:flutter/material.dart';
 
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
+import '../../view_models/celebrating.dart';
 
 class JoinedChallengeCard extends StatefulWidget {
   final int defaultChallengeProgress;
   final String challengeName;
   final remainingTime;
+  final int challengeId;
   const JoinedChallengeCard(
       {super.key,
       required this.defaultChallengeProgress,
       required this.challengeName,
-      this.remainingTime});
+      this.remainingTime,
+      required this.challengeId});
 
   @override
   State<JoinedChallengeCard> createState() => _JoinedChallengeCardState();
 }
 
 class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
+  final CelebratingDialogVM _celebratingDialogVM = CelebratingDialogVM();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkChallengeProgress();
+    });
+  }
+
+  void _checkChallengeProgress() async {
+    await _celebratingDialogVM.checkAndShowCelebratingDialog(
+      widget.challengeId,
+      context,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double currentHeight = MediaQuery.of(context).size.height;

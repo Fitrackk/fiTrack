@@ -8,13 +8,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
-import '../main.dart';
 import '../models/activity_data_model.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart' as models;
-import 'celebrating-dialog.dart';
-
-
 
 class ActivityTrackerVM {
   StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
@@ -81,7 +77,6 @@ class ActivityTrackerVM {
     final models.User? currentUser = await _userVM.getUserData();
     ActivityData? localActivityData = await fetchLocalActivityData();
 
-
     if (currentUser != null) {
       String? username = currentUser.userName;
       if (localActivityData == null) {
@@ -100,15 +95,15 @@ class ActivityTrackerVM {
 
       _linearAccelerationSubscription =
           userAccelerometerEventStream().listen((UserAccelerometerEvent event) {
-            _lastLinearAccelerationEvent = event;
-            _processSensorData();
-          });
+        _lastLinearAccelerationEvent = event;
+        _processSensorData();
+      });
 
       _gyroscopeSubscription =
           gyroscopeEventStream().listen((GyroscopeEvent event) {
-            _lastGyroscopeEvent = event;
-            _processSensorData();
-          });
+        _lastGyroscopeEvent = event;
+        _processSensorData();
+      });
 
       Timer(const Duration(minutes: 120), () {
         checkLocalStorageData();
@@ -128,7 +123,7 @@ class ActivityTrackerVM {
     String documentId = "$username-$todayDate";
 
     DocumentReference docRef =
-    _firestore.collection('ActivityData').doc(documentId);
+        _firestore.collection('ActivityData').doc(documentId);
 
     try {
       DocumentSnapshot docSnapshot = await docRef.get();
@@ -163,7 +158,7 @@ class ActivityTrackerVM {
     String documentId = "$username-$todayDate";
 
     DocumentReference docRef =
-    _firestore.collection('ActivityData').doc(documentId);
+        _firestore.collection('ActivityData').doc(documentId);
 
     try {
       DocumentSnapshot docSnapshot = await docRef.get();
@@ -206,12 +201,12 @@ class ActivityTrackerVM {
       String todayDate = "${now.year}-${now.month}-${now.day}";
       String documentId = "$username-$todayDate";
       DocumentReference docRef =
-      _firestore.collection('ActivityData').doc(documentId);
+          _firestore.collection('ActivityData').doc(documentId);
 
       docRef.get().then((docSnapshot) {
         if (docSnapshot.exists) {
           Map<String, dynamic> data =
-          docSnapshot.data() as Map<String, dynamic>;
+              docSnapshot.data() as Map<String, dynamic>;
 
           double newDistanceTraveled = data['distanceTraveled'] ?? 0;
           newDistanceTraveled += distanceTraveled;
@@ -238,7 +233,7 @@ class ActivityTrackerVM {
           }
 
           Map<String, double> existingActivityTypeDistance =
-          Map<String, double>.from(data['activityTypeDistance']);
+              Map<String, double>.from(data['activityTypeDistance']);
           activityTypeDistance.forEach((key, value) {
             double newValue =
                 (existingActivityTypeDistance[key] ?? 0) + value / 100;
@@ -342,10 +337,10 @@ class ActivityTrackerVM {
           activeTime: activeTime + getActiveTimeInMinutes(),
           caloriesBurned: caloriesBurned,
           activityTypeDistance:
-          activityTypeDistance.map((key, value) => MapEntry(
-            key,
-            value / 1000,
-          )));
+              activityTypeDistance.map((key, value) => MapEntry(
+                    key,
+                    value / 1000,
+                  )));
 
       await _saveLocalActivityData(activityData);
     }
@@ -374,7 +369,7 @@ class ActivityTrackerVM {
     double strideLengthInMeters = 0.415 * height / 100;
     int activeTimeInMinutes = getActiveTimeInMinutes();
     double stepFrequency =
-    (activeTimeInMinutes > 0) ? stepsCount / activeTimeInMinutes : 0;
+        (activeTimeInMinutes > 0) ? stepsCount / activeTimeInMinutes : 0;
     double speed = strideLengthInMeters * stepFrequency;
     return speed;
   }
@@ -452,7 +447,7 @@ class ActivityTrackerVM {
     String? dataString = await _secureStorage.read(key: 'activityData');
     if (dataString != null) {
       Map<String, dynamic> dataMap =
-      json.decode(dataString) as Map<String, dynamic>;
+          json.decode(dataString) as Map<String, dynamic>;
       return ActivityData(
         username: dataMap['username'],
         date: DateTime.parse(dataMap['date']),
@@ -461,7 +456,7 @@ class ActivityTrackerVM {
         activeTime: dataMap['activeTime'],
         caloriesBurned: dataMap['caloriesBurned'],
         activityTypeDistance:
-        Map<String, double>.from(dataMap['activityTypeDistance']),
+            Map<String, double>.from(dataMap['activityTypeDistance']),
       );
     }
     return null;
@@ -486,21 +481,21 @@ class ActivityTrackerVM {
         String todayDate = "${now.year}-${now.month}-${now.day}";
         String documentId = "$username-$todayDate";
         DocumentReference docRef =
-        _firestore.collection('ActivityData').doc(documentId);
+            _firestore.collection('ActivityData').doc(documentId);
 
         docRef.get().then((docSnapshot) {
           if (docSnapshot.exists) {
             Map<String, dynamic> data =
-            docSnapshot.data() as Map<String, dynamic>;
+                docSnapshot.data() as Map<String, dynamic>;
 
             int existingStepsCount = (data['stepsCount'] ?? 0).toInt();
             double existingCaloriesBurned =
-            (data['caloriesBurned'] ?? 0.0).toDouble();
+                (data['caloriesBurned'] ?? 0.0).toDouble();
 
             int newStepsCount =
-            localActivityData.stepsCount >= existingStepsCount
-                ? localActivityData.stepsCount
-                : existingStepsCount + localActivityData.stepsCount;
+                localActivityData.stepsCount >= existingStepsCount
+                    ? localActivityData.stepsCount
+                    : existingStepsCount + localActivityData.stepsCount;
             int newActiveTime = localActivityData.activeTime;
             double newCaloriesBurned = existingCaloriesBurned +
                 (localActivityData.caloriesBurned - existingCaloriesBurned);
@@ -563,10 +558,10 @@ class ActivityTrackerVM {
 
       for (var challengeDoc in challengeSnapshot.docs) {
         ChallengeProgress challengeProgress =
-        ChallengeProgress.fromFirestore(challengeDoc);
+            ChallengeProgress.fromFirestore(challengeDoc);
 
         String normalizedActivityType =
-        challengeProgress.activityType.toLowerCase();
+            challengeProgress.activityType.toLowerCase();
         double currentDistanceForType =
             (activityData.activityTypeDistance[normalizedActivityType] ?? 0.0) /
                 1000;
@@ -594,45 +589,23 @@ class ActivityTrackerVM {
   }
 
   Future<void> _completeChallenge(ChallengeProgress challengeProgress) async {
-    try {
-      print('Entering _completeChallenge function'); // Debugging
+    await _firestore
+        .collection('challengeProgress')
+        .doc(challengeProgress.challengeId as String?)
+        .update({
+      'progress': 100,
+    });
 
-      await _firestore
-          .collection('challengeProgress')
-          .doc(challengeProgress.challengeId as String?)
-          .update({
-        'progress': challengeProgress.progress,
-      });
-
-      DocumentReference userDoc = _firestore.collection('users').doc(challengeProgress.username);
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot userSnapshot = await transaction.get(userDoc);
-        if (userSnapshot.exists) {
-          var userData = userSnapshot.data() as Map<String, dynamic>?;
-          double currentScore = userData?['score'] ?? 0;
-          transaction.update(userDoc, {'score': currentScore + (challengeProgress.distance * 10)});
-        }
-      });
-
-      // Check progress and display appropriate dialog
-      if (challengeProgress.progress < 100) {
-        print('Progress is less than 100'); // Debugging
-        // Debugging: Check if context is available
-        if (navigatorKey.currentState != null) {
-          print('Navigator key current state is not null'); // Debugging
-          showCelebratingDialog(navigatorKey.currentState!.context);
-        } else {
-          print('Navigator key current state is null'); // Debugging
-        }
-      } else {
-        // Perform any additional logic if needed when progress is 100 or greater
-        print('Progress is 100 or greater'); // Debugging
+    DocumentReference userDoc =
+        _firestore.collection('users').doc(challengeProgress.username);
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot userSnapshot = await transaction.get(userDoc);
+      if (userSnapshot.exists) {
+        var userData = userSnapshot.data() as Map<String, dynamic>?;
+        double currentScore = userData?['score'] ?? 0;
+        transaction.update(userDoc,
+            {'score': currentScore + (challengeProgress.distance * 10)});
       }
-    } catch (e) {
-      print('Error in _completeChallenge: $e'); // Debugging
-    }
+    });
   }
-
-
-
 }
