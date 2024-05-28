@@ -279,6 +279,7 @@ class _DashboardState extends State<Dashboard> {
                                       progressPercentage.toInt(),
                                   remainingTime: getRemainingTime(),
                                   challengeName: challenge.challengeName,
+                                  challengeId: challenge.challengeId,
                                 );
                               } else if (progressSnapshot.hasError) {
                                 return Text("Error: ${progressSnapshot.error}");

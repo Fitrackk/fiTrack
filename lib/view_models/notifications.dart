@@ -11,6 +11,7 @@ class NotificationsVM {
       FlutterLocalNotificationsPlugin();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final UserVM _userVM = UserVM();
+
   Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -44,7 +45,7 @@ class NotificationsVM {
         android: AndroidNotificationDetails(
           'fitrack',
           'fitrack',
-          channelDescription: 'water & challenges reminders',
+          channelDescription: 'fitrack : challenges community & reminders',
           importance: Importance.max,
           priority: Priority.high,
         ),
@@ -66,11 +67,13 @@ class NotificationsVM {
     });
   }
 
-  Future<void> cancelAllNotifications() async {
+  Future<void> cancelUserNotifications(String username) async {
     await flutterLocalNotificationsPlugin.cancelAll();
 
-    // Optionally, clear the notifications collection in Firestore
-    var snapshots = await firestore.collection('notifications').get();
+    var snapshots = await firestore
+        .collection('notifications')
+        .where('username', isEqualTo: username)
+        .get();
     for (var doc in snapshots.docs) {
       await doc.reference.delete();
     }
@@ -84,71 +87,84 @@ class NotificationsVM {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
     return {
-      'date': scheduledDate
-          .toIso8601String()
-          .split('T')[0], // Extracts date in YYYY-MM-DD format
-      'time': scheduledDate
-          .toIso8601String()
-          .split('T')[1] // Extracts time in HH:MM:SS format
+      'date': scheduledDate.toIso8601String().split('T')[0],
+      'time': scheduledDate.toIso8601String().split('T')[1]
     };
+  }
+
+  Future<bool> userNotificationsExistForToday(String username) async {
+    final todayDate =
+        tz.TZDateTime.now(tz.local).toIso8601String().split('T')[0];
+
+    var snapshots = await firestore
+        .collection('notifications')
+        .where('username', isEqualTo: username)
+        .where('scheduledDate', isEqualTo: todayDate)
+        .get();
+
+    return snapshots.docs.isNotEmpty;
   }
 
   Future<void> scheduleDailyWaterReminder() async {
     User? currentUser = await _userVM.getUserData();
+    String username = currentUser?.userName ?? 'unknown';
+
+    bool notificationsExist = await userNotificationsExistForToday(username);
+    if (notificationsExist) {
+      print("Today's notifications already exist for user: $username");
+      return;
+    }
 
     List<Map<String, dynamic>> notifications = [
       {
         "time": Time(5, 0, 0),
         "message": "Time to drink some water and stay hydrated!",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
       {
         "time": Time(7, 0, 0),
         "message": "Keep it up! Stay hydrated with a glass of water.",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
       {
         "time": Time(9, 0, 0),
         "message": "You're doing great! Have another glass of water.",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
       {
         "time": Time(11, 0, 0),
         "message": "Don't forget to hydrate! Drink some water.",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
       {
         "time": Time(13, 0, 0),
         "message": "Keep yourself hydrated with another glass of water.",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
       {
         "time": Time(15, 0, 0),
         "message": "Time for a water break! Stay hydrated.",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
       {
         "time": Time(17, 0, 0),
         "message": "You're doing awesome! Have a glass of water.",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
       {
         "time": Time(19, 0, 0),
         "message": "End your day with a glass of water. Stay hydrated!",
         "type": "water",
-        "username": currentUser?.userName ?? 'unknown'
+        "username": username
       },
     ];
-
-    // Cancel any existing notifications
-    await cancelAllNotifications();
 
     for (var i = 0; i < notifications.length; i++) {
       final notification = notifications[i];

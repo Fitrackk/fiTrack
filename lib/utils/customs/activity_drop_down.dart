@@ -32,7 +32,7 @@ class _ActivityDropDownState extends State<ActivityDropDown> {
         child: DropdownButton<String>(
           dropdownColor: FitColors.tertiary70,
           menuMaxHeight: 200,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
           value: _selectedActivity,
           onChanged: (String? newValue) {
             setState(() {
