@@ -75,21 +75,20 @@ class ActivityTrackerVM {
 
   void startTracking() async {
     final models.User? currentUser = await _userVM.getUserData();
-    String? username = currentUser?.userName;
     ActivityData? localActivityData = await fetchLocalActivityData();
-    if (localActivityData == null) {
-      localActivityData = await _fetchFirestoreActivityData(username!);
-    } else {
-      stepsCount = localActivityData.stepsCount;
-      distanceTraveled = localActivityData.distanceTraveled;
-      activeTimeInMinutes = localActivityData.activeTime;
-      caloriesBurned = localActivityData.caloriesBurned;
-      activityTypeDistance = localActivityData.activityTypeDistance;
-    }
-    activeTime = activeTimeInMinutes;
 
     if (currentUser != null) {
       String? username = currentUser.userName;
+      if (localActivityData == null) {
+        localActivityData = await _fetchFirestoreActivityData(username!);
+      } else {
+        stepsCount = localActivityData.stepsCount;
+        distanceTraveled = localActivityData.distanceTraveled;
+        activeTimeInMinutes = localActivityData.activeTime;
+        caloriesBurned = localActivityData.caloriesBurned;
+        activityTypeDistance = localActivityData.activityTypeDistance;
+      }
+      activeTime = activeTimeInMinutes;
       height = currentUser.height!;
       weight = currentUser.weight!;
       await _createDocumentForToday(username!);
