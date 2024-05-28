@@ -32,7 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
               return Center(child: Text(' '));
             }
 
-            int userLevel = viewModel.calculateUserLevel(user.score as double);
+            int userLevel = viewModel.calculateUserLevel(user.score ?? 0);
 
             challengeReminder = user.challengeReminder == 'true';
             waterReminder = user.waterReminder == 'true';

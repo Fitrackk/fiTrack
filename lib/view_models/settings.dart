@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import '../models/user_model.dart' as model;
 
 class SettingsVM extends ChangeNotifier {
@@ -15,7 +16,7 @@ class SettingsVM extends ChangeNotifier {
       String? userId = _auth.currentUser?.uid;
       if (userId == null) return;
       DocumentSnapshot userDoc =
-      await _firestore.collection('users').doc(userId).get();
+          await _firestore.collection('users').doc(userId).get();
       if (userDoc.exists) {
         _user = model.User.fromFirestore(userDoc);
         notifyListeners();
@@ -25,7 +26,7 @@ class SettingsVM extends ChangeNotifier {
     }
   }
 
-  int calculateUserLevel(double userScore) {
+  int calculateUserLevel(int userScore) {
     return ((userScore / 100) + 1).toInt();
   }
 

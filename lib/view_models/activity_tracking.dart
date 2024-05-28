@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+
 import '../models/activity_data_model.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart' as models;
@@ -603,7 +605,7 @@ class ActivityTrackerVM {
       DocumentSnapshot userSnapshot = await transaction.get(userDoc);
       if (userSnapshot.exists) {
         var userData = userSnapshot.data() as Map<String, dynamic>?;
-        double currentScore = userData?['score'] ?? 0;
+        int currentScore = userData?['score'] ?? 0;
         transaction.update(userDoc,
             {'score': currentScore + (challengeProgress.distance * 10)});
       }
@@ -642,8 +644,10 @@ class ActivityTrackerVM {
         final userDocs = await FirebaseFirestore.instance
             .collection('ActivityData')
             .where('username', isEqualTo: currentUser.userName)
-            .where('date', isGreaterThanOrEqualTo: "$formattedDate 00:00:00.000000")
-            .where('date', isLessThanOrEqualTo: "$formattedDate 23:59:59.999999")
+            .where('date',
+                isGreaterThanOrEqualTo: "$formattedDate 00:00:00.000000")
+            .where('date',
+                isLessThanOrEqualTo: "$formattedDate 23:59:59.999999")
             .get();
         if (userDocs.docs.isNotEmpty) {
           final data = userDocs.docs.first.data();
@@ -667,7 +671,8 @@ class ActivityTrackerVM {
                     'score': currentScore + 50,
                     'bonusAdded': true,
                   });
-                  print('Score updated for user with username: ${currentUser.userName}');
+                  print(
+                      'Score updated for user with username: ${currentUser.userName}');
                 } else {
                   print('Bonus score already added for today');
                 }
@@ -679,7 +684,8 @@ class ActivityTrackerVM {
             print('No steps count found in the document');
           }
         } else {
-          print('No document found for the current user in ActivityData with today\'s date');
+          print(
+              'No document found for the current user in ActivityData with today\'s date');
         }
       } else {
         print('No current user logged in');
