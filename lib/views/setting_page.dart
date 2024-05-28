@@ -27,7 +27,6 @@ class _SettingsPageState extends State<SettingsPage> {
             style: TextStyles.titleLargeBold.copyWith(color: FitColors.text20),
           ),
         ),
-
         body: Consumer<SettingsVM>(
           builder: (context, viewModel, child) {
             final user = viewModel.user;
@@ -169,6 +168,64 @@ class _SettingsPageState extends State<SettingsPage> {
                       inactiveThumbColor: FitColors.primary20,
                       inactiveTrackColor: FitColors.tertiary40,
                     ),
+                  ),
+                  SizedBox(height: 20),
+                  Divider(
+                    color: FitColors.placeholder,
+                    thickness: 1,
+                  ),
+                  ListTile(
+                    title: Text('Log Out',
+                        style: TextStyles.labelMediumBold
+                            .copyWith(color: FitColors.text20)),
+                    trailing: Icon(Icons.logout, color: FitColors.primary30),
+                    onTap: () async {
+                      // Show confirmation dialog
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              dialogBackgroundColor: FitColors.tertiary80,
+                            ),
+                            child: AlertDialog(
+                              content: Text(
+                                '\nAre you sure you want to log out?',
+                                style: TextStyles.bodyMed.copyWith(color: FitColors.text20),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyles.labelMediumBold.copyWith(color: FitColors.text95),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: FitColors.primary30,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text(
+                                    'Log Out',
+                                    style: TextStyles.labelMediumBold.copyWith(color: FitColors.text95),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: FitColors.primary30,
+                                  ),
+                                  onPressed: () async {
+                                    Navigator.of(context).pop();
+                                    await viewModel.logOut();
+                                    Navigator.of(context).pushReplacementNamed('/signing');
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
