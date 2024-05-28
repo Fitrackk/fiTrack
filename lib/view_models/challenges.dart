@@ -333,7 +333,6 @@ class ChallengesVM {
   Future<void> joinChallenge(BuildContext context, String challengeName,
       String challengeDate, String username, Function(bool) updateState) async {
     try {
-      // Ensure user is authenticated
       currentUser = await _userVM.getUserData();
       if (currentUser == null) {
         Navigator.pushNamed(context, '/signing');
@@ -341,8 +340,7 @@ class ChallengesVM {
       }
 
       username = currentUser!.userName!;
-      String? userImage = currentUser!
-          .profileImageUrl; // Assuming profileImage is the field name
+      String? userImage = currentUser!.profileImageUrl;
 
       final QuerySnapshot querySnapshot = await _firestore
           .collection('challenges')
@@ -410,7 +408,7 @@ class ChallengesVM {
 
             await doc.reference.update({
               'participantUsernames': updatedUsernames,
-              'challengeParticipantsImg': updatedImages,
+              'participantImages': updatedImages,
             });
             updateState(true);
           }
@@ -435,12 +433,15 @@ class ChallengesVM {
       if (querySnapshot.docs.isNotEmpty) {
         for (var doc in querySnapshot.docs) {
           Challenge challenge = Challenge.fromFirestore(doc);
+
+          // Check if the user is a participant
           if (challenge.participantUsernames.contains(username)) {
+            // Prevent the challenge owner from unjoining
             if (username == challenge.challengeOwner) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                      'Sorry, ou are the challenge owner and cannot leave your own challenge.',
+                      'Sorry, you are the challenge owner and cannot leave your own challenge.',
                       style: TextStyles.bodySmallBold
                           .copyWith(color: FitColors.error40)),
                   backgroundColor: FitColors.tertiary50,
@@ -448,11 +449,23 @@ class ChallengesVM {
               );
               return;
             }
-            List<String> updatedUsernames =
-                List.from(challenge.participantUsernames)..remove(username);
-            await doc.reference
-                .update({'participantUsernames': updatedUsernames});
-            updateState(false);
+
+            int index = challenge.participantUsernames.indexOf(username);
+
+            if (index != -1) {
+              // Remove the username and the corresponding image
+              List<String> updatedUsernames =
+                  List.from(challenge.participantUsernames)..removeAt(index);
+              List<String> updatedImages =
+                  List.from(challenge.participantImages ?? [])..removeAt(index);
+
+              await doc.reference.update({
+                'participantUsernames': updatedUsernames,
+                'participantImages': updatedImages,
+              });
+
+              updateState(false);
+            }
           }
         }
       } else {

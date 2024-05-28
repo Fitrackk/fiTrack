@@ -28,11 +28,10 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
           }
 
           final userData = snapshot.data!;
-          final int userScore = userData['score'] ?? 0;
+          final double userScore = userData['score'] ?? 0;
           int userLevel = ((userScore / 100) + 1).toInt();
           if (userScore < 100) userLevel = 1;
-          final profileImageUrl =
-              userData['profileImageUrl'] as String?; // Cast to String or null
+          final profileImageUrl = userData['profileImageUrl'] as String?;
           final profileImage = profileImageUrl != null
               ? NetworkImage(profileImageUrl)
               : AssetImage('assets/images/unknown.png');
@@ -44,7 +43,6 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
             progress = 0.0;
           }
 
-          // Calculate start and sweep angles for progress arc
           double startAngle = math.pi * 0.5;
           double sweepAngle = 2 * math.pi * progress;
 

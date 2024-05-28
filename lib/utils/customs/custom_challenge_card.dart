@@ -51,7 +51,6 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
   @override
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
-    double marginValue = 15;
     int joinedParticipants = widget.participantUsernames.length;
     int allowedParticipants = widget.participations;
     return Column(
@@ -131,8 +130,8 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                           for (int i = 0;
                               i < widget.participantUsernames.length;
                               i++)
-                            Container(
-                              margin: EdgeInsets.fromLTRB(marginValue, 0, 0, 0),
+                            Positioned(
+                              left: 20.0 + i * 15.0,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(50.0),
                                 child: Image.network(
@@ -151,14 +150,13 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                               style: TextStyles.bodyXSmall
                                   .copyWith(color: FitColors.placeholder),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      width: 30,
-                    ),
+                    const Spacer(),
                     Container(
+                      margin: const EdgeInsets.only(right: 20),
                       child: Row(
                         children: [
                           SizedBox(
@@ -277,7 +275,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                                   ElevatedButton(
                                                     onPressed: () {
                                                       Navigator.of(context)
-                                                          .pop(); // Dismiss the dialog
+                                                          .pop();
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -327,7 +325,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                                         );
                                                       }
                                                       Navigator.of(context)
-                                                          .pop(); // Dismiss the dialog
+                                                          .pop();
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
