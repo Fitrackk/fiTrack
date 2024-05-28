@@ -8,6 +8,8 @@ import 'package:fitrack/views/signing_page.dart';
 import 'package:fitrack/views/user_data_page.dart';
 import 'package:flutter/material.dart';
 
+import '../views/pass_change_page.dart';
+
 class Routes {
   static Map<String, WidgetBuilder> getRoutes(BuildContext context) {
     return {
@@ -18,6 +20,7 @@ class Routes {
       '/signing': (context) => const Signing(),
       '/challenge': (context) => const Challenges(),
       '/notification': (context) => const NotificationPage(),
+      '/change_password': (context) => ChangePasswordPage(),
       '/edit_profile': (context) => EditProfilePage(),
     };
   }
