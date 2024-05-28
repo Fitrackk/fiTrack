@@ -10,6 +10,9 @@ class User {
   double? height;
   double? score;
   String? dateOfBirth;
+  String? profileImageUrl;
+  String? waterReminder;
+  String? challengeReminder;
 
   User({
     required this.fullName,
@@ -21,6 +24,9 @@ class User {
     required this.height,
     required this.score,
     required this.dateOfBirth,
+    this.profileImageUrl,
+    required this.waterReminder,
+    required this.challengeReminder,
   });
 
   factory User.fromFirestore(DocumentSnapshot data) {
@@ -34,6 +40,9 @@ class User {
       height: (data['height'] ?? 150).toDouble(),
       score: (data['score'] ?? 10).toDouble(),
       dateOfBirth: data['dateOfBirth'] ?? '',
+      profileImageUrl: data['profileImageUrl'] ?? 'assets/images/unknown.png',
+      waterReminder: data['waterReminder'] ?? '',
+      challengeReminder: data['challengeReminder'] ?? '',
     );
   }
 
@@ -48,12 +57,14 @@ class User {
       'height': height,
       'score': score,
       'dateOfBirth': dateOfBirth,
+      'profileImageUrl': profileImageUrl,
+      'waterReminder': waterReminder,
+      'challengeReminder': challengeReminder,
     };
   }
 
   static int calculateAge(String? dob) {
     if (dob == null || dob.isEmpty) return 0;
-
     DateTime today = DateTime.now();
     DateTime birthDate = DateTime.parse(dob);
     int age = today.year - birthDate.year;

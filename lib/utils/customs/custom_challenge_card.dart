@@ -51,7 +51,6 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
   @override
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
-    double marginValue = 15;
     int joinedParticipants = widget.participantUsernames.length;
     int allowedParticipants = widget.participations;
     return Column(
@@ -128,15 +127,17 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                       width: 100,
                       child: Stack(
                         children: [
-                          for (int i = 1;
-                              i <= (widget.participations);
-                              i++, marginValue = marginValue + 15)
-                            Container(
-                              margin: EdgeInsets.fromLTRB(marginValue, 0, 0, 0),
+                          for (int i = 0;
+                              i < widget.participantUsernames.length;
+                              i++)
+                            Positioned(
+                              left: 20.0 + i * 15.0,
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.asset(
-                                  widget.challengeParticipantsImg[i - 1],
+                                borderRadius: BorderRadius.circular(50.0),
+                                child: Image.network(
+                                  widget.challengeParticipantsImg.length > i
+                                      ? widget.challengeParticipantsImg[i]
+                                      : 'assets/images/unknown.png',
                                   width: 30,
                                   height: 30,
                                 ),
@@ -149,14 +150,13 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                               style: TextStyles.bodyXSmall
                                   .copyWith(color: FitColors.placeholder),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      width: 30,
-                    ),
+                    const Spacer(),
                     Container(
+                      margin: const EdgeInsets.only(right: 20),
                       child: Row(
                         children: [
                           SizedBox(
@@ -275,7 +275,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                                   ElevatedButton(
                                                     onPressed: () {
                                                       Navigator.of(context)
-                                                          .pop(); // Dismiss the dialog
+                                                          .pop();
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
@@ -325,7 +325,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                                         );
                                                       }
                                                       Navigator.of(context)
-                                                          .pop(); // Dismiss the dialog
+                                                          .pop();
                                                     },
                                                     style: ElevatedButton
                                                         .styleFrom(
