@@ -20,7 +20,11 @@ void main() async {
   final tracker = ActivityTrackerVM();
   tracker.startTracking();
   await tracker.checkLocalStorageData();
-  tracker.checkStepsCount();
+   tracker.checkStepsCount();
+  
+  final challenges = ChallengesVM();
+  challenges.deleteOldChallenges();
+ 
   NotificationsVM notificationViewModel = NotificationsVM();
   await notificationViewModel.initialize();
   await notificationViewModel.scheduleDailyWaterReminder();

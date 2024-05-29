@@ -550,4 +550,32 @@ class ChallengesVM {
       );
     }
   }
+
+
+  Future<void> deleteOldChallenges() async {
+    final DateTime currentDate = DateTime.now();
+    final DateTime thresholdDate = currentDate.subtract(Duration(days: 30));
+
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection('challenges').get();
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        String challengeDateString = doc['challengeDate'];
+        DateTime challengeDate = DateFormat('yyyy-MM-dd').parse(challengeDateString);
+
+        if (challengeDate.isBefore(thresholdDate)) {
+          await _firestore.collection('challenges').doc(doc.id).delete();
+        }
+      }
+
+      print('Old challenges deleted successfully');
+    } catch (e) {
+      print('Error deleting old challenges: $e');
+    }
+  }
+
+
+
+
+
 }

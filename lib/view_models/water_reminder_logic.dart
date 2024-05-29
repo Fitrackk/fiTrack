@@ -17,10 +17,10 @@ class WaterReminderVM {
 
       try {
         DocumentSnapshot<Map<String, dynamic>> docSnapshot =
-            await FirebaseFirestore.instance
-                .collection("preference")
-                .doc(username)
-                .get();
+        await FirebaseFirestore.instance
+            .collection("preference")
+            .doc(username)
+            .get();
 
         if (docSnapshot.exists) {
           bool waterReminders = docSnapshot.data()?['waterReminders'] == "true";
