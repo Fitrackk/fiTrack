@@ -12,14 +12,19 @@ import 'package:stator/stator.dart';
 
 import 'configures/routes.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FirebaseService.initializeFirebase();
   final tracker = ActivityTrackerVM();
   tracker.startTracking();
   await tracker.checkLocalStorageData();
+   tracker.checkStepsCount();
+  
   final challenges = ChallengesVM();
   challenges.deleteOldChallenges();
+ 
   NotificationsVM notificationViewModel = NotificationsVM();
   await notificationViewModel.initialize();
   await notificationViewModel.scheduleDailyWaterReminder();
@@ -48,7 +53,9 @@ class _MainAppState extends State<MainApp> {
         _user = user;
       });
     });
-    _requestExactAlarmPermission();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _requestExactAlarmPermission();
+    });
   }
 
   Future<void> _requestExactAlarmPermission() async {
@@ -56,7 +63,7 @@ class _MainAppState extends State<MainApp> {
       final bool result =
           await platform.invokeMethod('requestExactAlarmPermission');
       if (!result) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
           SnackBar(content: Text('Exact alarm permission is required.')),
         );
       }
@@ -68,8 +75,11 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      home: _user == null ? const StartedPage() : const BottomNav(),
+      home: Scaffold(
+        body: _user == null ? const StartedPage() : const BottomNav(),
+      ),
       routes: Routes.getRoutes(context),
     );
   }

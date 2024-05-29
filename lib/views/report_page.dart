@@ -14,7 +14,7 @@ class ActivityDataPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TopNav(),
+      appBar: TopNav(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -64,7 +64,6 @@ class ActivityDataPage extends StatelessWidget {
                           name: 'Challenge Progress',
                           color: FitColors.tertiary80,
                           borderColor: FitColors.primary30,
-                          animationDelay: 1,
                           borderWidth: 3,
                           borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(50),

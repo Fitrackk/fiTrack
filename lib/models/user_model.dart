@@ -8,8 +8,11 @@ class User {
   String? gender;
   double? weight;
   double? height;
-  double? score;
+  int? score;
   String? dateOfBirth;
+  String? profileImageUrl;
+  String? waterReminder;
+  String? challengeReminder;
 
   User({
     required this.fullName,
@@ -21,6 +24,9 @@ class User {
     required this.height,
     required this.score,
     required this.dateOfBirth,
+    this.profileImageUrl,
+    required this.waterReminder,
+    required this.challengeReminder,
   });
 
   factory User.fromFirestore(DocumentSnapshot data) {
@@ -32,8 +38,12 @@ class User {
       gender: data['gender'] ?? '',
       weight: (data['weight'] ?? 40).toDouble(),
       height: (data['height'] ?? 150).toDouble(),
-      score: (data['score'] ?? 10).toDouble(),
+      score: (data['score'] ?? 10),
       dateOfBirth: data['dateOfBirth'] ?? '',
+      profileImageUrl: data['profileImageUrl'] ??
+          'https://firebasestorage.googleapis.com/v0/b/fitrack-ar138.appspot.com/o/profile_images%2Funknown.png?alt=media&token=b78193da-27d7-4aa6-b4ef-41f7b51c95e9',
+      waterReminder: data['waterReminder'] ?? '',
+      challengeReminder: data['challengeReminder'] ?? '',
     );
   }
 
@@ -48,12 +58,14 @@ class User {
       'height': height,
       'score': score,
       'dateOfBirth': dateOfBirth,
+      'profileImageUrl': profileImageUrl,
+      'waterReminder': waterReminder,
+      'challengeReminder': challengeReminder,
     };
   }
 
   static int calculateAge(String? dob) {
     if (dob == null || dob.isEmpty) return 0;
-
     DateTime today = DateTime.now();
     DateTime birthDate = DateTime.parse(dob);
     int age = today.year - birthDate.year;

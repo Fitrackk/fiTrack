@@ -326,6 +326,10 @@ class RegistrationVM extends ChangeNotifier {
           'email': email,
           'score': 10,
           'age': age,
+          'profileImageUrl':
+              'https://firebasestorage.googleapis.com/v0/b/fitrack-ar138.appspot.com/o/profile_images%2Funknown.png?alt=media&token=b78193da-27d7-4aa6-b4ef-41f7b51c95e9',
+          'waterReminder': "true",
+          'challengeReminder': "true"
         });
 
         return true;

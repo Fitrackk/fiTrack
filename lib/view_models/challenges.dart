@@ -45,13 +45,32 @@ class ChallengesVM {
     if (currentUser != null) {
       username = currentUser!.userName;
     }
+
     try {
       QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection("challenges").get();
+          await FirebaseFirestore.instance.collection('challenges').get();
 
-      List<Challenge> challenges = querySnapshot.docs.map((doc) {
-        return Challenge.fromFirestore(doc);
-      }).toList();
+      List<Challenge> challenges = [];
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        Challenge challenge = Challenge.fromFirestore(doc);
+        List<String> participantUsernames = challenge.participantUsernames;
+
+        List<String> participantImages = [];
+        for (String username in participantUsernames) {
+          // Fetch user data for each participant by username
+          User? participantData = await _userVM.getUserByUsername(username);
+          if (participantData != null) {
+            participantImages.add(participantData.profileImageUrl ?? "");
+          } else {
+            // If user data not found, use placeholder or default image
+            participantImages.add("");
+          }
+        }
+
+        challenge.participantImages = participantImages;
+        challenges.add(challenge);
+      }
 
       if (filter != null && filter.isNotEmpty) {
         challenges = challenges
@@ -177,6 +196,7 @@ class ChallengesVM {
         'distance': double.parse(distance!),
         'participations': int.parse(participants!),
         'reminder': reminder,
+        'participantImages': [currentUser?.profileImageUrl ?? ""]
       });
 
       addChallengeProgress(username!, activityType!, double.parse(distance),
@@ -222,9 +242,12 @@ class ChallengesVM {
         challengeId: challengeId,
       );
 
+      final docId = '${challengeId}_$username';
+
       await FirebaseFirestore.instance
           .collection('challengeProgress')
-          .add(challengeProgress.toFirestore());
+          .doc(docId)
+          .set(challengeProgress.toFirestore());
     } catch (e) {
       print('Failed to add challenge progress: $e');
     }
@@ -239,6 +262,7 @@ class ChallengesVM {
       }
 
       username = currentUser!.userName;
+      String? userImage = currentUser!.profileImageUrl;
 
       int challengeId = int.parse(id);
 
@@ -299,19 +323,47 @@ class ChallengesVM {
 
         await _firestore.collection('challenges').doc(challengeDoc.id).update({
           'participantUsernames': FieldValue.arrayUnion([username]),
+          'participantImages': FieldValue.arrayUnion([userImage]),
         });
+
+        await addChallengeProgress(
+          username!,
+          challengeDoc['activityType'],
+          challengeDoc['distance'],
+          challengeDate,
+          0,
+          challengeId,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Successfully joined the challenge!',
+              style: TextStyles.bodySmallBold.copyWith(color: FitColors.text95),
+            ),
+            backgroundColor: FitColors.tertiary50,
+          ),
+        );
       } else {
         throw Exception('Challenge not found');
       }
     } catch (e) {
       print("Error joining challenge: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to join challenge: $e',
+            style: TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+          ),
+          backgroundColor: FitColors.tertiary50,
+        ),
+      );
     }
   }
 
   Future<void> joinChallenge(BuildContext context, String challengeName,
       String challengeDate, String username, Function(bool) updateState) async {
     try {
-      // Ensure user is authenticated
       currentUser = await _userVM.getUserData();
       if (currentUser == null) {
         Navigator.pushNamed(context, '/signing');
@@ -319,6 +371,7 @@ class ChallengesVM {
       }
 
       username = currentUser!.userName!;
+      String? userImage = currentUser!.profileImageUrl;
 
       final QuerySnapshot querySnapshot = await _firestore
           .collection('challenges')
@@ -382,8 +435,23 @@ class ChallengesVM {
           if (!challenge.participantUsernames.contains(username)) {
             List<String> updatedUsernames =
                 List.from(challenge.participantUsernames)..add(username);
-            await doc.reference
-                .update({'participantUsernames': updatedUsernames});
+            List<String> updatedImages = List.from(challenge.participantImages)
+              ..add(userImage!);
+
+            await doc.reference.update({
+              'participantUsernames': updatedUsernames,
+              'participantImages': updatedImages,
+            });
+
+            await addChallengeProgress(
+              username,
+              challenge.activityType,
+              challenge.distance,
+              challenge.challengeDate,
+              0,
+              challenge.challengeId,
+            );
+
             updateState(true);
           }
         }
@@ -407,24 +475,63 @@ class ChallengesVM {
       if (querySnapshot.docs.isNotEmpty) {
         for (var doc in querySnapshot.docs) {
           Challenge challenge = Challenge.fromFirestore(doc);
+
+          // Check if the user is a participant
           if (challenge.participantUsernames.contains(username)) {
+            // Prevent the challenge owner from unjoining
             if (username == challenge.challengeOwner) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                      'Sorry, ou are the challenge owner and cannot leave your own challenge.',
-                      style: TextStyles.bodySmallBold
-                          .copyWith(color: FitColors.error40)),
+                    'Sorry, you are the challenge owner and cannot leave your own challenge.',
+                    style: TextStyles.bodySmallBold
+                        .copyWith(color: FitColors.error40),
+                  ),
                   backgroundColor: FitColors.tertiary50,
                 ),
               );
               return;
             }
-            List<String> updatedUsernames =
-                List.from(challenge.participantUsernames)..remove(username);
-            await doc.reference
-                .update({'participantUsernames': updatedUsernames});
-            updateState(false);
+
+            int index = challenge.participantUsernames.indexOf(username);
+
+            if (index != -1 && index < challenge.participantUsernames.length) {
+              // Remove the username and the corresponding image if they exist at the same index
+              List<String> updatedUsernames =
+                  List.from(challenge.participantUsernames);
+              updatedUsernames.removeAt(index);
+
+              List<String> updatedImages =
+                  List.from(challenge.participantImages);
+              if (index < updatedImages.length) {
+                updatedImages.removeAt(index);
+              }
+              // Delete the progress document associated with the user
+              await FirebaseFirestore.instance
+                  .collection('challengeProgress')
+                  .doc('${challenge.challengeId}_$username')
+                  .delete();
+
+              await doc.reference.update({
+                'participantUsernames': updatedUsernames,
+                'participantImages': updatedImages,
+              });
+
+              updateState(false);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Successfully unjoined the challenge!',
+                    style: TextStyles.bodySmallBold
+                        .copyWith(color: FitColors.text95),
+                  ),
+                  backgroundColor: FitColors.tertiary50,
+                ),
+              );
+            } else {
+              throw Exception('User not found in participants');
+            }
           }
         }
       } else {
@@ -432,6 +539,15 @@ class ChallengesVM {
       }
     } catch (error) {
       print("Error unjoining challenge: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to unjoin challenge: $error',
+            style: TextStyles.bodySmallBold.copyWith(color: FitColors.error40),
+          ),
+          backgroundColor: FitColors.tertiary50,
+        ),
+      );
     }
   }
 

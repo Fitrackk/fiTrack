@@ -28,6 +28,10 @@ dependencies:
   syncfusion_flutter_charts: ^25.2.4
   flutter_secure_storage: ^9.2.1
   permission_handler: ^11.3.1
+  image_picker: ^1.1.1
+  confetti: ^0.7.0
+  shared_preferences: ^2.2.3
+
 
 dev_dependencies:
   flutter_test:
@@ -46,3 +50,4 @@ flutter:
   assets:
     - assets/images/
     - assets/images/get_started.png
+    - assets/images/unknown.png
