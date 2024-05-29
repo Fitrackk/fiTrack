@@ -14,27 +14,27 @@ class WaterReminderVM {
     User? currentUser = await _userVM.getUserData();
     if (currentUser != null) {
       String? username = currentUser.userName;
+      if (username != null && username.isNotEmpty) {
+        try {
+          QuerySnapshot docSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: username)
+              .get();
+          for (var userDoc in docSnapshot.docs) {
+            User user = User.fromFirestore(userDoc);
+            bool waterReminders = user.waterReminder == "true";
 
-      try {
-        DocumentSnapshot<Map<String, dynamic>> docSnapshot =
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(username)
-            .get();
-
-        if (docSnapshot.exists) {
-          bool waterReminders = docSnapshot.data()?['waterReminders'] == "true";
-
-          if (waterReminders) {
-            await _notificationVM.scheduleDailyWaterReminder();
-          } else {
-            await _notificationVM.cancelUserNotifications(username!);
+            if (waterReminders) {
+              await _notificationVM.scheduleDailyWaterReminder();
+            } else {
+              await _notificationVM.cancelUserNotifications(username);
+            }
           }
-        } else {
-          print("Error: Preference document does not exist");
+        } catch (e) {
+          print("Error fetching preferences: $e");
         }
-      } catch (e) {
-        print("Error fetching preferences: $e");
+      } else {
+        print("Error: Username is null or empty");
       }
     } else {
       print("Error: Current user data not found");
