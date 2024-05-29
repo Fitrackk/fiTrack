@@ -3,7 +3,7 @@ import 'package:fitrack/services/firebase_service.dart';
 import 'package:fitrack/utils/customs/bottom_nav.dart';
 import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
-import 'package:fitrack/view_models/notifications.dart';
+import 'package:fitrack/view_models/water_reminder_logic.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:fitrack/views/get_started_page.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +24,9 @@ void main() async {
   
   final challenges = ChallengesVM();
   challenges.deleteOldChallenges();
- 
-  NotificationsVM notificationViewModel = NotificationsVM();
-  await notificationViewModel.initialize();
-  await notificationViewModel.scheduleDailyWaterReminder();
+
+  WaterReminderVM notificationViewModel = WaterReminderVM();
+  await notificationViewModel.initializeWaterReminder();
 
   runApp(const MainApp());
 }

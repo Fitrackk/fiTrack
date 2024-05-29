@@ -18,7 +18,7 @@ class WaterReminderVM {
       try {
         DocumentSnapshot<Map<String, dynamic>> docSnapshot =
         await FirebaseFirestore.instance
-            .collection("preference")
+            .collection("users")
             .doc(username)
             .get();
 
@@ -28,7 +28,6 @@ class WaterReminderVM {
           if (waterReminders) {
             await _notificationVM.scheduleDailyWaterReminder();
           } else {
-            // Cancel existing notifications if water reminders are disabled
             await _notificationVM.cancelUserNotifications(username!);
           }
         } else {
