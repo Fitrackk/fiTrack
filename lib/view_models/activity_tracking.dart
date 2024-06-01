@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/activity_data_model.dart';
 import '../models/challenge_progress.dart';
@@ -53,7 +54,6 @@ class ActivityTrackerVM {
       DateTime savedDate = DateTime.parse(dataMap['date']);
       DateTime today = DateTime.now();
 
-      // Check if the saved date is before today
       if (savedDate.isBefore(DateTime(today.year, today.month, today.day))) {
         await deleteLocalActivityData(savedDate);
         return null;
@@ -408,10 +408,8 @@ class ActivityTrackerVM {
       final double magnitude = _calculateMagnitude(x, y, z);
 
       if (magnitude > movementThreshold) {
-        // Start a timer to increment active time every second
         _startActiveTimeTimer();
       } else {
-        // Stop the active time timer when there is no movement
         _stopActiveTimeTimer();
       }
     } else {
@@ -459,9 +457,6 @@ class ActivityTrackerVM {
         value: json.encode(activityData.toMap()),
       );
       _activityDataController.add(activityData);
-      if (kDebugMode) {
-        print("Activity data saved locally: ${activityData.toMap()}");
-      }
     } catch (e) {
       if (kDebugMode) {
         print("Error saving activity data locally: $e");
@@ -641,9 +636,10 @@ class ActivityTrackerVM {
       final UserVM userVM = UserVM();
       final models.User? currentUser = await userVM.getUserData();
       if (currentUser != null) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
         final DateTime now = DateTime.now();
         final String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-        print("The username is: ${currentUser.userName}");
+
         final userDocs = await FirebaseFirestore.instance
             .collection('ActivityData')
             .where('username', isEqualTo: currentUser.userName)
@@ -652,33 +648,35 @@ class ActivityTrackerVM {
             .where('date',
                 isLessThanOrEqualTo: "$formattedDate 23:59:59.999999")
             .get();
+
         if (userDocs.docs.isNotEmpty) {
           final data = userDocs.docs.first.data();
           if (data['stepsCount'] != null) {
             int stepsCount = data['stepsCount'];
             if (stepsCount >= 10000) {
-              final userQuery = await FirebaseFirestore.instance
-                  .collection('users')
-                  .where('username', isEqualTo: currentUser.userName)
-                  .get();
-              if (userQuery.docs.isNotEmpty) {
-                final userDoc = userQuery.docs.first.reference;
-                final userSnapshot = await userDoc.get();
-                final userData = userSnapshot.data() as Map<String, dynamic>;
-                final currentScore = userData['score'] as int;
+              final bool? bonusAwardedToday =
+                  prefs.getBool('bonus_awarded_$formattedDate');
+              if (bonusAwardedToday == null || !bonusAwardedToday) {
+                final userQuery = await FirebaseFirestore.instance
+                    .collection('users')
+                    .where('username', isEqualTo: currentUser.userName)
+                    .get();
+                if (userQuery.docs.isNotEmpty) {
+                  final userDoc = userQuery.docs.first.reference;
+                  final userSnapshot = await userDoc.get();
+                  final userData = userSnapshot.data() as Map<String, dynamic>;
+                  final currentScore = userData['score'] as int;
 
-                // Check if bonus has already been added
-                final bonusAdded = userData['bonusAdded'] as bool? ?? false;
-                if (!bonusAdded) {
                   await userDoc.update({
                     'score': currentScore + 50,
-                    'bonusAdded': true,
                   });
+                  await prefs.setBool('bonus_awarded_$formattedDate', true);
+
                   print(
                       'Score updated for user with username: ${currentUser.userName}');
-                } else {
-                  print('Bonus score already added for today');
                 }
+              } else {
+                print('Bonus score already awarded for today');
               }
             } else {
               print('Steps count is less than 10,000: $stepsCount');
