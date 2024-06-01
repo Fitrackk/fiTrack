@@ -4,6 +4,8 @@ import 'package:fitrack/view_models/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../main.dart';
+
 class SettingsPage extends StatefulWidget {
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -179,13 +181,15 @@ class _SettingsPageState extends State<SettingsPage> {
                             child: AlertDialog(
                               content: Text(
                                 '\nAre you sure you want to log out?',
-                                style: TextStyles.bodyMed.copyWith(color: FitColors.text20),
+                                style: TextStyles.bodyMed
+                                    .copyWith(color: FitColors.text20),
                               ),
                               actions: <Widget>[
                                 TextButton(
                                   child: Text(
                                     'Cancel',
-                                    style: TextStyles.labelMediumBold.copyWith(color: FitColors.text95),
+                                    style: TextStyles.labelMediumBold
+                                        .copyWith(color: FitColors.text95),
                                   ),
                                   style: TextButton.styleFrom(
                                     backgroundColor: FitColors.primary30,
@@ -197,7 +201,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 TextButton(
                                   child: Text(
                                     'Log Out',
-                                    style: TextStyles.labelMediumBold.copyWith(color: FitColors.text95),
+                                    style: TextStyles.labelMediumBold
+                                        .copyWith(color: FitColors.text95),
                                   ),
                                   style: TextButton.styleFrom(
                                     backgroundColor: FitColors.primary30,
@@ -205,7 +210,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                   onPressed: () async {
                                     Navigator.of(context).pop();
                                     await viewModel.logOut();
-                                    Navigator.of(context).pushReplacementNamed('/signing');
+                                    navigatorKey.currentState!
+                                        .pushReplacementNamed('/signing');
                                   },
                                 ),
                               ],
