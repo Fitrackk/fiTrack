@@ -55,13 +55,6 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                   alignment: Alignment.center,
                   children: [
                     InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const NotificationPage()),
-                        );
-                      },
                       child: CircleAvatar(
                         radius: 30,
                         backgroundColor: Colors.transparent,

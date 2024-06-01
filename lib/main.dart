@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitrack/services/firebase_service.dart';
 import 'package:fitrack/utils/customs/bottom_nav.dart';
 import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
-import 'package:fitrack/view_models/water_reminder_logic.dart';
 import 'package:fitrack/view_models/user.dart';
+import 'package:fitrack/view_models/water_reminder_logic.dart';
 import 'package:fitrack/views/get_started_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,8 +22,7 @@ void main() async {
   final tracker = ActivityTrackerVM();
   tracker.startTracking();
   await tracker.checkLocalStorageData();
-   tracker.checkStepsCount();
-  
+  tracker.checkStepsCount();
   final challenges = ChallengesVM();
   challenges.deleteOldChallenges();
 
@@ -29,6 +30,9 @@ void main() async {
   await notificationViewModel.initializeWaterReminder();
 
   runApp(const MainApp());
+  Timer.periodic(const Duration(hours: 2), (Timer t) async {
+    await tracker.checkLocalStorageData();
+  });
 }
 
 class MainApp extends StatefulWidget {
@@ -62,9 +66,7 @@ class _MainAppState extends State<MainApp> {
       final bool result =
           await platform.invokeMethod('requestExactAlarmPermission');
       if (!result) {
-        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-          SnackBar(content: Text('Exact alarm permission is required.')),
-        );
+        print('Exact alarm permission is required.');
       }
     } on PlatformException catch (e) {
       print("Failed to request exact alarm permission: '${e.message}'.");
