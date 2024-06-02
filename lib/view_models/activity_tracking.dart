@@ -697,4 +697,45 @@ class ActivityTrackerVM {
       }
     }
   }
+  Future<void> deleteOldActivityData() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    try {
+      final now = DateTime.now();
+      final cutoffDate = now.subtract(Duration(days: 7));
+      final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSSSSS');
+
+      QuerySnapshot activitySnapshot = await _firestore.collection('ActivityData').get();
+
+      for (var doc in activitySnapshot.docs) {
+        String dateString = doc['date'];
+        DateTime date;
+
+        try {
+          date = dateFormat.parse(dateString);
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error parsing date for document ID: ${doc.id}, date string: $dateString');
+          }
+          continue;
+        }
+        if (date.isBefore(cutoffDate)) {
+          await _firestore.collection('ActivityData').doc(doc.id).delete();
+          if (kDebugMode) {
+            print('Deleted activity data for document ID: ${doc.id}');
+          }
+        }
+      }
+
+      if (kDebugMode) {
+        print('Old activity data deleted successfully');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting old activity data: $e');
+      }
+    }
+  }
+
+
 }

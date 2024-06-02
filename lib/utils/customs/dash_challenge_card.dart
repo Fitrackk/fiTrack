@@ -66,9 +66,10 @@ class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
             // Add your button onPressed logic here
           },
           style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(Colors.transparent),
-            elevation: WidgetStateProperty.all(0),
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+            elevation: MaterialStateProperty.all(0),
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+          //  overlayColor: WidgetStateProperty.all(Colors.transparent),
           ),
           child: Stack(
             children: [

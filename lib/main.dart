@@ -26,6 +26,8 @@ void main() async {
   final challenges = ChallengesVM();
   challenges.deleteOldChallenges();
 
+  await tracker.deleteOldActivityData();
+
   WaterReminderVM notificationViewModel = WaterReminderVM();
   await notificationViewModel.initializeWaterReminder();
 
