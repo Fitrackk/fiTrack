@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/utils/customs/dash_challenge_card.dart';
@@ -26,23 +28,37 @@ class _DashboardState extends State<Dashboard> {
   final userData = getSingleton<UserVM>();
   final challengeData = getSingleton<ChallengesVM>();
   final ActivityTrackerVM activityData = ActivityTrackerVM();
-  late ActivityData? _localActivityData;
+  ActivityData? _localActivityData;
   late DateTime _endTime;
   late Duration _remainingDuration;
+  final StreamController<ActivityData?> _activityDataController =
+      StreamController<ActivityData?>.broadcast();
 
   @override
   void initState() {
     super.initState();
     _calculateRemainingTime();
-    _fetchLocalActivityData();
-    _localActivityData = null;
+    _startFetchingLocalActivityData();
   }
 
-  Future<void> _fetchLocalActivityData() async {
-    final data = await activityData.fetchLocalActivityData();
-    setState(() {
-      _localActivityData = data;
+  void _startFetchingLocalActivityData() {
+    Timer.periodic(const Duration(seconds: 1), (Timer t) async {
+      try {
+        final data = await activityData.fetchLocalActivityData();
+        if (!_activityDataController.isClosed) {
+          _activityDataController.add(data);
+        }
+      } catch (e) {
+        // Handle any errors here, such as logging or displaying a message
+        print("Error fetching activity data: $e");
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _activityDataController.close();
+    super.dispose();
   }
 
   String getCurrentTime() {
@@ -95,10 +111,6 @@ class _DashboardState extends State<Dashboard> {
     String? todayDate = formatter.format(DateTime.now());
     double currentWidth = MediaQuery.of(context).size.width;
     double currentHeight = MediaQuery.of(context).size.height;
-    int defaultChallengeProgress = (_localActivityData != null
-            ? (_localActivityData!.stepsCount / 10000) * 100
-            : 0)
-        .toInt();
 
     return Scaffold(
       appBar: TopNav(),
@@ -106,18 +118,27 @@ class _DashboardState extends State<Dashboard> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(
-                height: 30,
+              const SizedBox(height: 30),
+              StreamBuilder<ActivityData?>(
+                stream: _activityDataController.stream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    _localActivityData = snapshot.data;
+                  }
+                  int defaultChallengeProgress = (_localActivityData != null
+                          ? (_localActivityData!.stepsCount / 10000) * 100
+                          : 0)
+                      .toInt();
+                  return CustomProgressIndicator(
+                    defaultChallengeProgress: defaultChallengeProgress,
+                    defaultChallengeSteps: _localActivityData != null
+                        ? _localActivityData!.stepsCount
+                        : 0,
+                    defaultChallengeGoal: 10000,
+                  );
+                },
               ),
-              CustomProgressIndicator(
-                  defaultChallengeProgress: defaultChallengeProgress,
-                  defaultChallengeSteps: _localActivityData != null
-                      ? _localActivityData!.stepsCount
-                      : 0,
-                  defaultChallengeGoal: 10000),
-              const SizedBox(
-                height: 100,
-              ),
+              const SizedBox(height: 100),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 width: currentWidth / 1.1,
@@ -125,120 +146,51 @@ class _DashboardState extends State<Dashboard> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: FitColors.tertiary90,
-                  boxShadow: (const [
+                  boxShadow: const [
                     BoxShadow(
                       color: FitColors.placeholder,
                       spreadRadius: 0.1,
                       blurRadius: 2,
                       offset: Offset(5, 10),
                     ),
-                  ]),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_pin,
-                          size: 40,
-                          color: FitColors.primary30,
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: _localActivityData != null
-                                    ? "${_localActivityData!.distanceTraveled.toStringAsFixed(2)} \n"
-                                    : "0 \n",
-                                style: TextStyles.labelSmallBold.copyWith(
-                                  color: FitColors.text20,
-                                ),
-                              ),
-                              TextSpan(
-                                text: "km",
-                                style: TextStyles.labelSmallBold.copyWith(
-                                  color: FitColors.text10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.access_time_rounded,
-                          size: 40,
-                          color: FitColors.primary30,
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: _localActivityData != null
-                                    ? "${_localActivityData!.activeTime} \n"
-                                    : "0 \n",
-                                style: TextStyles.labelSmallBold.copyWith(
-                                  color: FitColors.text20,
-                                ),
-                              ),
-                              TextSpan(
-                                text: "min",
-                                style: TextStyles.labelSmallBold.copyWith(
-                                  color: FitColors.text10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.local_fire_department_rounded,
-                          size: 40,
-                          color: FitColors.primary30,
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: _localActivityData != null
-                                    ? "${_localActivityData!.caloriesBurned.toInt()} \n"
-                                    : "0 \n",
-                                style: TextStyles.labelSmallBold.copyWith(
-                                  color: FitColors.text20,
-                                ),
-                              ),
-                              TextSpan(
-                                text: "Kcal",
-                                style: TextStyles.labelSmallBold.copyWith(
-                                  color: FitColors.text10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
+                child: StreamBuilder<ActivityData?>(
+                  stream: _activityDataController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      _localActivityData = snapshot.data;
+                    }
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildDataRow(
+                          icon: Icons.location_pin,
+                          value: _localActivityData?.distanceTraveled
+                                  .toStringAsFixed(2) ??
+                              "0",
+                          unit: "km",
+                        ),
+                        _buildDataRow(
+                          icon: Icons.access_time_rounded,
+                          value:
+                              _localActivityData?.activeTime.toString() ?? "0",
+                          unit: "min",
+                        ),
+                        _buildDataRow(
+                          icon: Icons.local_fire_department_rounded,
+                          value: _localActivityData?.caloriesBurned
+                                  .toInt()
+                                  .toString() ??
+                              "0",
+                          unit: "Kcal",
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
-              const SizedBox(
-                height: 50,
-              ),
+              const SizedBox(height: 50),
               StreamBuilder<List<Challenge>>(
                 stream: challengeData.getUserChallengeData().asStream(),
                 builder: (context, snapshot) {
@@ -254,9 +206,7 @@ class _DashboardState extends State<Dashboard> {
                             builder: (context, progressSnapshot) {
                               if (progressSnapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return const Center(
-                                  child: Text(" "),
-                                );
+                                return const Center(child: Text(" "));
                               } else if (progressSnapshot.hasError) {
                                 return Center(
                                   child:
@@ -305,6 +255,41 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDataRow({
+    required IconData icon,
+    required String value,
+    required String unit,
+  }) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 40,
+          color: FitColors.primary30,
+        ),
+        const SizedBox(width: 6),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: "$value \n",
+                style: TextStyles.labelSmallBold.copyWith(
+                  color: FitColors.text20,
+                ),
+              ),
+              TextSpan(
+                text: unit,
+                style: TextStyles.labelSmallBold.copyWith(
+                  color: FitColors.text10,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/activity_data_model.dart';
 import '../models/challenge_progress.dart';
@@ -21,40 +22,55 @@ class ActivityTrackerVM {
   GyroscopeEvent? _lastGyroscopeEvent;
   UserAccelerometerEvent? _lastLinearAccelerationEvent;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final StreamController<ActivityData> _activityDataController =
+      StreamController<ActivityData>.broadcast();
+  Stream<ActivityData> get activityDataStream => _activityDataController.stream;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final UserVM _userVM = UserVM();
   late models.User? currentUser;
   double height = 160;
   double weight = 60;
-  late DateTime _currentDate;
   Timer? _updateTimer;
   late int stepsCount;
   late double distanceTraveled;
-  late int activeTimeInMinutes;
-  late int activeTime;
   late double caloriesBurned;
   late ActivityData data;
   int lastRecordedStepCount = 0;
   DateTime? startTime;
+  late int activeTimeInSeconds;
 
-  void startActivity() {
-    startTime ??= DateTime.now();
-  }
+  int get activeTimeInMinutes => (activeTimeInSeconds ~/ 60);
+  Map<String, double> activityTypeDistance = {
+    'walking': 0,
+    'running': 0,
+    'jogging': 0,
+  };
 
-  int getActiveTimeInMinutes() {
-    if (startTime == null) return 0;
-    return DateTime.now().difference(startTime!).inMinutes;
-  }
+  Future<ActivityData?> fetchLocalActivityData() async {
+    String? dataString = await _secureStorage.read(key: 'activityData');
+    if (dataString != null) {
+      Map<String, dynamic> dataMap =
+          json.decode(dataString) as Map<String, dynamic>;
+      DateTime savedDate = DateTime.parse(dataMap['date']);
+      DateTime today = DateTime.now();
 
-  Future<void> checkDayTransition() async {
-    DateTime now = DateTime.now();
-    if (now.day != _currentDate.day) {
-      await _updateActivityDataInFirestore();
-      await deleteLocalActivityData(
-          _currentDate.subtract(const Duration(days: 1)));
-      _currentDate = now;
-      await _createDocumentForToday(currentUser!.userName!);
+      if (savedDate.isBefore(DateTime(today.year, today.month, today.day))) {
+        await deleteLocalActivityData(savedDate);
+        return null;
+      }
+
+      return ActivityData(
+        username: dataMap['username'],
+        date: savedDate,
+        distanceTraveled: dataMap['distanceTraveled'],
+        stepsCount: dataMap['stepsCount'],
+        activeTime: dataMap['activeTime'],
+        caloriesBurned: dataMap['caloriesBurned'],
+        activityTypeDistance:
+            Map<String, double>.from(dataMap['activityTypeDistance']),
+      );
     }
+    return null;
   }
 
   Future<void> deleteLocalActivityData(DateTime date) async {
@@ -70,12 +86,6 @@ class ActivityTrackerVM {
     }
   }
 
-  Map<String, double> activityTypeDistance = {
-    'walking': 0,
-    'running': 0,
-    'jogging': 0,
-  };
-
   void startTracking() async {
     final models.User? currentUser = await _userVM.getUserData();
     ActivityData? localActivityData = await fetchLocalActivityData();
@@ -87,11 +97,10 @@ class ActivityTrackerVM {
       } else {
         stepsCount = localActivityData.stepsCount;
         distanceTraveled = localActivityData.distanceTraveled;
-        activeTimeInMinutes = localActivityData.activeTime;
+        activeTimeInSeconds = localActivityData.activeTime * 60;
         caloriesBurned = localActivityData.caloriesBurned;
         activityTypeDistance = localActivityData.activityTypeDistance;
       }
-      activeTime = activeTimeInMinutes;
       height = currentUser.height!;
       weight = currentUser.weight!;
       await _createDocumentForToday(username!);
@@ -106,10 +115,6 @@ class ActivityTrackerVM {
           gyroscopeEventStream().listen((GyroscopeEvent event) {
         _lastGyroscopeEvent = event;
         _processSensorData();
-      });
-
-      Timer(const Duration(minutes: 120), () {
-        checkLocalStorageData();
       });
     } else {
       if (kDebugMode) {
@@ -132,17 +137,21 @@ class ActivityTrackerVM {
       DocumentSnapshot docSnapshot = await docRef.get();
       if (docSnapshot.exists) {
         ActivityData activityData = ActivityData.fromFirestore(docSnapshot);
-        activeTimeInMinutes = activityData.activeTime;
+        activeTimeInSeconds = activityData.activeTime * 60;
         stepsCount = activityData.stepsCount;
-        distanceTraveled = activityData.distanceTraveled;
+        distanceTraveled = activityData.distanceTraveled * 1000;
         caloriesBurned = activityData.caloriesBurned;
-        activityTypeDistance = activityData.activityTypeDistance;
+        activityTypeDistance =
+            activityData.activityTypeDistance.map((key, value) => MapEntry(
+                  key,
+                  value / 1000,
+                ));
         await _saveLocalActivityData(activityData);
         return activityData;
       } else {
         stepsCount = 0;
         distanceTraveled = 0.0;
-        activeTimeInMinutes = 0;
+        activeTimeInSeconds = 0;
         caloriesBurned = 0.0;
         activityTypeDistance = {'walking': 0, 'running': 0, 'jogging': 0};
         _createDocumentForToday(currentUser!.userName!);
@@ -228,7 +237,6 @@ class ActivityTrackerVM {
           if (newActiveTime.isNaN || newActiveTime.isInfinite) {
             newActiveTime = 0;
           }
-          activeTime += newActiveTime;
           double newCaloriesBurned = data['caloriesBurned'] ?? 0;
           newCaloriesBurned += caloriesBurned;
           if (newCaloriesBurned.isNaN || newCaloriesBurned.isInfinite) {
@@ -284,9 +292,9 @@ class ActivityTrackerVM {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double walkingThreshold = 2;
-    const double joggingThreshold = 3.5;
-    const double runningThreshold = 5;
+    const double walkingThreshold = 2.5;
+    const double joggingThreshold = 4;
+    const double runningThreshold = 6;
 
     double strideLengthInMeters = calculateStrideLength(height);
     double strideLengthInKilometers = strideLengthInMeters / 1000;
@@ -309,14 +317,13 @@ class ActivityTrackerVM {
 
   void stopTracking() {
     _saveLocalActivityData(ActivityData(
-      username: currentUser?.userName ?? '',
-      date: DateTime.now(),
-      distanceTraveled: distanceTraveled,
-      stepsCount: stepsCount,
-      activeTime: activeTimeInMinutes,
-      caloriesBurned: caloriesBurned,
-      activityTypeDistance: activityTypeDistance,
-    ));
+        username: currentUser?.userName ?? '',
+        date: DateTime.now(),
+        distanceTraveled: distanceTraveled,
+        stepsCount: stepsCount,
+        activeTime: activeTimeInMinutes,
+        caloriesBurned: caloriesBurned,
+        activityTypeDistance: activityTypeDistance));
 
     _linearAccelerationSubscription?.cancel();
     _gyroscopeSubscription?.cancel();
@@ -326,18 +333,18 @@ class ActivityTrackerVM {
   Future<void> _processSensorData() async {
     final models.User? currentUser = await _userVM.getUserData();
     if (_lastLinearAccelerationEvent != null && _lastGyroscopeEvent != null) {
-      _currentDate = DateTime.now();
       _calculateStepsCount(_lastLinearAccelerationEvent!);
       _calculateActiveTime();
       _updateActivityTypeDistance(_lastGyroscopeEvent!);
-      distanceTraveled = activityTypeDistance.values.reduce((a, b) => a + b);
-
+      distanceTraveled = activityTypeDistance.values
+          .map((distance) => distance / 1000)
+          .reduce((a, b) => a + b);
       ActivityData activityData = ActivityData(
           username: currentUser?.userName ?? '',
           date: DateTime.now(),
-          distanceTraveled: distanceTraveled / 1000,
+          distanceTraveled: distanceTraveled,
           stepsCount: stepsCount,
-          activeTime: activeTime + getActiveTimeInMinutes(),
+          activeTime: activeTimeInMinutes,
           caloriesBurned: caloriesBurned,
           activityTypeDistance:
               activityTypeDistance.map((key, value) => MapEntry(
@@ -347,7 +354,6 @@ class ActivityTrackerVM {
 
       await _saveLocalActivityData(activityData);
     }
-    await checkDayTransition();
   }
 
   void _calculateStepsCount(UserAccelerometerEvent event) {
@@ -360,7 +366,7 @@ class ActivityTrackerVM {
     const double threshold = 12.0;
 
     if (magnitude > threshold) {
-      startActivity();
+      _calculateActiveTime();
       stepsCount++;
       int newSteps = stepsCount - lastRecordedStepCount;
       lastRecordedStepCount = stepsCount;
@@ -370,7 +376,6 @@ class ActivityTrackerVM {
 
   double _calculateSpeed(int stepsCount) {
     double strideLengthInMeters = 0.415 * height / 100;
-    int activeTimeInMinutes = getActiveTimeInMinutes();
     double stepFrequency =
         (activeTimeInMinutes > 0) ? stepsCount / activeTimeInMinutes : 0;
     double speed = strideLengthInMeters * stepFrequency;
@@ -392,7 +397,7 @@ class ActivityTrackerVM {
     return sqrt(x * x + y * y + z * z);
   }
 
-  Future<void> _calculateActiveTime() async {
+  void _calculateActiveTime() {
     const double movementThreshold = 0.5;
 
     if (_lastLinearAccelerationEvent != null) {
@@ -403,10 +408,25 @@ class ActivityTrackerVM {
       final double magnitude = _calculateMagnitude(x, y, z);
 
       if (magnitude > movementThreshold) {
-        await Future.delayed(const Duration(seconds: 1));
-        activeTimeInMinutes = getActiveTimeInMinutes();
+        _startActiveTimeTimer();
+      } else {
+        _stopActiveTimeTimer();
       }
+    } else {
+      _stopActiveTimeTimer();
     }
+  }
+
+  void _startActiveTimeTimer() {
+    if (_updateTimer == null || !_updateTimer!.isActive) {
+      _updateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        activeTimeInSeconds++;
+      });
+    }
+  }
+
+  void _stopActiveTimeTimer() {
+    _updateTimer?.cancel();
   }
 
   Future<void> _saveLocalActivityData(ActivityData activityData) async {
@@ -436,33 +456,12 @@ class ActivityTrackerVM {
         key: 'activityData',
         value: json.encode(activityData.toMap()),
       );
-      if (kDebugMode) {
-        // print("Activity data saved locally: ${activityData.toMap()}");
-      }
+      _activityDataController.add(activityData);
     } catch (e) {
       if (kDebugMode) {
         print("Error saving activity data locally: $e");
       }
     }
-  }
-
-  Future<ActivityData?> fetchLocalActivityData() async {
-    String? dataString = await _secureStorage.read(key: 'activityData');
-    if (dataString != null) {
-      Map<String, dynamic> dataMap =
-          json.decode(dataString) as Map<String, dynamic>;
-      return ActivityData(
-        username: dataMap['username'],
-        date: DateTime.parse(dataMap['date']),
-        distanceTraveled: dataMap['distanceTraveled'],
-        stepsCount: dataMap['stepsCount'],
-        activeTime: dataMap['activeTime'],
-        caloriesBurned: dataMap['caloriesBurned'],
-        activityTypeDistance:
-            Map<String, double>.from(dataMap['activityTypeDistance']),
-      );
-    }
-    return null;
   }
 
   Future<void> checkLocalStorageData() async {
@@ -502,7 +501,6 @@ class ActivityTrackerVM {
             int newActiveTime = localActivityData.activeTime;
             double newCaloriesBurned = existingCaloriesBurned +
                 (localActivityData.caloriesBurned - existingCaloriesBurned);
-            activeTime = newActiveTime;
             startTime ??= DateTime.now();
             docRef.update({
               'distanceTraveled': localActivityData.distanceTraveled,
@@ -638,9 +636,10 @@ class ActivityTrackerVM {
       final UserVM userVM = UserVM();
       final models.User? currentUser = await userVM.getUserData();
       if (currentUser != null) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
         final DateTime now = DateTime.now();
         final String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-        print("The username is: ${currentUser.userName}");
+
         final userDocs = await FirebaseFirestore.instance
             .collection('ActivityData')
             .where('username', isEqualTo: currentUser.userName)
@@ -649,33 +648,35 @@ class ActivityTrackerVM {
             .where('date',
                 isLessThanOrEqualTo: "$formattedDate 23:59:59.999999")
             .get();
+
         if (userDocs.docs.isNotEmpty) {
           final data = userDocs.docs.first.data();
           if (data['stepsCount'] != null) {
             int stepsCount = data['stepsCount'];
             if (stepsCount >= 10000) {
-              final userQuery = await FirebaseFirestore.instance
-                  .collection('users')
-                  .where('username', isEqualTo: currentUser.userName)
-                  .get();
-              if (userQuery.docs.isNotEmpty) {
-                final userDoc = userQuery.docs.first.reference;
-                final userSnapshot = await userDoc.get();
-                final userData = userSnapshot.data() as Map<String, dynamic>;
-                final currentScore = userData['score'] as int;
+              final bool? bonusAwardedToday =
+                  prefs.getBool('bonus_awarded_$formattedDate');
+              if (bonusAwardedToday == null || !bonusAwardedToday) {
+                final userQuery = await FirebaseFirestore.instance
+                    .collection('users')
+                    .where('username', isEqualTo: currentUser.userName)
+                    .get();
+                if (userQuery.docs.isNotEmpty) {
+                  final userDoc = userQuery.docs.first.reference;
+                  final userSnapshot = await userDoc.get();
+                  final userData = userSnapshot.data() as Map<String, dynamic>;
+                  final currentScore = userData['score'] as int;
 
-                // Check if bonus has already been added
-                final bonusAdded = userData['bonusAdded'] as bool? ?? false;
-                if (!bonusAdded) {
                   await userDoc.update({
                     'score': currentScore + 50,
-                    'bonusAdded': true,
                   });
+                  await prefs.setBool('bonus_awarded_$formattedDate', true);
+
                   print(
                       'Score updated for user with username: ${currentUser.userName}');
-                } else {
-                  print('Bonus score already added for today');
                 }
+              } else {
+                print('Bonus score already awarded for today');
               }
             } else {
               print('Steps count is less than 10,000: $stepsCount');
