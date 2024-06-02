@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/view_models/user.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-
+import 'package:intl/intl.dart';
 import '../models/user_model.dart';
 
 class NotificationsVM {
@@ -179,4 +180,44 @@ class NotificationsVM {
       );
     }
   }
+  Future<void> deleteOldNotifications() async {
+    try {
+      final now = DateTime.now();
+      final cutoffDate = now.subtract(Duration(days: 7));
+      final dateFormat = DateFormat('yyyy-MM-dd');
+
+      QuerySnapshot notificationSnapshot = await firestore.collection('notifications').get();
+
+      for (var doc in notificationSnapshot.docs) {
+        String dateString = doc['scheduledDate'];
+        DateTime date;
+
+        // Try to parse the date string.
+        try {
+          date = dateFormat.parse(dateString);
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error parsing date for document ID: ${doc.id}, date string: $dateString');
+          }
+          continue;  // Skip this document if date parsing fails
+        }
+
+        if (date.isBefore(cutoffDate)) {
+          await firestore.collection('notifications').doc(doc.id).delete();
+          if (kDebugMode) {
+            print('Deleted notification data for document ID: ${doc.id}');
+          }
+        }
+      }
+
+      if (kDebugMode) {
+        print('Old notification data deletion completed');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting old notification data: $e');
+      }
+    }
+  }
+
 }
