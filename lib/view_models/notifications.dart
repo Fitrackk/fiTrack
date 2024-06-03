@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/view_models/user.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -8,16 +10,16 @@ import '../models/user_model.dart';
 
 class NotificationsVM {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final UserVM _userVM = UserVM();
 
   Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const InitializationSettings initializationSettings =
-    InitializationSettings(
+        InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -52,7 +54,7 @@ class NotificationsVM {
       ),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
 
@@ -116,7 +118,8 @@ class NotificationsVM {
     };
   }
 
-  Future<bool> notificationsExistForUserAndDate(String username, String date, String type) async {
+  Future<bool> notificationsExistForUserAndDate(
+      String username, String date, String type) async {
     var snapshots = await firestore
         .collection('notifications')
         .where('username', isEqualTo: username)
@@ -131,7 +134,8 @@ class NotificationsVM {
     User? currentUser = await _userVM.getUserData();
     String username = currentUser?.userName ?? 'unknown';
 
-    bool notificationsExist = await notificationsExistForUserAndDate(username, tz.TZDateTime.now(tz.local).toIso8601String().split('T')[0], 'water');
+    bool notificationsExist = await notificationsExistForUserAndDate(username,
+        tz.TZDateTime.now(tz.local).toIso8601String().split('T')[0], 'water');
     if (notificationsExist) {
       print("Today's notifications already exist for user: $username");
       return;
@@ -205,7 +209,8 @@ class NotificationsVM {
   Future<void> scheduleChallengeReminders() async {
     final now = tz.TZDateTime.now(tz.local);
     final tomorrow = now.add(const Duration(days: 1));
-    final tomorrowDateString = "${tomorrow.year}-${_twoDigits(tomorrow.month)}-${_twoDigits(tomorrow.day)}";
+    final tomorrowDateString =
+        "${tomorrow.year}-${_twoDigits(tomorrow.month)}-${_twoDigits(tomorrow.day)}";
 
     var snapshots = await firestore
         .collection('challenges')
@@ -216,33 +221,39 @@ class NotificationsVM {
     for (var doc in snapshots.docs) {
       var challenge = doc.data();
       for (var participant in challenge['participantUsernames']) {
-        bool notificationsExist = await notificationsExistForUserAndDate(participant, tomorrowDateString, 'challenge');
+        bool notificationsExist = await notificationsExistForUserAndDate(
+            participant, tomorrowDateString, 'challenge');
         if (notificationsExist) {
-          print("Challenge notifications already exist for user: $participant on $tomorrowDateString");
+          print(
+              "Challenge notifications already exist for user: $participant on $tomorrowDateString");
           continue;
         }
 
         List<Map<String, dynamic>> notifications = [
           {
-            "time": DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 12, 0),
+            "time":
+                DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 12, 0),
             "message": "Get ready for your challenge at 12 PM!",
             "type": "challenge",
             "username": participant
           },
           {
-            "time": DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 18, 0),
+            "time":
+                DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 18, 0),
             "message": "Don't forget your challenge at 6 PM!",
             "type": "challenge",
             "username": participant
           },
           {
-            "time": DateTime(tomorrow.year, tomorrow.month, tomorrow.day + 1, 0, 0),
+            "time":
+                DateTime(tomorrow.year, tomorrow.month, tomorrow.day + 1, 0, 0),
             "message": "Midnight reminder for your challenge!",
             "type": "challenge",
             "username": participant
           },
           {
-            "time": DateTime(tomorrow.year, tomorrow.month, tomorrow.day + 1, 6, 0),
+            "time":
+                DateTime(tomorrow.year, tomorrow.month, tomorrow.day + 1, 6, 0),
             "message": "Early morning reminder for your challenge!",
             "type": "challenge",
             "username": participant
@@ -276,5 +287,47 @@ class NotificationsVM {
 
   String _twoDigits(int n) {
     return n.toString().padLeft(2, '0');
+  }
+
+  Future<void> deleteOldNotifications() async {
+    try {
+      final now = DateTime.now();
+      final cutoffDate = now.subtract(Duration(days: 7));
+      final dateFormat = DateFormat('yyyy-MM-dd');
+
+      QuerySnapshot notificationSnapshot =
+          await firestore.collection('notifications').get();
+
+      for (var doc in notificationSnapshot.docs) {
+        String dateString = doc['scheduledDate'];
+        DateTime date;
+
+        // Try to parse the date string.
+        try {
+          date = dateFormat.parse(dateString);
+        } catch (e) {
+          if (kDebugMode) {
+            print(
+                'Error parsing date for document ID: ${doc.id}, date string: $dateString');
+          }
+          continue; // Skip this document if date parsing fails
+        }
+
+        if (date.isBefore(cutoffDate)) {
+          await firestore.collection('notifications').doc(doc.id).delete();
+          if (kDebugMode) {
+            print('Deleted notification data for document ID: ${doc.id}');
+          }
+        }
+      }
+
+      if (kDebugMode) {
+        print('Old notification data deletion completed');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting old notification data: $e');
+      }
+    }
   }
 }
