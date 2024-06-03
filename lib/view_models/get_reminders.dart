@@ -16,7 +16,7 @@ class NotificationsVM {
         if (userDoc.exists) {
           String username = userDoc['username'];
           DateTime now = DateTime.now();
-          DateTime increasedTime = now.add(Duration(hours: 1));
+          DateTime increasedTime = now.add(const Duration(hours: 1));
           DateFormat dateFormat = DateFormat("HH:mm:ss.SSS'Z'");
           String formattedCurrentTime = dateFormat.format(increasedTime);
           if (kDebugMode) {
