@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
 import '../../view_models/celebrating.dart';
