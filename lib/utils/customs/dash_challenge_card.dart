@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../configures/color_theme.dart';
 import '../../configures/text_style.dart';
 import '../../view_models/celebrating.dart';
@@ -66,9 +65,9 @@ class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
             // Add your button onPressed logic here
           },
           style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(Colors.transparent),
-            elevation: WidgetStateProperty.all(0),
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+            elevation: MaterialStateProperty.all(0),
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
           ),
           child: Stack(
             children: [

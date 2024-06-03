@@ -6,6 +6,7 @@ import 'package:fitrack/view_models/get_reminders.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
 
@@ -15,21 +16,19 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   NotificationsVM notification = NotificationsVM();
-
+  int flag =0;
   String getCurrentDate() {
     DateTime now = DateTime.now();
     DateFormat dateFormat = DateFormat('yyyy-MM-dd');
     String formattedDate = dateFormat.format(now);
     return formattedDate;
   }
-
   String getCurrentTime() {
     DateTime now = DateTime.now();
     DateFormat timeFormat = DateFormat('HH:mm');
     String formattedTime = timeFormat.format(now);
     return formattedTime;
   }
-
   @override
   void initState() {
     super.initState();
@@ -38,25 +37,23 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     double currentWidth = MediaQuery.of(context).size.width;
-    int flag = 0;
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
               color: FitColors.primary30),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications),
           ),
         ],
       ),
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,29 +61,20 @@ class _NotificationPageState extends State<NotificationPage> {
             Text(
               'Notifications',
               style:
-                  TextStyles.displaySmallBold.copyWith(color: FitColors.text20),
+              TextStyles.displaySmallBold.copyWith(color: FitColors.text20),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Expanded(
-              child: FutureBuilder<QuerySnapshot>(
+              child: FutureBuilder<List<QueryDocumentSnapshot>>(
                 future: notification.getNotification(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final docs = snapshot.data!.docs;
-                    final today = DateTime.now();
-
+                    final docs = snapshot.data!;
                     return ListView.builder(
                       shrinkWrap: true,
                       itemCount: docs.length,
                       itemBuilder: (context, index) {
                         final doc = docs[index];
-                        final scheduledDate =
-                            DateTime.parse(doc['scheduledDate']);
-                        final difference = today.difference(scheduledDate);
-
-                        if (difference.inDays <= 7) {
-                          flag = 1;
-
                           return SizedBox(
                             width: currentWidth / 1.5,
                             child: Column(
@@ -109,10 +97,10 @@ class _NotificationPageState extends State<NotificationPage> {
                                     text: doc['body'],
                                     time: doc['scheduledDate'],
                                   ),
-                                SizedBox(height: 15),
+                                const SizedBox(height: 15),
                                 SizedBox(
                                   width: currentWidth / 1.2,
-                                  child: Divider(
+                                  child: const Divider(
                                     thickness: 0.8,
                                     color: FitColors.primary30,
                                     height: 1,
@@ -121,9 +109,6 @@ class _NotificationPageState extends State<NotificationPage> {
                               ],
                             ),
                           );
-                        } else {
-                          return SizedBox.shrink();
-                        }
                       },
                     );
                   }

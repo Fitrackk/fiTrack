@@ -9,47 +9,30 @@ class NoNotification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: FitColors.primary30),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notifications),
-          ),
-        ],
-      ),
-      body: Container(
+
+    return
+      Container(
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Notifications',
-              style: TextStyles.displaySmallBold.copyWith(color: FitColors.text20),
-            ),
-            SizedBox(height: 110),
             ImageIcon(
-              AssetImage('assets/images/GoogleAlertsIcon.png'),
+              AssetImage('assets/images/google_alerts_icon.png'),
               size: 120,
               color: FitColors.primary30,
             ),
-            SizedBox(height: 60),
+            SizedBox(height: 50),
             Text("No Notification Yet", style: TextStyles.titleLargeBold.copyWith(color: FitColors.text20),),
-            SizedBox(height: 40),
+            SizedBox(height: 60),
             Text(
               "you have no notification right now. \n come back later",
               style: TextStyles.titleMedium.copyWith(color: FitColors.text60),
               textAlign: TextAlign.center,
             ),
+            SizedBox(height: 300),
+
           ],
         ),
-      ),
     );
   }
 }
