@@ -1,54 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+import 'package:fitrack/view_models/user.dart';
 
-class ChallengeNotification {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  final FirebaseFirestore firestore;
+import '../models/user_model.dart';
+import 'notifications.dart';
 
-  ChallengeNotification({
-    required this.flutterLocalNotificationsPlugin,
-    required this.firestore,
-  });
+class ChallengeReminderVM {
+  final UserVM _userVM = UserVM();
+  final NotificationsVM _notificationVM = NotificationsVM();
 
-  Future<void> scheduleChallengeNotification({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime dateTime,
-    required String type,
-    required String username,
-  }) async {
-    final tz.TZDateTime scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
+  Future<void> initializeChallengeReminder() async {
+    await _notificationVM.initialize();
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      scheduledDate,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'fitrack',
-          'fitrack',
-          channelDescription: 'fitrack : challenges community & reminders',
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-      ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.dateAndTime,
-    );
+    User? currentUser = await _userVM.getUserData();
+    if (currentUser != null) {
+      String? username = currentUser.userName;
+      if (username != null && username.isNotEmpty) {
+        try {
+          QuerySnapshot docSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: username)
+              .get();
+          for (var userDoc in docSnapshot.docs) {
+            User user = User.fromFirestore(userDoc);
+            bool challengeReminders = user.challengeReminder == "true";
 
-    await firestore.collection('notifications').add({
-      'id': id,
-      'title': title,
-      'body': body,
-      'scheduledDate': scheduledDate.toIso8601String(),
-      'type': type,
-      'username': username,
-    });
+            if (challengeReminders) {
+              await _notificationVM.scheduleChallengeReminders();
+            } else {
+              await _notificationVM.cancelUserNotifications(username, type: 'challenge');
+            }
+          }
+        } catch (e) {
+          print("Error fetching preferences: $e");
+        }
+      } else {
+        print("Error: Username is null or empty");
+      }
+    } else {
+      print("Error: Current user data not found");
+    }
   }
 }

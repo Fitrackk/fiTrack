@@ -27,7 +27,7 @@ class WaterReminderVM {
             if (waterReminders) {
               await _notificationVM.scheduleDailyWaterReminder();
             } else {
-              await _notificationVM.cancelUserNotifications(username);
+              await _notificationVM.cancelUserNotifications(username,type: 'water');
             }
           }
         } catch (e) {

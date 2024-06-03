@@ -9,10 +9,7 @@ import 'package:fitrack/view_models/user.dart';
 import 'package:fitrack/views/get_started_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fitrack/view_models/challenge_reminder.dart'; // Import the ChallengeReminderVM
-import 'package:fitrack/view_models/challenge_notification.dart'; // Import ChallengeNotification
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import FirebaseFirestore
+import 'package:fitrack/view_models/challenge_notification.dart';
 import 'package:stator/stator.dart';
 
 import 'configures/routes.dart';
@@ -33,22 +30,8 @@ void main() async {
 
   WaterReminderVM notificationViewModel = WaterReminderVM();
   await notificationViewModel.initializeWaterReminder();
-
-  // Initialize FlutterLocalNotificationsPlugin
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-  // Initialize ChallengeNotification and ChallengeReminderVM
-  final ChallengeNotification challengeNotification = ChallengeNotification(
-    flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-    firestore: FirebaseFirestore.instance,
-  );
-
-  final ChallengeReminderVM challengeReminderVM = ChallengeReminderVM(
-    challengeNotification: challengeNotification,
-  );
-
-  await challengeReminderVM.initialize();
-  await challengeReminderVM.scheduleChallengeReminders();
+  ChallengeReminderVM challengesNotificationViewModel = ChallengeReminderVM();
+  challengesNotificationViewModel.initializeChallengeReminder();
 
   runApp(const MainApp());
 }
