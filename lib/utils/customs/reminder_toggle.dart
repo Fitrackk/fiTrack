@@ -18,7 +18,7 @@ class _ReminderToggleState extends State<ReminderToggle> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
+        SizedBox(
           width: 50,
           height: 50,
           child: Switch(
@@ -38,7 +38,7 @@ class _ReminderToggleState extends State<ReminderToggle> {
             inactiveTrackColor: FitColors.tertiary40,
           ),
         ),
-        Container(
+        SizedBox(
           width: 1,
           height: 1,
           child: TextField(

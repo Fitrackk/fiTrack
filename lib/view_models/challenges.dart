@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:fitrack/models/challenge_model.dart';
 import 'package:fitrack/view_models/user.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -80,7 +81,9 @@ class ChallengesVM {
       }
       return challenges;
     } catch (e) {
-      print("Error fetching challenges: $e");
+      if (kDebugMode) {
+        print("Error fetching challenges: $e");
+      }
       return [];
     }
   }
@@ -112,7 +115,9 @@ class ChallengesVM {
 
       return challenges;
     } catch (e) {
-      print("Error fetching challenges: $e");
+      if (kDebugMode) {
+        print("Error fetching challenges: $e");
+      }
       return [];
     }
   }
@@ -128,7 +133,9 @@ class ChallengesVM {
         return ChallengeProgress.fromFirestore(doc);
       }).toList();
     } catch (e) {
-      print("Error fetching challenge progress: $e");
+      if (kDebugMode) {
+        print("Error fetching challenge progress: $e");
+      }
       return [];
     }
   }
@@ -249,7 +256,9 @@ class ChallengesVM {
           .doc(docId)
           .set(challengeProgress.toFirestore());
     } catch (e) {
-      print('Failed to add challenge progress: $e');
+      if (kDebugMode) {
+        print('Failed to add challenge progress: $e');
+      }
     }
   }
 
@@ -348,7 +357,9 @@ class ChallengesVM {
         throw Exception('Challenge not found');
       }
     } catch (e) {
-      print("Error joining challenge: $e");
+      if (kDebugMode) {
+        print("Error joining challenge: $e");
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -456,10 +467,14 @@ class ChallengesVM {
           }
         }
       } else {
-        print("No matching challenge found");
+        if (kDebugMode) {
+          print("No matching challenge found");
+        }
       }
     } catch (error) {
-      print("Error joining challenge: $error");
+      if (kDebugMode) {
+        print("Error joining challenge: $error");
+      }
     }
   }
 
@@ -535,10 +550,14 @@ class ChallengesVM {
           }
         }
       } else {
-        print("No matching challenge found");
+        if (kDebugMode) {
+          print("No matching challenge found");
+        }
       }
     } catch (error) {
-      print("Error unjoining challenge: $error");
+      if (kDebugMode) {
+        print("Error unjoining challenge: $error");
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -551,31 +570,31 @@ class ChallengesVM {
     }
   }
 
-
   Future<void> deleteOldChallenges() async {
     final DateTime currentDate = DateTime.now();
     final DateTime thresholdDate = currentDate.subtract(Duration(days: 30));
 
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('challenges').get();
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('challenges').get();
 
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         String challengeDateString = doc['challengeDate'];
-        DateTime challengeDate = DateFormat('yyyy-MM-dd').parse(challengeDateString);
+        DateTime challengeDate =
+            DateFormat('yyyy-MM-dd').parse(challengeDateString);
 
         if (challengeDate.isBefore(thresholdDate)) {
           await _firestore.collection('challenges').doc(doc.id).delete();
         }
       }
 
-      print('Old challenges deleted successfully');
+      if (kDebugMode) {
+        print('Old challenges deleted successfully');
+      }
     } catch (e) {
-      print('Error deleting old challenges: $e');
+      if (kDebugMode) {
+        print('Error deleting old challenges: $e');
+      }
     }
   }
-
-
-
-
-
 }

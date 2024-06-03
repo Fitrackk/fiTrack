@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 class NotificationsVM {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   Future<List<QueryDocumentSnapshot>> getNotification() async {
     try {
       User? user = _auth.currentUser;
@@ -17,7 +18,7 @@ class NotificationsVM {
           String username = userDoc['username'];
           DateTime now = DateTime.now();
           DateTime increasedTime = now.add(const Duration(hours: 1));
-          DateFormat dateFormat = DateFormat("HH:mm:ss.SSS'Z'");
+          DateFormat dateFormat = DateFormat("HH:mm:ss.SSS");
           String formattedCurrentTime = dateFormat.format(increasedTime);
           if (kDebugMode) {
             print("Formatted Current Time: $formattedCurrentTime");
@@ -33,16 +34,20 @@ class NotificationsVM {
           var filteredDocs = querySnapshot.docs.where((doc) {
             String scheduledTimeString = doc['scheduledTime'];
             // print("Scheduled Time String: $scheduledTimeString");
-            DateFormat format = DateFormat("HH:mm:ss.SSS'Z'");
+            DateFormat format = DateFormat("HH:mm:ss.SSS");
             DateTime scheduledTime = format.parse(scheduledTimeString);
 
             DateTime scheduledDate = DateTime.parse(doc['scheduledDate']);
-            return scheduledDate.isAfter(sevenDaysAgo) && scheduledDate.isBefore(now) && scheduledTime.isBefore(increasedTime);
+            return scheduledDate.isAfter(sevenDaysAgo) &&
+                scheduledDate.isBefore(now) &&
+                scheduledTime.isBefore(increasedTime);
           }).toList();
 
           filteredDocs.sort((a, b) {
-            DateTime aTime = DateFormat("HH:mm:ss.SSS'Z'").parse(a['scheduledTime']);
-            DateTime bTime = DateFormat("HH:mm:ss.SSS'Z'").parse(b['scheduledTime']);
+            DateTime aTime =
+                DateFormat("HH:mm:ss.SSS").parse(a['scheduledTime']);
+            DateTime bTime =
+                DateFormat("HH:mm:ss.SSS").parse(b['scheduledTime']);
             return bTime.compareTo(aTime);
           });
 
@@ -54,7 +59,9 @@ class NotificationsVM {
         throw Exception("No user is currently logged in.");
       }
     } catch (e) {
-      print("Error fetching notifications: $e");
+      if (kDebugMode) {
+        print("Error fetching notifications: $e");
+      }
       rethrow;
     }
   }

@@ -8,6 +8,7 @@ import 'package:fitrack/utils/customs/progress_indicator.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
 import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stator/stator.dart';
@@ -50,7 +51,9 @@ class _DashboardState extends State<Dashboard> {
         }
       } catch (e) {
         // Handle any errors here, such as logging or displaying a message
-        print("Error fetching activity data: $e");
+        if (kDebugMode) {
+          print("Error fetching activity data: $e");
+        }
       }
     });
   }

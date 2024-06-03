@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:flutter/foundation.dart';
 
 class TopNavViewModel {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -17,7 +18,9 @@ class TopNavViewModel {
         }
       }
     } catch (e) {
-      print('Error fetching user data: $e');
+      if (kDebugMode) {
+        print('Error fetching user data: $e');
+      }
     }
     return null;
   }

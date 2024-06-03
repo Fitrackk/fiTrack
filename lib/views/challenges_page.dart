@@ -22,6 +22,7 @@ class _ChallengesState extends State<Challenges> {
         appBar: AppBar(
           elevation: 0.0,
           centerTitle: true,
+          automaticallyImplyLeading: false,
           title: Text(
             "FiTrack Community",
             style: TextStyles.titleLargeBold.copyWith(color: FitColors.text20),

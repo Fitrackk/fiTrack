@@ -64,7 +64,7 @@ class _NotificationPageState extends State<NotificationPage> {
             Text(
               'Notifications',
               style:
-              TextStyles.displaySmallBold.copyWith(color: FitColors.text20),
+                  TextStyles.displaySmallBold.copyWith(color: FitColors.text20),
             ),
             const SizedBox(height: 50),
             Expanded(
@@ -72,13 +72,13 @@ class _NotificationPageState extends State<NotificationPage> {
                 future: notification.getNotification(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text("");
+                    return const Text("");
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final docs = snapshot.data!;
                     if (docs.isEmpty) {
-                      return NoNotification();
+                      return const NoNotification();
                     }
                     return ListView.builder(
                       shrinkWrap: true,
@@ -122,7 +122,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       },
                     );
                   } else {
-                    return NoNotification();
+                    return const NoNotification();
                   }
                 },
               ),

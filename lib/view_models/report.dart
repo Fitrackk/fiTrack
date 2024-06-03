@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/view_models/user.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -35,7 +36,9 @@ class ActivityDataVM {
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        print('No documents found in the ActivityData collection.');
+        if (kDebugMode) {
+          print('No documents found in the ActivityData collection.');
+        }
         return {'activityData': [], 'maxStepsCount': 0};
       }
 
@@ -49,11 +52,11 @@ class ActivityDataVM {
       };
 
       DateTime now = DateTime.now();
-      DateTime sevenDaysAgo = now.subtract(Duration(days: 7));
+      DateTime sevenDaysAgo = now.subtract(const Duration(days: 7));
 
       List<Map<String, dynamic>> activityData = [];
       int maxStepsCount = 0;
-      Set<String> addedDates = Set<String>(); // Keep track of unique dates
+      Set<String> addedDates = <String>{};
 
       for (var doc in querySnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
@@ -61,11 +64,10 @@ class ActivityDataVM {
         final date =
             dateStr != null ? DateTime.tryParse(dateStr)?.toLocal() : null;
         if (date != null && !date.isBefore(sevenDaysAgo)) {
-          // Check if date has already been added
           if (addedDates.contains(dateStr)) {
-            continue; // Skip duplicate date
+            continue;
           }
-          addedDates.add(dateStr); // Add date to set of added dates
+          addedDates.add(dateStr);
 
           final day = date.weekday;
           String dayString;
@@ -163,7 +165,9 @@ class ActivityDataVM {
 
       return {'activityData': activityData, 'maxStepsCount': maxStepsCount};
     } catch (e) {
-      print('Error fetching activity data: $e');
+      if (kDebugMode) {
+        print('Error fetching activity data: $e');
+      }
       return {'activityData': [], 'maxStepsCount': 0};
     }
   }

@@ -137,56 +137,58 @@ class NotificationsVM {
     bool notificationsExist = await notificationsExistForUserAndDate(username,
         tz.TZDateTime.now(tz.local).toIso8601String().split('T')[0], 'water');
     if (notificationsExist) {
-      print("Today's notifications already exist for user: $username");
+      if (kDebugMode) {
+        print("Today's notifications already exist for user: $username");
+      }
       return;
     }
     if (currentUser?.waterReminder == "false") return;
 
     List<Map<String, dynamic>> notifications = [
       {
-        "time": Time(5, 0, 0),
+        "time": const Time(5, 0, 0),
         "message": "Time to drink some water and stay hydrated!",
         "type": "water",
         "username": username
       },
       {
-        "time": Time(7, 0, 0),
+        "time": const Time(7, 0, 0),
         "message": "Keep it up! Stay hydrated with a glass of water.",
         "type": "water",
         "username": username
       },
       {
-        "time": Time(9, 0, 0),
+        "time": const Time(9, 0, 0),
         "message": "You're doing great! Have another glass of water.",
         "type": "water",
         "username": username
       },
       {
-        "time": Time(11, 0, 0),
+        "time": const Time(11, 0, 0),
         "message": "Don't forget to hydrate! Drink some water.",
         "type": "water",
         "username": username
       },
       {
-        "time": Time(13, 0, 0),
+        "time": const Time(13, 0, 0),
         "message": "Keep yourself hydrated with another glass of water.",
         "type": "water",
         "username": username
       },
       {
-        "time": Time(15, 0, 0),
+        "time": const Time(15, 0, 0),
         "message": "Time for a water break! Stay hydrated.",
         "type": "water",
         "username": username
       },
       {
-        "time": Time(17, 0, 0),
+        "time": const Time(17, 0, 0),
         "message": "You're doing awesome! Have a glass of water.",
         "type": "water",
         "username": username
       },
       {
-        "time": Time(19, 0, 0),
+        "time": const Time(19, 0, 0),
         "message": "End your day with a glass of water. Stay hydrated!",
         "type": "water",
         "username": username
@@ -224,8 +226,10 @@ class NotificationsVM {
         bool notificationsExist = await notificationsExistForUserAndDate(
             participant, tomorrowDateString, 'challenge');
         if (notificationsExist) {
-          print(
-              "Challenge notifications already exist for user: $participant on $tomorrowDateString");
+          if (kDebugMode) {
+            print(
+                "Challenge notifications already exist for user: $participant on $tomorrowDateString");
+          }
           continue;
         }
 
@@ -292,7 +296,7 @@ class NotificationsVM {
   Future<void> deleteOldNotifications() async {
     try {
       final now = DateTime.now();
-      final cutoffDate = now.subtract(Duration(days: 7));
+      final cutoffDate = now.subtract(const Duration(days: 7));
       final dateFormat = DateFormat('yyyy-MM-dd');
 
       QuerySnapshot notificationSnapshot =

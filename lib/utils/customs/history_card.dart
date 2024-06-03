@@ -122,7 +122,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                         Container(
                           margin: const EdgeInsets.only(left: 23.0, top: 20.0),
                           child: Text(
-                            '${widget.kcal.toStringAsFixed(2)}',
+                            widget.kcal.toStringAsFixed(2),
                             style: TextStyles.bodySmallBold
                                 .copyWith(color: FitColors.primary20),
                           ),
@@ -222,7 +222,7 @@ class _CustomHistoryCardState extends State<CustomHistoryCard> {
                         Container(
                           margin: const EdgeInsets.only(left: 25.0, top: 20.0),
                           child: Text(
-                            '${widget.challGoal}',
+                            widget.challGoal,
                             style: TextStyles.bodySmallBold
                                 .copyWith(color: FitColors.primary20),
                           ),

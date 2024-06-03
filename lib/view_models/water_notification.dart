@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/view_models/user.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
 import 'notifications.dart';
@@ -27,17 +28,24 @@ class WaterReminderVM {
             if (waterReminders) {
               await _notificationVM.scheduleDailyWaterReminder();
             } else {
-              await _notificationVM.cancelUserNotifications(username,type: 'water');
+              await _notificationVM.cancelUserNotifications(username,
+                  type: 'water');
             }
           }
         } catch (e) {
-          print("Error fetching preferences: $e");
+          if (kDebugMode) {
+            print("Error fetching preferences: $e");
+          }
         }
       } else {
-        print("Error: Username is null or empty");
+        if (kDebugMode) {
+          print("Error: Username is null or empty");
+        }
       }
     } else {
-      print("Error: Current user data not found");
+      if (kDebugMode) {
+        print("Error: Current user data not found");
+      }
     }
   }
 }

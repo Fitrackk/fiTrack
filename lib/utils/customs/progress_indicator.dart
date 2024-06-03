@@ -25,7 +25,7 @@ class CustomProgressIndicator extends StatefulWidget {
 class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 200,
       child: Stack(
         children: [

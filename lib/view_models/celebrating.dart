@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitrack/view_models/user.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,7 +21,13 @@ class CelebratingDialogVM {
         return ChallengeProgress.fromFirestore(doc);
       }).toList();
     } catch (e) {
-      print("Error fetching challenge progress: $e");
+      if (kDebugMode) {
+        if (kDebugMode) {
+          if (kDebugMode) {
+            print("Error fetching challenge progress: $e");
+          }
+        }
+      }
       return [];
     }
   }
@@ -38,11 +45,15 @@ class CelebratingDialogVM {
         ActivityData activityData = ActivityData.fromFirestore(docSnapshot);
         return activityData.stepsCount;
       } else {
-        print("Document not found for today's date: $todayDate");
+        if (kDebugMode) {
+          print("Document not found for today's date: $todayDate");
+        }
         return 0;
       }
     } catch (e) {
-      print("Error fetching steps count: $e");
+      if (kDebugMode) {
+        print("Error fetching steps count: $e");
+      }
       return 0;
     }
   }

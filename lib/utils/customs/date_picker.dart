@@ -18,7 +18,7 @@ class _DatePickerState extends State<DatePicker> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(Duration(days: 60)),
+      lastDate: DateTime.now().add(const Duration(days: 60)),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
@@ -49,7 +49,7 @@ class _DatePickerState extends State<DatePicker> {
     return Row(
       children: [
         IconButton(
-          icon: Icon(Icons.calendar_today),
+          icon: const Icon(Icons.calendar_today),
           onPressed: () => _selectDate(context),
         ),
         GestureDetector(

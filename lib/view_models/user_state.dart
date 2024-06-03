@@ -4,16 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_state.dart';
 
 Future<UserState?> getUserState() async {
-  if (FirebaseAuth.instance.currentUser == null) {
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
     return UserState.signedOut;
   } else {
-    final exists = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
         .get();
-    if (exists.data() == null) {
+    if (userDoc.exists) {
       return UserState.signedIn;
+    } else {
+      return UserState.signedOut;
     }
   }
-  return null;
 }

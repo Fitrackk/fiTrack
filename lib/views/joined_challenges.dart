@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
 
@@ -73,7 +74,9 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                         setState(() {});
                         Navigator.pop(context);
                       } catch (e) {
-                        print("Failed to join challenge: $e");
+                        if (kDebugMode) {
+                          print("Failed to join challenge: $e");
+                        }
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(

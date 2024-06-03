@@ -552,8 +552,10 @@ class ActivityTrackerVM {
           .get();
 
       if (challengeSnapshot.docs.isEmpty) {
-        print(
-            "No challenge progress documents found for the user on the given date.");
+        if (kDebugMode) {
+          print(
+              "No challenge progress documents found for the user on the given date.");
+        }
         return;
       }
 
@@ -571,7 +573,9 @@ class ActivityTrackerVM {
             (currentDistanceForType / challengeProgress.distance) * 100;
         challengeProgress.progress = newProgress;
 
-        print("New progress calculated: $newProgress");
+        if (kDebugMode) {
+          print("New progress calculated: $newProgress");
+        }
 
         await _firestore
             .collection('challengeProgress')
@@ -672,24 +676,36 @@ class ActivityTrackerVM {
                   });
                   await prefs.setBool('bonus_awarded_$formattedDate', true);
 
-                  print(
-                      'Score updated for user with username: ${currentUser.userName}');
+                  if (kDebugMode) {
+                    print(
+                        'Score updated for user with username: ${currentUser.userName}');
+                  }
                 }
               } else {
-                print('Bonus score already awarded for today');
+                if (kDebugMode) {
+                  print('Bonus score already awarded for today');
+                }
               }
             } else {
-              print('Steps count is less than 10,000: $stepsCount');
+              if (kDebugMode) {
+                print('Steps count is less than 10,000: $stepsCount');
+              }
             }
           } else {
-            print('No steps count found in the document');
+            if (kDebugMode) {
+              print('No steps count found in the document');
+            }
           }
         } else {
-          print(
-              'No document found for the current user in ActivityData with today\'s date');
+          if (kDebugMode) {
+            print(
+                'No document found for the current user in ActivityData with today\'s date');
+          }
         }
       } else {
-        print('No current user logged in');
+        if (kDebugMode) {
+          print('No current user logged in');
+        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -697,15 +713,17 @@ class ActivityTrackerVM {
       }
     }
   }
+
   Future<void> deleteOldActivityData() async {
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     try {
       final now = DateTime.now();
-      final cutoffDate = now.subtract(Duration(days: 7));
+      final cutoffDate = now.subtract(const Duration(days: 7));
       final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSSSSS');
 
-      QuerySnapshot activitySnapshot = await _firestore.collection('ActivityData').get();
+      QuerySnapshot activitySnapshot =
+          await firestore.collection('ActivityData').get();
 
       for (var doc in activitySnapshot.docs) {
         String dateString = doc['date'];
@@ -715,12 +733,13 @@ class ActivityTrackerVM {
           date = dateFormat.parse(dateString);
         } catch (e) {
           if (kDebugMode) {
-            print('Error parsing date for document ID: ${doc.id}, date string: $dateString');
+            print(
+                'Error parsing date for document ID: ${doc.id}, date string: $dateString');
           }
           continue;
         }
         if (date.isBefore(cutoffDate)) {
-          await _firestore.collection('ActivityData').doc(doc.id).delete();
+          await firestore.collection('ActivityData').doc(doc.id).delete();
           if (kDebugMode) {
             print('Deleted activity data for document ID: ${doc.id}');
           }
@@ -736,6 +755,4 @@ class ActivityTrackerVM {
       }
     }
   }
-
-
 }

@@ -24,11 +24,11 @@ class _NotificationsCardState extends State<NotificationsCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 30),
+      margin: const EdgeInsets.only(left: 30),
       child: Row(
         children: [
           widget.icon,
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Flexible(
@@ -43,7 +43,7 @@ class _NotificationsCardState extends State<NotificationsCard> {
                   softWrap: true,
                   overflow: TextOverflow.fade,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     const Icon(

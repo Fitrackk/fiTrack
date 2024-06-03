@@ -1,5 +1,6 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/customs/custom_text_field.dart';
@@ -42,7 +43,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         });
       }
     } catch (e) {
-      print('Error loading user profile image: $e');
+      if (kDebugMode) {
+        print('Error loading user profile image: $e');
+      }
       setState(() {
         _profileImageUrl = 'assets/images/unknown.png';
       });
@@ -57,13 +60,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new),
           color: FitColors.tertiary60,
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +78,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         .copyWith(color: FitColors.text20),
                   ),
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Center(
                   child: Stack(
                     children: [
@@ -83,55 +86,55 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         radius: 80,
                         backgroundImage: _profileImageUrl != null
                             ? NetworkImage(_profileImageUrl!)
-                            : AssetImage('assets/images/unknown.png')
+                            : const AssetImage('assets/images/unknown.png')
                                 as ImageProvider,
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 40.0),
+                const SizedBox(height: 40.0),
                 CustomTextField(
                   labelText: 'Old Password',
                   showIcon: true,
                   obscureText: true,
                   controller: _oldPasswordController,
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Center(
                   child: Text(
                     _oldPasswordError,
-                    style: TextStyle(color: FitColors.error40),
+                    style: const TextStyle(color: FitColors.error40),
                   ),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 CustomTextField(
                   labelText: 'New Password',
                   showIcon: true,
                   obscureText: true,
                   controller: _newPasswordController,
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Center(
                   child: Text(
                     _newPasswordError,
-                    style: TextStyle(color: FitColors.error40),
+                    style: const TextStyle(color: FitColors.error40),
                   ),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 CustomTextField(
                   labelText: 'Confirm New Password',
                   showIcon: true,
                   obscureText: true,
                   controller: _confirmPasswordController,
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Center(
                   child: Text(
                     _confirmPasswordError,
-                    style: TextStyle(color: FitColors.error40),
+                    style: const TextStyle(color: FitColors.error40),
                   ),
                 ),
-                SizedBox(height: 32.0),
+                const SizedBox(height: 32.0),
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -152,7 +155,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 32.0),
+                      const SizedBox(width: 32.0),
                       SizedBox(
                         width: 100,
                         child: ElevatedButton(

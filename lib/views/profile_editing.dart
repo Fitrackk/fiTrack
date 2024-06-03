@@ -132,7 +132,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: <Widget>[
               Text(
@@ -212,12 +212,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 onChanged: _onUserNameChanged,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Column(
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       style: TextStyles.bodyMediumBold
                           .copyWith(color: FitColors.text20),
                       controller: _heightController,
@@ -241,8 +242,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       style: TextStyles.bodyMediumBold
                           .copyWith(color: FitColors.text20),
                       controller: _weightController,
@@ -265,7 +267,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       onChanged: _onWeightChanged,
                     ),
                   ),
-                  SizedBox(height: 32.0),
+                  const SizedBox(height: 32.0),
                 ],
               ),
               Center(
@@ -290,7 +292,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 32.0),
+                      const SizedBox(width: 32.0),
                       SizedBox(
                         width: 100,
                         child: ElevatedButton(

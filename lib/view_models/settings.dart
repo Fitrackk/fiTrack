@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart' as model;
 
@@ -22,7 +22,9 @@ class SettingsVM extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('Error fetching user profile : $e');
+      if (kDebugMode) {
+        print('Error fetching user profile : $e');
+      }
     }
   }
 
@@ -40,7 +42,9 @@ class SettingsVM extends ChangeNotifier {
       _user?.challengeReminder = value.toString();
       notifyListeners();
     } catch (e) {
-      print('Error updating challenge reminder: $e');
+      if (kDebugMode) {
+        print('Error updating challenge reminder: $e');
+      }
     }
   }
 
@@ -54,7 +58,9 @@ class SettingsVM extends ChangeNotifier {
       _user?.waterReminder = value.toString();
       notifyListeners();
     } catch (e) {
-      print('Error updating water reminder: $e');
+      if (kDebugMode) {
+        print('Error updating water reminder: $e');
+      }
     }
   }
 
@@ -64,7 +70,9 @@ class SettingsVM extends ChangeNotifier {
       _user = null;
       notifyListeners();
     } catch (e) {
-      print('Error logging out: $e');
+      if (kDebugMode) {
+        print('Error logging out: $e');
+      }
     }
   }
 }

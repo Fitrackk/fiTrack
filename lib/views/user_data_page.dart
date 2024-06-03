@@ -25,7 +25,7 @@ class UserData extends StatelessWidget {
         ),
         body: Container(
           alignment: Alignment.center,
-          child: DataForm(),
+          child: const DataForm(),
         ),
       ),
     );

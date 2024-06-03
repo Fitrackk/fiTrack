@@ -37,7 +37,7 @@ class _CelebratingDialogState extends State<CelebratingDialog> {
       contentPadding: EdgeInsets.zero,
       content: Stack(
         children: [
-          Container(
+          SizedBox(
             width: 300.0,
             height: 200.0,
             child: Column(
@@ -45,7 +45,7 @@ class _CelebratingDialogState extends State<CelebratingDialog> {
                 Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
-                    icon: Icon(Icons.close, color: FitColors.primary30),
+                    icon: const Icon(Icons.close, color: FitColors.primary30),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -67,13 +67,13 @@ class _CelebratingDialogState extends State<CelebratingDialog> {
                     createParticlePath: drawStar,
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   widget.title,
                   style: TextStyles.titleLarge,
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   widget.body,
                   style: TextStyles.bodyLarge,

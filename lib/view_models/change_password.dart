@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart' as model;
 
@@ -18,7 +19,9 @@ class ChangePasswordVM {
 
       return model.User.fromFirestore(userDoc).profileImageUrl;
     } catch (e) {
-      print('Error fetching user profile image URL: $e');
+      if (kDebugMode) {
+        print('Error fetching user profile image URL: $e');
+      }
     }
     return null;
   }
@@ -40,7 +43,9 @@ class ChangePasswordVM {
         await currentUser.updatePassword(newPassword);
       }
     } catch (e) {
-      print('Error changing password: $e');
+      if (kDebugMode) {
+        print('Error changing password: $e');
+      }
       rethrow; // Rethrow the error to be caught by the UI
     }
   }
@@ -59,7 +64,9 @@ class ChangePasswordVM {
         return true;
       }
     } catch (e) {
-      print('Error validating old password: $e');
+      if (kDebugMode) {
+        print('Error validating old password: $e');
+      }
     }
     // If reauthentication fails, return false
     return false;

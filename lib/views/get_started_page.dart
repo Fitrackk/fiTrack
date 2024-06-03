@@ -25,20 +25,19 @@ class StartedPage extends StatelessWidget {
             children: <Widget>[
               Image.asset(
                 "assets/images/get_started.png",
-                width: 500, 
+                width: 500,
               ),
               const SizedBox(height: 10),
               Padding(
-                padding: EdgeInsets.only(bottom: 0),
+                padding: const EdgeInsets.only(bottom: 0),
                 child: Text('Explore more',
                     style: TextStyles.headlineLarge
                         .copyWith(color: FitColors.primary30)),
               ),
-              
               Text('Each step a new horizon',
                   style:
                       TextStyles.titleMedium.copyWith(color: FitColors.text30)),
-              const SizedBox(height: 60), 
+              const SizedBox(height: 60),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/signup');
@@ -54,7 +53,6 @@ class StartedPage extends StatelessWidget {
                     style: TextStyles.titleMedium
                         .copyWith(color: FitColors.primary30)),
               ),
-          
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: () => Navigator.pushNamed(context, '/signing'),

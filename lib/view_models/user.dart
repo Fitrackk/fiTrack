@@ -91,7 +91,9 @@ class UserVM extends ChangeNotifier {
         return null;
       }
     } catch (e) {
-      print('Error fetching user by username: $e');
+      if (kDebugMode) {
+        print('Error fetching user by username: $e');
+      }
       return null;
     }
   }

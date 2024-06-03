@@ -1,6 +1,6 @@
 import 'package:fitrack/configures/bottom_nav_bloc.dart';
 import 'package:fitrack/configures/color_theme.dart';
-import 'package:fitrack/views/challenges.dart';
+import 'package:fitrack/views/challenges_page.dart';
 import 'package:fitrack/views/dashboard_page.dart';
 import 'package:fitrack/views/report_page.dart';
 import 'package:fitrack/views/setting_page.dart';
@@ -44,8 +44,8 @@ class _MainViewState extends State<MainView> {
         children: [
           const Dashboard(),
           ActivityDataPage(),
-          Challenges(),
-         SettingsPage(),
+          const Challenges(),
+          SettingsPage(),
         ],
         onPageChanged: (index) {
           BlocProvider.of<BottomNavBloc>(context)

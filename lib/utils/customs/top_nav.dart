@@ -17,13 +17,13 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return AppBar(
             automaticallyImplyLeading: false,
-            title: Text(' '),
+            title: const Text(' '),
           );
         } else {
           if (snapshot.hasError || snapshot.data == null) {
             return AppBar(
               automaticallyImplyLeading: false,
-              title: Text('Error fetching data'),
+              title: const Text('Error fetching data'),
             );
           }
 
@@ -34,7 +34,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
           final profileImageUrl = userData['profileImageUrl'] as String?;
           final profileImage = profileImageUrl != null
               ? NetworkImage(profileImageUrl)
-              : AssetImage('assets/images/unknown.png');
+              : const AssetImage('assets/images/unknown.png');
 
           double progress = (userScore % 100) / 100;
           if (progress > 1.0) {

@@ -31,7 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
           builder: (context, viewModel, child) {
             final user = viewModel.user;
             if (user == null) {
-              return Center(child: Text(' '));
+              return const Center(child: Text(' '));
             }
 
             int userLevel = viewModel.calculateUserLevel(user.score ?? 0);
@@ -50,10 +50,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         radius: 50,
                         backgroundImage: user.profileImageUrl != null
                             ? NetworkImage(user.profileImageUrl!)
-                            : AssetImage('assets/images/p.png')
+                            : const AssetImage('assets/images/p.png')
                                 as ImageProvider,
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -71,11 +71,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Row(
                     children: [
-                      Icon(Icons.person, color: FitColors.primary30),
-                      SizedBox(width: 8),
+                      const Icon(Icons.person, color: FitColors.primary30),
+                      const SizedBox(width: 8),
                       Text(
                         'Account',
                         style: TextStyles.labelLargeBold
@@ -83,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  Divider(
+                  const Divider(
                     color: FitColors.placeholder,
                     thickness: 1,
                   ),
@@ -91,7 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Edit Profile',
                         style: TextStyles.labelMediumBold
                             .copyWith(color: FitColors.text20)),
-                    trailing: Icon(Icons.arrow_forward_ios,
+                    trailing: const Icon(Icons.arrow_forward_ios,
                         color: FitColors.primary30),
                     onTap: () {
                       Navigator.pushNamed(context, '/edit_profile');
@@ -101,17 +101,18 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Change Password',
                         style: TextStyles.labelMediumBold
                             .copyWith(color: FitColors.text20)),
-                    trailing: Icon(Icons.arrow_forward_ios,
+                    trailing: const Icon(Icons.arrow_forward_ios,
                         color: FitColors.primary30),
                     onTap: () {
                       Navigator.pushNamed(context, '/change_password');
                     },
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
-                      Icon(Icons.notifications, color: FitColors.primary30),
-                      SizedBox(width: 8),
+                      const Icon(Icons.notifications,
+                          color: FitColors.primary30),
+                      const SizedBox(width: 8),
                       Text(
                         'Notifications',
                         style: TextStyles.labelLargeBold
@@ -119,7 +120,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  Divider(
+                  const Divider(
                     color: FitColors.placeholder,
                     thickness: 1,
                   ),
@@ -159,8 +160,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       inactiveTrackColor: FitColors.tertiary40,
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Divider(
+                  const SizedBox(height: 20),
+                  const Divider(
                     color: FitColors.placeholder,
                     thickness: 1,
                   ),
@@ -168,7 +169,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Log Out',
                         style: TextStyles.labelMediumBold
                             .copyWith(color: FitColors.text20)),
-                    trailing: Icon(Icons.logout, color: FitColors.primary30),
+                    trailing:
+                        const Icon(Icons.logout, color: FitColors.primary30),
                     onTap: () async {
                       // Show confirmation dialog
                       showDialog(

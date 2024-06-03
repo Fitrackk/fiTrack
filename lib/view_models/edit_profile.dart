@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
 import '../utils/validation_utils/validation_utils.dart';
@@ -23,7 +24,9 @@ class EditProfile {
 
       return User.fromFirestore(userDoc);
     } catch (e) {
-      print('Error fetching user data: $e`');
+      if (kDebugMode) {
+        print('Error fetching user data: $e`');
+      }
       return null;
     }
   }
@@ -35,7 +38,9 @@ class EditProfile {
 
       await _firestore.collection('users').doc(userId).update(user.toMap());
     } catch (e) {
-      print('Error updating user data: $e');
+      if (kDebugMode) {
+        print('Error updating user data: $e');
+      }
     }
   }
 
@@ -49,7 +54,9 @@ class EditProfile {
           await _storage.ref('profile_images/$userId.jpg').putFile(file);
       return await snapshot.ref.getDownloadURL();
     } catch (e) {
-      print('Error uploading profile image: $e');
+      if (kDebugMode) {
+        print('Error uploading profile image: $e');
+      }
       return null;
     }
   }
