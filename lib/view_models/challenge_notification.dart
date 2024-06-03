@@ -4,11 +4,11 @@ import 'package:fitrack/view_models/user.dart';
 import '../models/user_model.dart';
 import 'notifications.dart';
 
-class WaterReminderVM {
+class ChallengeReminderVM {
   final UserVM _userVM = UserVM();
   final NotificationsVM _notificationVM = NotificationsVM();
 
-  Future<void> initializeWaterReminder() async {
+  Future<void> initializeChallengeReminder() async {
     await _notificationVM.initialize();
 
     User? currentUser = await _userVM.getUserData();
@@ -22,12 +22,12 @@ class WaterReminderVM {
               .get();
           for (var userDoc in docSnapshot.docs) {
             User user = User.fromFirestore(userDoc);
-            bool waterReminders = user.waterReminder == "true";
+            bool challengeReminders = user.challengeReminder == "true";
 
-            if (waterReminders) {
-              await _notificationVM.scheduleDailyWaterReminder();
+            if (challengeReminders) {
+              await _notificationVM.scheduleChallengeReminders();
             } else {
-              await _notificationVM.cancelUserNotifications(username,type: 'water');
+              await _notificationVM.cancelUserNotifications(username, type: 'challenge');
             }
           }
         } catch (e) {
