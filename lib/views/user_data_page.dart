@@ -23,7 +23,10 @@ class UserData extends StatelessWidget {
             color: FitColors.tertiary60,
           ),
         ),
-        body: const Center(child: DataForm()),
+        body: Container(
+          alignment: Alignment.center,
+          child: DataForm(),
+        ),
       ),
     );
   }
@@ -82,6 +85,10 @@ class _DataFormState extends State<DataForm> {
             const SizedBox(height: 20),
             TextField(
               controller: _usernameController,
+              onChanged: (value) {
+                _authService.validateUserName(value);
+                setState(() {});
+              },
               decoration: InputDecoration(
                 labelText: 'Username',
                 labelStyle:
@@ -109,6 +116,10 @@ class _DataFormState extends State<DataForm> {
             const SizedBox(height: 20),
             TextField(
               controller: _fullNameController,
+              onChanged: (value) {
+                _authService.validateFullName(value);
+                setState(() {});
+              },
               decoration: InputDecoration(
                 labelText: 'Full Name',
                 labelStyle:
@@ -137,62 +148,82 @@ class _DataFormState extends State<DataForm> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: TextField(
-                    controller: _heightController,
-                    decoration: InputDecoration(
-                      labelText: 'Height',
-                      labelStyle: TextStyles.titleMedium
-                          .copyWith(color: FitColors.text10),
-                      hintText: 'Enter your height',
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: FitColors.tertiary60,
-                          width: 1.1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        controller: _heightController,
+                        onChanged: (value) {
+                          _authService.validateHeight(value);
+                          setState(() {});
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Height',
+                          labelStyle: TextStyles.titleMedium
+                              .copyWith(color: FitColors.text10),
+                          hintText: 'your height in cm',
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: FitColors.tertiary60,
+                              width: 1.1,
+                            ),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: FitColors.primary30,
+                              width: 1.1,
+                            ),
+                          ),
                         ),
                       ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: FitColors.primary30,
-                          width: 1.1,
+                      if (_authService.heightError.isNotEmpty)
+                        Text(
+                          _authService.heightError,
+                          style: const TextStyle(color: FitColors.error50),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
                 ),
-                if (_authService.heightError.isNotEmpty)
-                  Text(
-                    _authService.heightError,
-                    style: const TextStyle(color: FitColors.error50),
-                  ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: TextField(
-                    controller: _weightController,
-                    decoration: InputDecoration(
-                      labelText: 'Weight',
-                      labelStyle: TextStyles.titleMedium
-                          .copyWith(color: FitColors.text10),
-                      hintText: 'Enter your weight',
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: FitColors.tertiary60,
-                          width: 1.1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        controller: _weightController,
+                        onChanged: (value) {
+                          _authService.validateWeight(value);
+                          setState(() {});
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Weight',
+                          labelStyle: TextStyles.titleMedium
+                              .copyWith(color: FitColors.text10),
+                          hintText: 'your weight in kg',
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: FitColors.tertiary60,
+                              width: 1.1,
+                            ),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: FitColors.primary30,
+                              width: 1.1,
+                            ),
+                          ),
                         ),
                       ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: FitColors.primary30,
-                          width: 1.1,
+                      if (_authService.weightError.isNotEmpty)
+                        Text(
+                          _authService.weightError,
+                          style: const TextStyle(color: FitColors.error50),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
                 ),
-                if (_authService.weightError.isNotEmpty)
-                  Text(
-                    _authService.weightError,
-                    style: const TextStyle(color: FitColors.error50),
-                  ),
               ],
             ),
             const SizedBox(height: 20),
@@ -201,6 +232,10 @@ class _DataFormState extends State<DataForm> {
               child: AbsorbPointer(
                 child: TextField(
                   controller: _dateOfBirthController,
+                  onChanged: (value) {
+                    _authService.validateDateOfBirth(value);
+                    setState(() {});
+                  },
                   decoration: InputDecoration(
                     labelText: 'Date of Birth',
                     labelStyle: TextStyles.titleMedium

@@ -62,7 +62,7 @@ class _JoinedChallengeCardState extends State<JoinedChallengeCard> {
       ),
       child: ElevatedButton(
           onPressed: () {
-            // Add your button onPressed logic here
+            // onPressed logic here
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.transparent),
