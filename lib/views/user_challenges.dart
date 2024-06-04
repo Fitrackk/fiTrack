@@ -50,7 +50,7 @@ class _UserChallengesState extends State<UserChallenges> {
                 Text(
                   'New Challenge Setup',
                   style:
-                  TextStyles.titleMedBold.copyWith(color: FitColors.text10),
+                      TextStyles.titleMedBold.copyWith(color: FitColors.text10),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -214,7 +214,8 @@ class _UserChallengesState extends State<UserChallenges> {
                 return FutureBuilder<List<Challenge>>(
                   future: challengeData.getChallengeData(),
                   builder: (context, challengeSnapshot) {
-                    if (challengeSnapshot.connectionState == ConnectionState.waiting) {
+                    if (challengeSnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return const ShimmerLoadingCard();
                     } else if (challengeSnapshot.hasError) {
                       return Center(
@@ -222,7 +223,8 @@ class _UserChallengesState extends State<UserChallenges> {
                       );
                     } else if (challengeSnapshot.hasData) {
                       List<Challenge> challenges = challengeSnapshot.data!
-                          .where((challenge) => challenge.challengeOwner == user.userName)
+                          .where((challenge) =>
+                              challenge.challengeOwner == user.userName)
                           .toList();
                       if (challenges.isEmpty) {
                         return const NoChallenge();
@@ -234,32 +236,47 @@ class _UserChallengesState extends State<UserChallenges> {
                           itemBuilder: (context, index) {
                             Challenge challenge = challenges[index];
                             return FutureBuilder<List<ChallengeProgress>>(
-                              future: challengeData.getChallengeProgress(challenge.challengeId),
+                              future: challengeData
+                                  .getChallengeProgress(challenge.challengeId),
                               builder: (context, progressSnapshot) {
-                                if (progressSnapshot.connectionState == ConnectionState.waiting) {
+                                if (progressSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
                                   return const ShimmerLoadingCard();
                                 } else if (progressSnapshot.hasError) {
                                   return Center(
-                                    child: Text('Error: ${progressSnapshot.error}'),
+                                    child: Text(
+                                        'Error: ${progressSnapshot.error}'),
                                   );
                                 } else if (progressSnapshot.hasData) {
                                   double totalProgress = progressSnapshot.data!
-                                      .fold(0, (sum, progress) => sum + progress.progress);
-                                  double progressPercentage = progressSnapshot.data!.isEmpty
-                                      ? 0
-                                      : totalProgress / progressSnapshot.data!.length;
-                                  return CustomChallengeCard(
-                                    challengeId: challenge.challengeId,
-                                    challengeName: challenge.challengeName,
-                                    challengeOwner: challenge.challengeOwner,
-                                    challengeDate: challenge.challengeDate,
-                                    participations: challenge.participations,
-                                    challengeParticipantsImg: challenge.participantImages,
-                                    activityType: challenge.activityType,
-                                    distance: challenge.distance,
-                                    participantUsernames: challenge.participantUsernames,
-                                    challengeJoined: true,
-                                    challengeProgress: "${progressPercentage.toStringAsFixed(0)}%",
+                                      .fold(
+                                          0,
+                                          (sum, progress) =>
+                                              sum + progress.progress);
+                                  double progressPercentage =
+                                      progressSnapshot.data!.isEmpty
+                                          ? 0
+                                          : totalProgress /
+                                              progressSnapshot.data!.length;
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 15, 0, 5),
+                                    child: CustomChallengeCard(
+                                      challengeId: challenge.challengeId,
+                                      challengeName: challenge.challengeName,
+                                      challengeOwner: challenge.challengeOwner,
+                                      challengeDate: challenge.challengeDate,
+                                      participations: challenge.participations,
+                                      challengeParticipantsImg:
+                                          challenge.participantImages,
+                                      activityType: challenge.activityType,
+                                      distance: challenge.distance,
+                                      participantUsernames:
+                                          challenge.participantUsernames,
+                                      challengeJoined: true,
+                                      challengeProgress:
+                                          "${progressPercentage.toStringAsFixed(0)}%",
+                                    ),
                                   );
                                 } else {
                                   return const Center(

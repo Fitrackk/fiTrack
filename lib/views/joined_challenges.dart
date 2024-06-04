@@ -30,84 +30,107 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          backgroundColor: FitColors.tertiary90,
-          content: SizedBox(
-            width: 200,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              backgroundColor: FitColors.tertiary90,
+              content: AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
-                      width: 200,
-                      child: TextFormField(
-                        controller: _idController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter Challenge ID',
+                    AnimatedOpacity(
+                      opacity: 1.0,
+                      duration: Duration(milliseconds: 500),
+                      child: Text(
+                        'Join Challenge',
+                        style: TextStyles.titleMedBold
+                            .copyWith(color: FitColors.text10),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          child: TextFormField(
+                            controller: _idController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: 'Enter Challenge ID',
+                              filled: true,
+                              fillColor: FitColors.tertiary80,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        var id = _idController.text;
+                        if (id.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please enter a valid challenge ID',
+                                style: TextStyles.bodySmallBold
+                                    .copyWith(color: FitColors.text95),
+                              ),
+                              backgroundColor: FitColors.tertiary50,
+                            ),
+                          );
+                        } else {
+                          try {
+                            await challengeVM.joinChallengeById(context, id);
+                            setState(() {});
+                            Navigator.pop(context);
+                          } catch (e) {
+                            if (kDebugMode) {
+                              print("Failed to join challenge: $e");
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Failed to join challenge: $e',
+                                  style: TextStyles.bodySmallBold
+                                      .copyWith(color: FitColors.error40),
+                                ),
+                                backgroundColor: FitColors.tertiary50,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: FitColors.primary20,
+                        elevation: 10,
+                        shadowColor: Colors.black.withOpacity(0.5),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Join !',
+                          style: TextStyles.titleMedium
+                              .copyWith(color: FitColors.primary95),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    var id = _idController.text;
-                    if (id.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Please enter a valid challenge ID',
-                            style: TextStyles.bodySmallBold
-                                .copyWith(color: FitColors.text95),
-                          ),
-                          backgroundColor: FitColors.tertiary50,
-                        ),
-                      );
-                    } else {
-                      try {
-                        await challengeVM.joinChallengeById(context, id);
-                        setState(() {});
-                        Navigator.pop(context);
-                      } catch (e) {
-                        if (kDebugMode) {
-                          print("Failed to join challenge: $e");
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Failed to join challenge: $e',
-                              style: TextStyles.bodySmallBold
-                                  .copyWith(color: FitColors.error40),
-                            ),
-                            backgroundColor: FitColors.tertiary50,
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: FitColors.primary20,
-                    elevation: 10,
-                    shadowColor: Colors.black.withOpacity(0.5),
-                  ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      'Join !',
-                      style: TextStyles.titleMedium
-                          .copyWith(color: FitColors.primary95),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -144,9 +167,10 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                     if (userSnapshot.hasData) {
                       User? user = userSnapshot.data;
                       if (user != null) {
-                        var joinedChallenges = challenges.where((challenge) =>
-                            challenge.participantUsernames
-                                .contains(user.userName)).toList();
+                        var joinedChallenges = challenges
+                            .where((challenge) => challenge.participantUsernames
+                                .contains(user.userName))
+                            .toList();
                         if (joinedChallenges.isEmpty) {
                           return const NoChallenge();
                         }
@@ -157,8 +181,8 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                             itemBuilder: (context, index) {
                               Challenge challenge = joinedChallenges[index];
                               return FutureBuilder<List<ChallengeProgress>>(
-                                future: ChallengesVM()
-                                    .getChallengeProgress(challenge.challengeId),
+                                future: ChallengesVM().getChallengeProgress(
+                                    challenge.challengeId),
                                 builder: (context, progressSnapshot) {
                                   if (progressSnapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -175,10 +199,10 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                                     });
 
                                     double progressPercentage =
-                                    progressSnapshot.data!.isEmpty
-                                        ? 0
-                                        : totalProgress /
-                                        progressSnapshot.data!.length;
+                                        progressSnapshot.data!.isEmpty
+                                            ? 0
+                                            : totalProgress /
+                                                progressSnapshot.data!.length;
 
                                     return SingleChildScrollView(
                                       child: Column(
@@ -187,23 +211,23 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                                           CustomChallengeCard(
                                             challengeId: challenge.challengeId,
                                             challengeName:
-                                            challenge.challengeName,
+                                                challenge.challengeName,
                                             challengeOwner:
-                                            challenge.challengeOwner,
+                                                challenge.challengeOwner,
                                             challengeDate:
-                                            challenge.challengeDate,
+                                                challenge.challengeDate,
                                             participations:
-                                            challenge.participations,
+                                                challenge.participations,
                                             challengeParticipantsImg:
-                                            challenge.participantImages,
+                                                challenge.participantImages,
                                             activityType:
-                                            challenge.activityType,
+                                                challenge.activityType,
                                             distance: challenge.distance,
-                                            participantUsernames: challenge
-                                                .participantUsernames,
+                                            participantUsernames:
+                                                challenge.participantUsernames,
                                             challengeJoined: true,
                                             challengeProgress:
-                                            "${progressPercentage.toStringAsFixed(0)}%",
+                                                "${progressPercentage.toStringAsFixed(0)}%",
                                           ),
                                           const SizedBox(
                                             height: 5,
