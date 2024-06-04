@@ -1,3 +1,4 @@
+import 'package:fitrack/views/no_challenge_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
@@ -23,7 +24,6 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
   final TextEditingController _idController = TextEditingController();
 
   final userData = getSingleton<UserVM>();
-  bool isJoined = true;
   final ChallengesVM challengeVM = ChallengesVM();
 
   void _addChallengeDialog() {
@@ -137,114 +137,99 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                   child: Text('Error: ${snapshot.error}'),
                 );
               } else if (snapshot.hasData) {
-                return Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data?.length,
-                    itemBuilder: (context, index) {
-                      Challenge challenge = snapshot.data![index];
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            StreamBuilder(
-                              stream: userData.getUserData().asStream(),
-                              builder: (context, userSnapshot) {
-                                if (userSnapshot.hasData) {
-                                  User? user = userSnapshot.data;
-                                  if (user != null) {
-                                    if (challenge.participantUsernames
-                                        .contains(user.userName)) {
-                                      return FutureBuilder<
-                                          List<ChallengeProgress>>(
-                                        future: ChallengesVM()
-                                            .getChallengeProgress(
-                                                challenge.challengeId),
-                                        builder: (context, progressSnapshot) {
-                                          if (progressSnapshot
-                                                  .connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const ShimmerLoadingCard();
-                                          } else if (progressSnapshot
-                                              .hasError) {
-                                            return Center(
-                                              child: Text(
-                                                  'Error: ${progressSnapshot.error}'),
-                                            );
-                                          } else if (progressSnapshot.hasData) {
-                                            double totalProgress = 0;
-                                            progressSnapshot.data
-                                                ?.forEach((progress) {
-                                              totalProgress +=
-                                                  progress.progress;
-                                            });
+                var challenges = snapshot.data!;
+                return StreamBuilder(
+                  stream: userData.getUserData().asStream(),
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.hasData) {
+                      User? user = userSnapshot.data;
+                      if (user != null) {
+                        var joinedChallenges = challenges.where((challenge) =>
+                            challenge.participantUsernames
+                                .contains(user.userName)).toList();
+                        if (joinedChallenges.isEmpty) {
+                          return const NoChallenge();
+                        }
+                        return Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: joinedChallenges.length,
+                            itemBuilder: (context, index) {
+                              Challenge challenge = joinedChallenges[index];
+                              return FutureBuilder<List<ChallengeProgress>>(
+                                future: ChallengesVM()
+                                    .getChallengeProgress(challenge.challengeId),
+                                builder: (context, progressSnapshot) {
+                                  if (progressSnapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const ShimmerLoadingCard();
+                                  } else if (progressSnapshot.hasError) {
+                                    return Center(
+                                      child: Text(
+                                          'Error: ${progressSnapshot.error}'),
+                                    );
+                                  } else if (progressSnapshot.hasData) {
+                                    double totalProgress = 0;
+                                    progressSnapshot.data?.forEach((progress) {
+                                      totalProgress += progress.progress;
+                                    });
 
-                                            double progressPercentage =
-                                                progressSnapshot.data!.isEmpty
-                                                    ? 0
-                                                    : totalProgress /
-                                                        progressSnapshot
-                                                            .data!.length;
+                                    double progressPercentage =
+                                    progressSnapshot.data!.isEmpty
+                                        ? 0
+                                        : totalProgress /
+                                        progressSnapshot.data!.length;
 
-                                            return SingleChildScrollView(
-                                              child: Column(
-                                                children: [
-                                                  const SizedBox(height: 15),
-                                                  CustomChallengeCard(
-                                                    challengeId:
-                                                        challenge.challengeId,
-                                                    challengeName:
-                                                        challenge.challengeName,
-                                                    challengeOwner: challenge
-                                                        .challengeOwner,
-                                                    challengeDate:
-                                                        challenge.challengeDate,
-                                                    participations: challenge
-                                                        .participations,
-                                                    challengeParticipantsImg:
-                                                        challenge
-                                                            .participantImages,
-                                                    activityType:
-                                                        challenge.activityType,
-                                                    distance:
-                                                        challenge.distance,
-                                                    participantUsernames:
-                                                        challenge
-                                                            .participantUsernames,
-                                                    challengeJoined: true,
-                                                    challengeProgress:
-                                                        "${progressPercentage.toStringAsFixed(0)}%",
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          } else {
-                                            return const Center(
-                                              child: Text(
-                                                  'No progress data available'),
-                                            );
-                                          }
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox();
+                                    return SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 15),
+                                          CustomChallengeCard(
+                                            challengeId: challenge.challengeId,
+                                            challengeName:
+                                            challenge.challengeName,
+                                            challengeOwner:
+                                            challenge.challengeOwner,
+                                            challengeDate:
+                                            challenge.challengeDate,
+                                            participations:
+                                            challenge.participations,
+                                            challengeParticipantsImg:
+                                            challenge.participantImages,
+                                            activityType:
+                                            challenge.activityType,
+                                            distance: challenge.distance,
+                                            participantUsernames: challenge
+                                                .participantUsernames,
+                                            challengeJoined: true,
+                                            challengeProgress:
+                                            "${progressPercentage.toStringAsFixed(0)}%",
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                        ],
+                                      ),
+                                    );
                                   } else {
-                                    return const Text("User is null");
+                                    return const Center(
+                                      child: Text('No progress data available'),
+                                    );
                                   }
-                                } else if (userSnapshot.hasError) {
-                                  return Text("Error: ${userSnapshot.error}");
-                                } else {
-                                  return const SizedBox();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      } else {
+                        return const Text("User is null");
+                      }
+                    } else if (userSnapshot.hasError) {
+                      return Text("Error: ${userSnapshot.error}");
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
                 );
               } else {
                 return const Center(

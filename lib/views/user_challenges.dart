@@ -2,6 +2,7 @@ import 'package:fitrack/utils/customs/activity_drop_down.dart';
 import 'package:fitrack/utils/customs/date_picker.dart';
 import 'package:fitrack/utils/customs/participants_drop_down.dart';
 import 'package:fitrack/utils/customs/reminder_toggle.dart';
+import 'package:fitrack/views/no_challenge_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
@@ -31,8 +32,6 @@ class _UserChallengesState extends State<UserChallenges> {
   final TextEditingController _reminderController = TextEditingController();
   final userData = getSingleton<UserVM>();
   final challengeData = getSingleton<ChallengesVM>();
-  bool isJoined = true;
-  final ChallengesVM challengeVM = ChallengesVM();
 
   void _showChallengeDialog() {
     showDialog(
@@ -51,7 +50,7 @@ class _UserChallengesState extends State<UserChallenges> {
                 Text(
                   'New Challenge Setup',
                   style:
-                      TextStyles.titleMedBold.copyWith(color: FitColors.text10),
+                  TextStyles.titleMedBold.copyWith(color: FitColors.text10),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -201,132 +200,92 @@ class _UserChallengesState extends State<UserChallenges> {
       margin: const EdgeInsets.only(bottom: 20),
       child: Column(
         children: [
-          FutureBuilder<List<Challenge>>(
-            future: ChallengesVM().getChallengeData(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+          FutureBuilder<User?>(
+            future: userData.getUserData(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
                 return const ShimmerLoadingCard();
-              } else if (snapshot.hasError) {
+              } else if (userSnapshot.hasError) {
                 return Center(
-                  child: Text('Error: ${snapshot.error}'),
+                  child: Text('Error: ${userSnapshot.error}'),
                 );
-              } else if (snapshot.hasData) {
-                return Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data?.length,
-                    itemBuilder: (context, index) {
-                      Challenge challenge = snapshot.data![index];
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            StreamBuilder(
-                              stream: userData.getUserData().asStream(),
-                              builder: (context, userSnapshot) {
-                                if (userSnapshot.hasData) {
-                                  User? user = userSnapshot.data;
-                                  if (user != null) {
-                                    if (challenge.challengeOwner ==
-                                        user.userName) {
-                                      return FutureBuilder<
-                                          List<ChallengeProgress>>(
-                                        future: ChallengesVM()
-                                            .getChallengeProgress(
-                                                challenge.challengeId),
-                                        builder: (context, progressSnapshot) {
-                                          if (progressSnapshot
-                                                  .connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const ShimmerLoadingCard();
-                                          } else if (progressSnapshot
-                                              .hasError) {
-                                            return Center(
-                                              child: Text(
-                                                  'Error: ${progressSnapshot.error}'),
-                                            );
-                                          } else if (progressSnapshot.hasData) {
-                                            double totalProgress = 0;
-                                            progressSnapshot.data
-                                                ?.forEach((progress) {
-                                              totalProgress +=
-                                                  progress.progress;
-                                            });
-
-                                            double progressPercentage =
-                                                progressSnapshot.data!.isEmpty
-                                                    ? 0
-                                                    : totalProgress /
-                                                        progressSnapshot
-                                                            .data!.length;
-
-                                            return SingleChildScrollView(
-                                              child: Column(
-                                                children: [
-                                                  const SizedBox(height: 20),
-                                                  CustomChallengeCard(
-                                                    challengeId:
-                                                        challenge.challengeId,
-                                                    challengeName:
-                                                        challenge.challengeName,
-                                                    challengeOwner: challenge
-                                                        .challengeOwner,
-                                                    challengeDate:
-                                                        challenge.challengeDate,
-                                                    participations: challenge
-                                                        .participations,
-                                                    challengeParticipantsImg:
-                                                        challenge
-                                                            .participantImages,
-                                                    activityType:
-                                                        challenge.activityType,
-                                                    distance:
-                                                        challenge.distance,
-                                                    participantUsernames:
-                                                        challenge
-                                                            .participantUsernames,
-                                                    challengeJoined: true,
-                                                    challengeProgress:
-                                                        "${progressPercentage.toStringAsFixed(0)}%",
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          } else {
-                                            return const Center(
-                                              child: Text(
-                                                  'No progress data available'),
-                                            );
-                                          }
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox();
-                                  } else {
-                                    return const Text("User is null");
-                                  }
-                                } else if (userSnapshot.hasError) {
-                                  return Text("Error: ${userSnapshot.error}");
+              } else if (userSnapshot.hasData && userSnapshot.data != null) {
+                User user = userSnapshot.data!;
+                return FutureBuilder<List<Challenge>>(
+                  future: challengeData.getChallengeData(),
+                  builder: (context, challengeSnapshot) {
+                    if (challengeSnapshot.connectionState == ConnectionState.waiting) {
+                      return const ShimmerLoadingCard();
+                    } else if (challengeSnapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${challengeSnapshot.error}'),
+                      );
+                    } else if (challengeSnapshot.hasData) {
+                      List<Challenge> challenges = challengeSnapshot.data!
+                          .where((challenge) => challenge.challengeOwner == user.userName)
+                          .toList();
+                      if (challenges.isEmpty) {
+                        return const NoChallenge();
+                      }
+                      return Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: challenges.length,
+                          itemBuilder: (context, index) {
+                            Challenge challenge = challenges[index];
+                            return FutureBuilder<List<ChallengeProgress>>(
+                              future: challengeData.getChallengeProgress(challenge.challengeId),
+                              builder: (context, progressSnapshot) {
+                                if (progressSnapshot.connectionState == ConnectionState.waiting) {
+                                  return const ShimmerLoadingCard();
+                                } else if (progressSnapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${progressSnapshot.error}'),
+                                  );
+                                } else if (progressSnapshot.hasData) {
+                                  double totalProgress = progressSnapshot.data!
+                                      .fold(0, (sum, progress) => sum + progress.progress);
+                                  double progressPercentage = progressSnapshot.data!.isEmpty
+                                      ? 0
+                                      : totalProgress / progressSnapshot.data!.length;
+                                  return CustomChallengeCard(
+                                    challengeId: challenge.challengeId,
+                                    challengeName: challenge.challengeName,
+                                    challengeOwner: challenge.challengeOwner,
+                                    challengeDate: challenge.challengeDate,
+                                    participations: challenge.participations,
+                                    challengeParticipantsImg: challenge.participantImages,
+                                    activityType: challenge.activityType,
+                                    distance: challenge.distance,
+                                    participantUsernames: challenge.participantUsernames,
+                                    challengeJoined: true,
+                                    challengeProgress: "${progressPercentage.toStringAsFixed(0)}%",
+                                  );
                                 } else {
-                                  return const SizedBox();
+                                  return const Center(
+                                    child: Text('No progress data available'),
+                                  );
                                 }
                               },
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       );
-                    },
-                  ),
+                    } else {
+                      return const Center(
+                        child: Text('No data available'),
+                      );
+                    }
+                  },
                 );
               } else {
                 return const Center(
-                  child: Text('No data available'),
+                  child: Text('User not found'),
                 );
               }
             },
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),
