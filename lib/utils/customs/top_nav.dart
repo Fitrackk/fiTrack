@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../configures/color_theme.dart';
 import '../../view_models/top_nav.dart';
-import '../../views/notifications.dart';
+import '../../views/notifications_page.dart';
 
 class TopNav extends StatelessWidget implements PreferredSizeWidget {
   final TopNavViewModel _viewModel = TopNavViewModel();

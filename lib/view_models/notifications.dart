@@ -37,36 +37,42 @@ class NotificationsVM {
   }) async {
     final dateTimeComponents = _nextInstanceOfTime(time);
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.parse(tz.local,
-          '${dateTimeComponents['date']}T${dateTimeComponents['time']}'),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'fitrack',
-          'fitrack',
-          channelDescription: 'fitrack : challenges community & reminders',
-          importance: Importance.max,
-          priority: Priority.high,
+    try {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tz.TZDateTime.parse(tz.local,
+            '${dateTimeComponents['date']}T${dateTimeComponents['time']}'),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'fitrack',
+            'fitrack',
+            channelDescription: 'fitrack : challenges community & reminders',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
         ),
-      ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
 
-    await _addNotificationToFirestore(
-      id: id,
-      title: title,
-      body: body,
-      scheduledDate: dateTimeComponents['date'],
-      scheduledTime: dateTimeComponents['time'],
-      type: type,
-      username: username,
-    );
+      await _addNotificationToFirestore(
+        id: id,
+        title: title,
+        body: body,
+        scheduledDate: dateTimeComponents['date'],
+        scheduledTime: dateTimeComponents['time'],
+        type: type,
+        username: username,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error scheduling notification: $e');
+      }
+    }
   }
 
   Future<void> _addNotificationToFirestore({
@@ -78,15 +84,24 @@ class NotificationsVM {
     required String type,
     required String username,
   }) async {
-    await firestore.collection('notifications').add({
-      'id': id,
-      'title': title,
-      'body': body,
-      'scheduledDate': scheduledDate,
-      'scheduledTime': scheduledTime,
-      'type': type,
-      'username': username,
-    });
+    try {
+      await firestore.collection('notifications').add({
+        'id': id,
+        'title': title,
+        'body': body,
+        'scheduledDate': scheduledDate,
+        'scheduledTime': scheduledTime,
+        'type': type,
+        'username': username,
+      });
+      if (kDebugMode) {
+        print('Notification added to Firestore: $id');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error adding notification to Firestore: $e');
+      }
+    }
   }
 
   Future<void> cancelUserNotifications(String username, {String? type}) async {
@@ -100,8 +115,14 @@ class NotificationsVM {
 
     var snapshots = await query.get();
     for (var doc in snapshots.docs) {
-      await flutterLocalNotificationsPlugin.cancel(doc['id']);
-      await doc.reference.delete();
+      try {
+        await flutterLocalNotificationsPlugin.cancel(doc['id']);
+        await doc.reference.delete();
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error cancelling notification: $e');
+        }
+      }
     }
   }
 
@@ -275,15 +296,27 @@ class NotificationsVM {
             username: notification['username'],
           );
 
-          await _addNotificationToFirestore(
-            id: challenge['challengeId'] * 100 + i,
-            title: 'Challenge Reminder',
-            body: notification['message'],
-            scheduledDate: notification['time'].toIso8601String().split('T')[0],
-            scheduledTime: notification['time'].toIso8601String().split('T')[1],
-            type: notification['type'],
-            username: notification['username'],
-          );
+          try {
+            await _addNotificationToFirestore(
+              id: i,
+              title: 'Challenge Reminder',
+              body: notification['message'],
+              scheduledDate:
+                  notification['time'].toIso8601String().split('T')[0],
+              scheduledTime:
+                  notification['time'].toIso8601String().split('T')[1],
+              type: notification['type'],
+              username: notification['username'],
+            );
+            if (kDebugMode) {
+              print(
+                  'Challenge notification added to Firestore: ${challenge['challengeId'] * 100 + i}');
+            }
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error adding challenge notification to Firestore: $e');
+            }
+          }
         }
       }
     }
@@ -306,7 +339,6 @@ class NotificationsVM {
         String dateString = doc['scheduledDate'];
         DateTime date;
 
-        // Try to parse the date string.
         try {
           date = dateFormat.parse(dateString);
         } catch (e) {
@@ -314,7 +346,7 @@ class NotificationsVM {
             print(
                 'Error parsing date for document ID: ${doc.id}, date string: $dateString');
           }
-          continue; // Skip this document if date parsing fails
+          continue;
         }
 
         if (date.isBefore(cutoffDate)) {

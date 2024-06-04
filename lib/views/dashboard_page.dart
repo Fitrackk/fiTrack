@@ -11,6 +11,7 @@ import 'package:fitrack/view_models/challenges.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stator/stator.dart';
 
 import '../models/activity_data_model.dart';
@@ -50,7 +51,6 @@ class _DashboardState extends State<Dashboard> {
           _activityDataController.add(data);
         }
       } catch (e) {
-        // Handle any errors here, such as logging or displaying a message
         if (kDebugMode) {
           print("Error fetching activity data: $e");
         }
@@ -209,7 +209,7 @@ class _DashboardState extends State<Dashboard> {
                             builder: (context, progressSnapshot) {
                               if (progressSnapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return const Center(child: Text(" "));
+                                return _buildShimmerCard();
                               } else if (progressSnapshot.hasError) {
                                 return Center(
                                   child:
@@ -293,6 +293,81 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildShimmerCard() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 30),
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height / 7,
+        decoration: BoxDecoration(
+          boxShadow: const [
+            BoxShadow(
+              color: FitColors.placeholder,
+              spreadRadius: 0.1,
+              blurRadius: 2,
+              offset: Offset(3, 5),
+            ),
+          ],
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+            elevation: MaterialStateProperty.all(0),
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                bottom: 10,
+                left: 5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      width: 150,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                right: 5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      width: 50,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
