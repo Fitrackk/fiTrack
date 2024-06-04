@@ -12,6 +12,7 @@ import '../models/challenge_model.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart';
 import '../utils/customs/custom_challenge_card.dart';
+import '../utils/customs/shimmer_loading.dart';
 import '../view_models/challenges.dart';
 import '../view_models/user.dart';
 
@@ -204,9 +205,7 @@ class _UserChallengesState extends State<UserChallenges> {
             future: ChallengesVM().getChallengeData(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: Text(""),
-                );
+                return const ShimmerLoadingCard();
               } else if (snapshot.hasError) {
                 return Center(
                   child: Text('Error: ${snapshot.error}'),
@@ -238,9 +237,7 @@ class _UserChallengesState extends State<UserChallenges> {
                                           if (progressSnapshot
                                                   .connectionState ==
                                               ConnectionState.waiting) {
-                                            return const Center(
-                                              child: Text(" "),
-                                            );
+                                            return const ShimmerLoadingCard();
                                           } else if (progressSnapshot
                                               .hasError) {
                                             return Center(
@@ -303,14 +300,14 @@ class _UserChallengesState extends State<UserChallenges> {
                                         },
                                       );
                                     }
-                                    return const SizedBox(); // Returning an empty SizedBox if the challenge doesn't belong to the current user
+                                    return const SizedBox();
                                   } else {
                                     return const Text("User is null");
                                   }
                                 } else if (userSnapshot.hasError) {
                                   return Text("Error: ${userSnapshot.error}");
                                 } else {
-                                  return const SizedBox(); // Returning an empty SizedBox if snapshot has no data
+                                  return const SizedBox();
                                 }
                               },
                             ),

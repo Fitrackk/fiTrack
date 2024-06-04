@@ -1,5 +1,6 @@
 import 'package:fitrack/models/challenge_model.dart';
 import 'package:fitrack/utils/customs/custom_challenge_card.dart';
+import 'package:fitrack/view_models/challenges.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:stator/stator.dart';
@@ -8,7 +9,7 @@ import '../configures/color_theme.dart';
 import '../configures/text_style.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart';
-import '../view_models/challenges.dart';
+import '../utils/customs/shimmer_loading.dart';
 
 class AllChallenges extends StatefulWidget {
   const AllChallenges({super.key});
@@ -47,7 +48,7 @@ class _AllChallengesState extends State<AllChallenges> {
                       child: Text('All Challenges',
                           style: TextStyles.labelLarge.copyWith(
                             color: FitColors.text20,
-                          )), // No filter
+                          )),
                     ),
                     PopupMenuItem(
                       value: 'walking',
@@ -86,9 +87,7 @@ class _AllChallengesState extends State<AllChallenges> {
           future: userData.getUserData(),
           builder: (context, userSnapshot) {
             if (userSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: Text(" "),
-              );
+              return const ShimmerLoadingCard();
             } else if (userSnapshot.hasError) {
               return Center(
                 child: Text('Error: ${userSnapshot.error}'),
@@ -105,9 +104,7 @@ class _AllChallengesState extends State<AllChallenges> {
                     challengesData.getChallengeData(filter: _selectedFilter),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: Text(" "),
-                    );
+                    return const ShimmerLoadingCard();
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text('Error: ${snapshot.error}'),
@@ -128,9 +125,7 @@ class _AllChallengesState extends State<AllChallenges> {
                             builder: (context, progressSnapshot) {
                               if (progressSnapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return const Center(
-                                  child: Text(" "),
-                                );
+                                return const ShimmerLoadingCard();
                               } else if (progressSnapshot.hasError) {
                                 return Center(
                                   child:

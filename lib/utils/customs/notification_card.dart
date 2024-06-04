@@ -24,7 +24,7 @@ class _NotificationsCardState extends State<NotificationsCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 30),
+      margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
       child: Row(
         children: [
           widget.icon,

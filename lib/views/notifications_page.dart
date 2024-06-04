@@ -6,6 +6,7 @@ import 'package:fitrack/view_models/get_reminders.dart';
 import 'package:fitrack/views/no_notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -72,7 +73,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 future: notification.getNotification(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Text("");
+                    return _buildShimmerCard(context);
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
@@ -125,6 +126,54 @@ class _NotificationPageState extends State<NotificationPage> {
                     return const NoNotification();
                   }
                 },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerCard(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        margin: const EdgeInsets.only(left: 30),
+        child: Row(
+          children: [
+            Container(
+              width: 35,
+              height: 35,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 20),
+            Flexible(
+              fit: FlexFit.loose,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: 20,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_month_outlined,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        width: 80,
+                        height: 20,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

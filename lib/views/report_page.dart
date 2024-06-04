@@ -4,10 +4,11 @@ import 'package:fitrack/utils/customs/history_card.dart';
 import 'package:fitrack/utils/customs/top_nav.dart';
 import 'package:fitrack/view_models/report.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ActivityDataPage extends StatefulWidget {
-  const ActivityDataPage({super.key});
+  const ActivityDataPage({Key? key}) : super(key: key);
 
   @override
   _ActivityDataPageState createState() => _ActivityDataPageState();
@@ -42,7 +43,7 @@ class _ActivityDataPageState extends State<ActivityDataPage> {
   Future<void> _loadMoreData() async {
     if (!_isLoading) {
       setState(() => _isLoading = true);
-      // Implement logic to load more data
+
       setState(() => _isLoading = false);
     }
   }
@@ -61,14 +62,14 @@ class _ActivityDataPageState extends State<ActivityDataPage> {
                   .copyWith(color: FitColors.primary20),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(10, 30, 10, 0),
               child: SizedBox(
                 height: 500,
                 child: FutureBuilder<Map<String, dynamic>>(
                   future: _activityDataFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Text(" ");
+                      return _buildShimmerChart();
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
@@ -132,7 +133,7 @@ class _ActivityDataPageState extends State<ActivityDataPage> {
               future: _activityDataFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text(" ");
+                  return _buildShimmerList();
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
@@ -164,10 +165,137 @@ class _ActivityDataPageState extends State<ActivityDataPage> {
                 );
               },
             ),
-            if (_isLoading)
-              const CircularProgressIndicator(), // Show loading indicator while loading more data
+            if (_isLoading) _buildShimmerList(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerChart() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: 500,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: FitColors.tertiary90,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerList() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 5,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: FitColors.tertiary90,
+                boxShadow: const [
+                  BoxShadow(
+                    color: FitColors.placeholder,
+                    spreadRadius: 0.1,
+                    blurRadius: 2,
+                    offset: Offset(1, 5),
+                  ),
+                ],
+              ),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  dividerColor: Colors.transparent,
+                ),
+                child: ExpansionTile(
+                  tilePadding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                  title: Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 10),
+                          Container(
+                            width: 1,
+                            height: 40,
+                            color: FitColors.primary30,
+                          ),
+                          const SizedBox(width: 20),
+                          Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 20),
+                          Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 20),
+                          Container(
+                            width: 100,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  iconColor: FitColors.primary20,
+                  collapsedIconColor: FitColors.primary20,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 8.0, right: 8.0, bottom: 8.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 25),
+                          Container(
+                            width: 100,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 15),
+                          Container(
+                            width: 80,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 15),
+                          Container(
+                            width: 80,
+                            height: 60,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
