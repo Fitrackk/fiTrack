@@ -154,9 +154,11 @@ class NotificationsVM {
   Future<void> scheduleDailyWaterReminder() async {
     User? currentUser = await _userVM.getUserData();
     String username = currentUser?.userName ?? 'unknown';
-
-    bool notificationsExist = await notificationsExistForUserAndDate(username,
-        tz.TZDateTime.now(tz.local).toIso8601String().split('T')[0], 'water');
+    DateTime now = DateTime.now();
+    final today =
+        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    bool notificationsExist =
+        await notificationsExistForUserAndDate(username, today, 'water');
     if (notificationsExist) {
       if (kDebugMode) {
         print("Today's notifications already exist for user: $username");
@@ -230,6 +232,8 @@ class NotificationsVM {
   }
 
   Future<void> scheduleChallengeReminders() async {
+    User? currentUser = await _userVM.getUserData();
+    String username = currentUser?.userName ?? 'unknown';
     final now = tz.TZDateTime.now(tz.local);
     final tomorrow = now.add(const Duration(days: 1));
     final tomorrowDateString =
@@ -244,78 +248,62 @@ class NotificationsVM {
     for (var doc in snapshots.docs) {
       var challenge = doc.data();
       for (var participant in challenge['participantUsernames']) {
-        bool notificationsExist = await notificationsExistForUserAndDate(
-            participant, tomorrowDateString, 'challenge');
-        if (notificationsExist) {
-          if (kDebugMode) {
-            print(
-                "Challenge notifications already exist for user: $participant on $tomorrowDateString");
+        if (participant == username) {
+          bool notificationsExist = await notificationsExistForUserAndDate(
+              username, tomorrowDateString, 'challenge');
+          if (notificationsExist) {
+            if (kDebugMode) {
+              print(
+                  "Challenge notifications already exist for user: $participant on $tomorrowDateString");
+            }
+            continue;
           }
-          continue;
-        }
 
-        List<Map<String, dynamic>> notifications = [
-          {
-            "time":
-                DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 12, 0),
-            "message": "Get ready for your challenge at 12 PM!",
-            "type": "challenge",
-            "username": participant
-          },
-          {
-            "time":
-                DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 18, 0),
-            "message": "Don't forget your challenge at 6 PM!",
-            "type": "challenge",
-            "username": participant
-          },
-          {
-            "time":
-                DateTime(tomorrow.year, tomorrow.month, tomorrow.day + 1, 0, 0),
-            "message": "Midnight reminder for your challenge!",
-            "type": "challenge",
-            "username": participant
-          },
-          {
-            "time":
-                DateTime(tomorrow.year, tomorrow.month, tomorrow.day + 1, 6, 0),
-            "message": "Early morning reminder for your challenge!",
-            "type": "challenge",
-            "username": participant
-          },
-        ];
+          List<Map<String, dynamic>> notifications = [
+            {
+              "time": DateTime(
+                  tomorrow.year, tomorrow.month, tomorrow.day, 12 - 3, 0, 0),
+              "message": "Get ready for your ${challenge['name']} challenge ",
+              "type": "challenge",
+              "username": username
+            },
+            {
+              "time": DateTime(
+                  tomorrow.year, tomorrow.month, tomorrow.day, 18 - 3, 0, 0),
+              "message": "Don't forget your challenge",
+              "type": "challenge",
+              "username": username
+            },
+            {
+              "time": DateTime(
+                  tomorrow.year, tomorrow.month, tomorrow.day + 1, 0 - 3, 0, 0),
+              "message": "Midnight reminder for your challenge!",
+              "type": "challenge",
+              "username": username
+            },
+            {
+              "time": DateTime(
+                  tomorrow.year, tomorrow.month, tomorrow.day + 1, 6 - 3, 0, 0),
+              "message": "Early morning reminder for your challenge!",
+              "type": "challenge",
+              "username": username
+            },
+          ];
 
-        for (var i = 0; i < notifications.length; i++) {
-          final notification = notifications[i];
-          await scheduleDailyNotification(
-            id: challenge['challengeId'] * 100 + i,
-            title: 'Challenge Reminder',
-            body: notification['message'],
-            time: Time(notification['time'].hour, notification['time'].minute),
-            type: notification['type'],
-            username: notification['username'],
-          );
-
-          try {
-            await _addNotificationToFirestore(
-              id: i,
+          for (var i = 0; i < notifications.length; i++) {
+            final notification = notifications[i];
+            final notificationId =
+                "${challenge['challengeId']}_${notification['type']}_$i"
+                    .hashCode;
+            await scheduleDailyNotification(
+              id: notificationId,
               title: 'Challenge Reminder',
               body: notification['message'],
-              scheduledDate:
-                  notification['time'].toIso8601String().split('T')[0],
-              scheduledTime:
-                  notification['time'].toIso8601String().split('T')[1],
+              time:
+                  Time(notification['time'].hour, notification['time'].minute),
               type: notification['type'],
               username: notification['username'],
             );
-            if (kDebugMode) {
-              print(
-                  'Challenge notification added to Firestore: ${challenge['challengeId'] * 100 + i}');
-            }
-          } catch (e) {
-            if (kDebugMode) {
-              print('Error adding challenge notification to Firestore: $e');
-            }
           }
         }
       }

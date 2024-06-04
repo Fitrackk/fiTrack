@@ -20,9 +20,6 @@ class NotificationsVM {
           DateTime increasedTime = now.add(const Duration(hours: 1));
           DateFormat dateFormat = DateFormat("HH:mm:ss.SSS");
           String formattedCurrentTime = dateFormat.format(increasedTime);
-          if (kDebugMode) {
-            print("Formatted Current Time: $formattedCurrentTime");
-          }
 
           var querySnapshot = await FirebaseFirestore.instance
               .collection('notifications')
@@ -33,7 +30,6 @@ class NotificationsVM {
           DateTime sevenDaysAgo = now.subtract(const Duration(days: 7));
           var filteredDocs = querySnapshot.docs.where((doc) {
             String scheduledTimeString = doc['scheduledTime'];
-            // print("Scheduled Time String: $scheduledTimeString");
             DateFormat format = DateFormat("HH:mm:ss.SSS");
             DateTime scheduledTime = format.parse(scheduledTimeString);
 
