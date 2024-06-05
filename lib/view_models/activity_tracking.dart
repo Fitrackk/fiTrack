@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -16,7 +15,6 @@ import '../models/challenge_progress.dart';
 import '../models/user_model.dart' as models;
 
 class ActivityTrackerVM {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
   StreamSubscription<UserAccelerometerEvent>? _linearAccelerationSubscription;
   GyroscopeEvent? _lastGyroscopeEvent;
@@ -35,8 +33,6 @@ class ActivityTrackerVM {
   late double distanceTraveled;
   late double caloriesBurned;
   late ActivityData data;
-  int lastRecordedStepCount = 0;
-  DateTime? startTime;
   late int activeTimeInSeconds;
 
   int get activeTimeInMinutes => (activeTimeInSeconds ~/ 60);
@@ -172,7 +168,7 @@ class ActivityTrackerVM {
         activityTypeDistance =
             activityData.activityTypeDistance.map((key, value) => MapEntry(
                   key,
-                  value / 1000,
+                  value * 1000,
                 ));
         await _saveLocalActivityData(activityData);
         return activityData;
@@ -228,87 +224,6 @@ class ActivityTrackerVM {
     } catch (error) {
       if (kDebugMode) {
         print('Error creating or retrieving document: $error');
-      }
-    }
-  }
-
-  Future<void> _updateActivityDataInFirestore() async {
-    final models.User? currentUser = await _userVM.getUserData();
-
-    if (currentUser != null) {
-      String? username = currentUser.userName;
-      DateTime now = DateTime.now();
-      String todayDate = "${now.year}-${now.month}-${now.day}";
-      String documentId = "$username-$todayDate";
-      DocumentReference docRef =
-          _firestore.collection('ActivityData').doc(documentId);
-
-      docRef.get().then((docSnapshot) {
-        if (docSnapshot.exists) {
-          Map<String, dynamic> data =
-              docSnapshot.data() as Map<String, dynamic>;
-
-          double newDistanceTraveled = data['distanceTraveled'] ?? 0;
-          newDistanceTraveled += distanceTraveled;
-          if (newDistanceTraveled.isNaN || newDistanceTraveled.isInfinite) {
-            newDistanceTraveled = 0.0;
-          }
-
-          int newStepsCount = data['stepsCount'] ?? 0;
-          newStepsCount += stepsCount;
-          if (newStepsCount.isNaN || newStepsCount.isInfinite) {
-            newStepsCount = 0;
-          }
-
-          int newActiveTime = data['activeTime'] ?? 0;
-          newActiveTime += activeTimeInMinutes;
-          if (newActiveTime.isNaN || newActiveTime.isInfinite) {
-            newActiveTime = 0;
-          }
-          double newCaloriesBurned = data['caloriesBurned'] ?? 0;
-          newCaloriesBurned += caloriesBurned;
-          if (newCaloriesBurned.isNaN || newCaloriesBurned.isInfinite) {
-            newCaloriesBurned = 0.0;
-          }
-
-          Map<String, double> existingActivityTypeDistance =
-              Map<String, double>.from(data['activityTypeDistance']);
-          activityTypeDistance.forEach((key, value) {
-            double newValue =
-                (existingActivityTypeDistance[key] ?? 0) + value / 100;
-            if (newValue.isNaN || newValue.isInfinite) {
-              newValue = 0.0;
-            }
-            existingActivityTypeDistance[key] = newValue;
-          });
-
-          data['distanceTraveled'] = newDistanceTraveled;
-          data['stepsCount'] = newStepsCount;
-          data['activeTime'] = newActiveTime;
-          data['caloriesBurned'] = newCaloriesBurned;
-          data['activityTypeDistance'] = existingActivityTypeDistance;
-
-          docRef.update(data).then((_) {
-            if (kDebugMode) {
-              print('Document updated successfully');
-            }
-          }).catchError((error) {
-            if (kDebugMode) {
-              print('Error updating document: $error');
-            }
-          });
-        } else {
-          _createDocumentForToday(username!);
-          _updateActivityDataInFirestore();
-        }
-      }).catchError((error) {
-        if (kDebugMode) {
-          print('Error retrieving document: $error');
-        }
-      });
-    } else {
-      if (kDebugMode) {
-        print('Error: Current user data not found');
       }
     }
   }
@@ -391,14 +306,12 @@ class ActivityTrackerVM {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double threshold = 12.0;
+    const double threshold = 20.0;
 
     if (magnitude > threshold) {
       _calculateActiveTime();
       stepsCount++;
-      int newSteps = stepsCount - lastRecordedStepCount;
-      lastRecordedStepCount = stepsCount;
-      _calculateCaloriesBurned(newSteps);
+      _calculateCaloriesBurned(stepsCount);
     }
   }
 
@@ -418,7 +331,7 @@ class ActivityTrackerVM {
     if (calories.isNaN || calories.isInfinite) {
       calories = 0.0;
     }
-    caloriesBurned += calories;
+    caloriesBurned = calories;
   }
 
   double _calculateMagnitude(double x, double y, double z) {
@@ -521,7 +434,10 @@ class ActivityTrackerVM {
             int existingStepsCount = (data['stepsCount'] ?? 0).toInt();
             double existingCaloriesBurned =
                 (data['caloriesBurned'] ?? 0.0).toDouble();
-
+            double existingDistanceTraveled =
+                (data['distanceTraveled'] ?? 0.0).toDouble();
+            Map<String, double> existingActivityTypeDistance =
+                Map<String, double>.from(data['activityTypeDistance'] ?? {});
             int newStepsCount =
                 localActivityData.stepsCount >= existingStepsCount
                     ? localActivityData.stepsCount
@@ -529,12 +445,20 @@ class ActivityTrackerVM {
             int newActiveTime = localActivityData.activeTime;
             double newCaloriesBurned = existingCaloriesBurned +
                 (localActivityData.caloriesBurned - existingCaloriesBurned);
-            startTime ??= DateTime.now();
+            double newDistanceTraveled =
+                existingDistanceTraveled + localActivityData.distanceTraveled;
+            Map<String, double> newActivityTypeDistance = {
+              ...existingActivityTypeDistance
+            };
+            localActivityData.activityTypeDistance.forEach((key, value) {
+              newActivityTypeDistance[key] =
+                  (newActivityTypeDistance[key] ?? 0.0) + value;
+            });
             docRef.update({
-              'distanceTraveled': localActivityData.distanceTraveled,
+              'distanceTraveled': newDistanceTraveled,
               'stepsCount': newStepsCount,
               'activeTime': newActiveTime,
-              'activityTypeDistance': localActivityData.activityTypeDistance,
+              'activityTypeDistance': newActivityTypeDistance,
               'caloriesBurned': newCaloriesBurned,
             }).then((_) {
               if (kDebugMode) {
@@ -548,7 +472,7 @@ class ActivityTrackerVM {
             });
           } else {
             _createDocumentForToday(username!);
-            _updateActivityDataInFirestore();
+            _updateActivityDataInFirestoreWithLocalData(localActivityData);
           }
         }).catchError((error) {
           if (kDebugMode) {
@@ -640,27 +564,6 @@ class ActivityTrackerVM {
             {'score': currentScore + (challengeProgress.distance * 10)});
       }
     });
-  }
-
-  Future<models.User?> getUserData() async {
-    try {
-      final currentUser = _auth.currentUser;
-      if (currentUser != null) {
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.uid)
-            .get();
-        if (userDoc.exists) {
-          return models.User.fromFirestore(userDoc);
-        }
-      }
-      return null;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching user data: $e');
-      }
-      return null;
-    }
   }
 
   Future<void> checkStepsCount() async {
