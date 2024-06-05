@@ -18,6 +18,7 @@ class CustomChallengeCard extends StatefulWidget {
   final bool challengeJoined;
   final String? challengeProgress;
   final List<String> challengeParticipantsImg;
+  final VoidCallback onUnjoin;
 
   const CustomChallengeCard({
     super.key,
@@ -32,6 +33,7 @@ class CustomChallengeCard extends StatefulWidget {
     required this.challengeJoined,
     required this.challengeProgress,
     required this.challengeParticipantsImg,
+    required this.onUnjoin,
   });
 
   @override
@@ -321,6 +323,7 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                                               _isChallengeJoined =
                                                                   isJoined;
                                                             });
+                                                            widget.onUnjoin();
                                                           },
                                                         );
                                                       }

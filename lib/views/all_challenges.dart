@@ -30,6 +30,12 @@ class _AllChallengesState extends State<AllChallenges> {
     super.initState();
   }
 
+  void removeChallengeCard() {
+    setState(() {
+      // Remove the challenge card from the widget tree
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -160,6 +166,7 @@ class _AllChallengesState extends State<AllChallenges> {
                                       participantUsernames:
                                           challenge.participantUsernames,
                                       challengeJoined: isJoined,
+                                      onUnjoin: removeChallengeCard,
                                     ),
                                     const SizedBox(
                                       height: 20,

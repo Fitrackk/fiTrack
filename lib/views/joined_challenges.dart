@@ -25,6 +25,11 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
 
   final userData = getSingleton<UserVM>();
   final ChallengesVM challengeVM = ChallengesVM();
+  void removeChallengeCard() {
+    setState(() {
+      // Remove the challenge card from the widget tree
+    });
+  }
 
   void _addChallengeDialog() {
     showDialog(
@@ -228,6 +233,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                                             challengeJoined: true,
                                             challengeProgress:
                                                 "${progressPercentage.toStringAsFixed(0)}%",
+                                            onUnjoin: removeChallengeCard,
                                           ),
                                           const SizedBox(
                                             height: 5,
