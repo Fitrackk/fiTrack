@@ -86,7 +86,35 @@ class ActivityTrackerVM {
     }
   }
 
+  Future<DateTime?> _getLastCheckedDate() async {
+    String? dateStr = await _secureStorage.read(key: 'lastCheckedDate');
+    if (dateStr != null) {
+      return DateTime.parse(dateStr);
+    }
+    return null;
+  }
+
+  Future<void> _setLastCheckedDate(DateTime date) async {
+    await _secureStorage.write(
+      key: 'lastCheckedDate',
+      value: date.toIso8601String(),
+    );
+  }
+
+  Future<void> _checkAndClearOldData() async {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime? lastCheckedDate = await _getLastCheckedDate();
+    if (lastCheckedDate == null || lastCheckedDate.isBefore(today)) {
+      if (lastCheckedDate != null) {
+        await deleteLocalActivityData(lastCheckedDate);
+      }
+      await _setLastCheckedDate(today);
+    }
+  }
+
   void startTracking() async {
+    await _checkAndClearOldData();
     final models.User? currentUser = await _userVM.getUserData();
     ActivityData? localActivityData = await fetchLocalActivityData();
 

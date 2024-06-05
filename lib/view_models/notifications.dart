@@ -94,9 +94,6 @@ class NotificationsVM {
         'type': type,
         'username': username,
       });
-      if (kDebugMode) {
-        print('Notification added to Firestore: $id');
-      }
     } catch (e) {
       if (kDebugMode) {
         print('Error adding notification to Firestore: $e');
@@ -249,6 +246,10 @@ class NotificationsVM {
       var challenge = doc.data();
       for (var participant in challenge['participantUsernames']) {
         if (participant == username) {
+          String challengeName = challenge['challengeName'];
+          String activityType = challenge['activityType'];
+          DateTime challengeDate = DateTime.parse(challenge['challengeDate']);
+
           bool notificationsExist = await notificationsExistForUserAndDate(
               username, tomorrowDateString, 'challenge');
           if (notificationsExist) {
@@ -258,33 +259,38 @@ class NotificationsVM {
             }
             continue;
           }
+          if (currentUser?.challengeReminder == "false") return;
 
           List<Map<String, dynamic>> notifications = [
             {
-              "time": DateTime(
-                  tomorrow.year, tomorrow.month, tomorrow.day, 12 - 3, 0, 0),
-              "message": "Get ready for your ${challenge['name']} challenge ",
+              "time": DateTime(challengeDate.year, challengeDate.month,
+                  challengeDate.day, 0 - 3, 0, 0),
+              "message":
+                  "Midnight reminder: Your $challengeName challenge is today!",
               "type": "challenge",
               "username": username
             },
             {
-              "time": DateTime(
-                  tomorrow.year, tomorrow.month, tomorrow.day, 18 - 3, 0, 0),
-              "message": "Don't forget your challenge",
+              "time": DateTime(challengeDate.year, challengeDate.month,
+                  challengeDate.day, 6 - 3, 0, 0),
+              "message":
+                  "Good morning! Get ready for your $challengeName challenge today. Make sure you're prepared for a session of $activityType.",
               "type": "challenge",
               "username": username
             },
             {
-              "time": DateTime(
-                  tomorrow.year, tomorrow.month, tomorrow.day + 1, 0 - 3, 0, 0),
-              "message": "Midnight reminder for your challenge!",
+              "time": DateTime(challengeDate.year, challengeDate.month,
+                  challengeDate.day, 12 - 3, 0, 0),
+              "message":
+                  "Don't forget! Your $challengeName challenge is this afternoon. Keep up the motivation!",
               "type": "challenge",
               "username": username
             },
             {
-              "time": DateTime(
-                  tomorrow.year, tomorrow.month, tomorrow.day + 1, 6 - 3, 0, 0),
-              "message": "Early morning reminder for your challenge!",
+              "time": DateTime(challengeDate.year, challengeDate.month,
+                  challengeDate.day, 18 - 3, 0, 0),
+              "message":
+                  "Evening reminder: Your $challengeName challenge is coming up soon. Get ready!",
               "type": "challenge",
               "username": username
             },
