@@ -34,13 +34,12 @@ class _SignUpState extends State<SignUp> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 40),
-                Text(
-                  "Sign Up",
-                  style: TextStyles.displayLargeBold.copyWith(
-                    color: FitColors.text30,
-                  ),
+                Image.asset(
+                  'assets/images/logo.png', 
+                  width: 140,
+                  height: 140,
+                  fit: BoxFit.cover, 
                 ),
-                const SizedBox(height: 10),
                 Text(
                   "Enter profile details\n and start creating your account",
                   textAlign: TextAlign.center,

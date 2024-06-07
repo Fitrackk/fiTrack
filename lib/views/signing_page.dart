@@ -44,10 +44,12 @@ class _SignInContentState extends State<SignInContent> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 5),
-              Text("Sign in",
-                  style: TextStyles.displayLargeBold
-                      .copyWith(color: FitColors.text30)),
-              const SizedBox(height: 50),
+              Image.asset(
+                'assets/images/logo.png',
+                width: 140,
+                height: 140,
+                fit: BoxFit.cover,
+              ),
               Text("Welcome back again",
                   style:
                       TextStyles.titleMedium.copyWith(color: FitColors.text30)),
