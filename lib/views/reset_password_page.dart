@@ -25,6 +25,8 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   @override
   Widget build(BuildContext context) {
+    double currentWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -44,10 +46,10 @@ class _ResetPasswordState extends State<ResetPassword> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
-                  constraints:
-                      const BoxConstraints.tightFor(width: 180, height: 51),
-                  color: FitColors.background,
+                SizedBox(
+                  width: currentWidth / 2,
+                  // constraints:
+                  //     const BoxConstraints.tightFor(width: 180, height: 51),
                   child: Center(
                     child: Text(
                       "Forgot password",
@@ -58,6 +60,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                 ),
               ],
             ),
+          ),
+          const SizedBox(
+            height: 50,
           ),
           Container(
             constraints: const BoxConstraints.tightFor(width: 319, height: 60),

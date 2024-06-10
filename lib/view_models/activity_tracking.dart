@@ -34,7 +34,9 @@ class ActivityTrackerVM {
   late double caloriesBurned;
   late ActivityData data;
   late int activeTimeInSeconds;
-
+  bool isGyroStep = false;
+  bool isMoving = false;
+  bool isStep = false;
   int get activeTimeInMinutes => (activeTimeInSeconds ~/ 60);
   Map<String, double> activityTypeDistance = {
     'walking': 0,
@@ -139,6 +141,7 @@ class ActivityTrackerVM {
           gyroscopeEventStream().listen((GyroscopeEvent event) {
         _lastGyroscopeEvent = event;
         _processSensorData();
+        _processGyroSensorData(event);
       });
     } else {
       if (kDebugMode) {
@@ -306,12 +309,30 @@ class ActivityTrackerVM {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double threshold = 20.0;
+    const double threshold = 1;
 
-    if (magnitude > threshold) {
-      _calculateActiveTime();
+    if (magnitude > threshold && !isStep && isGyroStep) {
+      isStep = true;
       stepsCount++;
       _calculateCaloriesBurned(stepsCount);
+    } else if (magnitude < threshold) {
+      isStep = false;
+    }
+  }
+
+  void _processGyroSensorData(GyroscopeEvent event) {
+    final double x = event.x;
+    final double y = event.y;
+    final double z = event.z;
+
+    final double gyroMagnitude = _calculateMagnitude(x, y, z);
+
+    const double movementThreshold = 1.0;
+
+    if (gyroMagnitude > movementThreshold) {
+      isGyroStep = true;
+    } else {
+      isGyroStep = false;
     }
   }
 
