@@ -40,11 +40,9 @@ class NotificationsVM {
           }).toList();
 
           filteredDocs.sort((a, b) {
-            DateTime aTime =
-                DateFormat("HH:mm:ss.SSS").parse(a['scheduledTime']);
-            DateTime bTime =
-                DateFormat("HH:mm:ss.SSS").parse(b['scheduledTime']);
-            return bTime.compareTo(aTime);
+            DateTime aDate = DateTime.parse(a['scheduledDate']);
+            DateTime bDate = DateTime.parse(b['scheduledDate']);
+            return bDate.compareTo(aDate);
           });
 
           return filteredDocs;
