@@ -99,10 +99,12 @@ class EditProfile {
 
   Future<String?> validateUserName(String username) async {
     if (username.isEmpty) return 'Username is required';
-    if (username.length < 3)
+    if (username.length < 3) {
       return 'Username must be at least 3 characters long';
-    if (!ValidationUtils.isValidUserName(username))
+    }
+    if (!ValidationUtils.isValidUserName(username)) {
       return 'Username must not contain special characters';
+    }
     User? currentUser = await fetchUserData();
     if (currentUser != null && currentUser.userName == username) {
       return null;

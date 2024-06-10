@@ -110,12 +110,12 @@ class _SignInContentState extends State<SignInContent> {
                         .copyWith(color: FitColors.text30)),
               ),
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/signup'),
-                child: const Text("Sign up",
-                    style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: FitColors.text30)),
-              ),
+                  onTap: () => Navigator.pushNamed(context, '/signup'),
+                  child: Text(
+                    "Sign up",
+                    style: TextStyles.labelLargeBold
+                        .copyWith(color: FitColors.text30),
+                  )),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Row(

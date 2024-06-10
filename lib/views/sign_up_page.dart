@@ -33,12 +33,11 @@ class _SignUpState extends State<SignUp> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
                 Image.asset(
-                  'assets/images/logo.png', 
+                  'assets/images/logo.png',
                   width: 140,
                   height: 140,
-                  fit: BoxFit.cover, 
+                  fit: BoxFit.cover,
                 ),
                 Text(
                   "Enter profile details\n and start creating your account",
