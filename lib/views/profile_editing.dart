@@ -2,8 +2,9 @@ import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../models/user_model.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import '../view_models/edit_profile.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -48,6 +49,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  Future<bool> _request_permission(Permission permission)async{
+    AndroidDeviceInfo build = await DeviceInfoPlugin().androidInfo;
+    if(build.version.sdkInt >= 30){
+      var request = await Permission.manageExternalStorage.request();
+      if(request.isGranted){
+        _pickImage();
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+    else {
+      if(await permission.isGranted){
+        return true;
+      }
+      else{
+        var result = await permission.request();
+        if(result.isGranted){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+    }
+  }
+
   Future<void> _loadUserData() async {
     User? user = await _viewModel.fetchUserData();
     if (user != null) {
@@ -63,13 +92,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+
+
   Future<void> _pickImage() async {
     final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       String? downloadUrl =
-          await _viewModel.uploadProfileImage(pickedFile.path);
+      await _viewModel.uploadProfileImage(pickedFile.path);
       if (downloadUrl != null) {
         setState(() {
           _profileImageUrl = downloadUrl;
@@ -89,34 +120,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _dateOfBirthController.dispose();
     super.dispose();
   }
-
   void _onFullNameChanged(String value) async {
     String? error = await _viewModel.validateFullName(value);
     setState(() {
       _fullNameError = error ?? '';
     });
   }
-
   void _onHeightChanged(String value) async {
     String? error = await _viewModel.validateHeight(value);
     setState(() {
       _heightError = error ?? '';
     });
   }
-
   void _onWeightChanged(String value) async {
     String? error = await _viewModel.validateWeight(value);
     setState(() {
       _weightError = error ?? '';
     });
   }
-
   void _onUserNameChanged(String value) async {
     String? error = await _viewModel.validateUserName(value);
     setState(() {
       _usernameError = error ?? '';
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +183,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       bottom: 0,
                       right: 0,
                       child: GestureDetector(
-                        onTap: _pickImage,
+                        onTap: () async{
+                          if(await _request_permission(Permission.storage) == true){
+                            print("Permission is granted");
+                          }
+                          else {
+                            print("permission is not granted");
+                          }
+                        },
                         child: const CircleAvatar(
                           radius: 25,
                           backgroundColor: FitColors.primary30,
