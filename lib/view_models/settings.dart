@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart' as model;
+import 'activity_tracking.dart';
 
 class SettingsVM extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   model.User? _user;
+  final tracker = ActivityTrackerVM();
 
   model.User? get user => _user;
 
@@ -66,6 +68,7 @@ class SettingsVM extends ChangeNotifier {
 
   Future<void> logOut() async {
     try {
+      await tracker.stopTracking(user!);
       await _auth.signOut();
       _user = null;
       notifyListeners();

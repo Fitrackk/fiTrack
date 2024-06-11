@@ -577,15 +577,34 @@ class ChallengesVM {
 
         if (challengeDate.isBefore(thresholdDate)) {
           await _firestore.collection('challenges').doc(doc.id).delete();
+
+          int challengeId = doc['challengeId'];
+          QuerySnapshot progressSnapshot = await _firestore
+              .collection('challengeProgress')
+              .where('challengeId', isEqualTo: challengeId)
+              .get();
+
+          for (QueryDocumentSnapshot progressDoc in progressSnapshot.docs) {
+            await _firestore
+                .collection('challengeProgress')
+                .doc(progressDoc.id)
+                .delete();
+            if (kDebugMode) {
+              print(
+                  'Deleted challenge progress document for challengeId: $challengeId, document ID: ${progressDoc.id}');
+            }
+          }
         }
       }
 
       if (kDebugMode) {
-        print('Old challenges deleted successfully');
+        print(
+            'Old challenges and corresponding challenge progress deleted successfully');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error deleting old challenges: $e');
+        print(
+            'Error deleting old challenges and corresponding challenge progress: $e');
       }
     }
   }

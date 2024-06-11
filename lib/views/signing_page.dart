@@ -61,7 +61,7 @@ class _SignInContentState extends State<SignInContent> {
                       style: const TextStyle(color: FitColors.error50)),
                 ),
               CustomTextField(
-                labelText: "Email or username",
+                labelText: "Email",
                 showIcon: false,
                 obscureText: false,
                 controller: emailController,

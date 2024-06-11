@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/activity_data_model.dart';
 import '../models/challenge_progress.dart';
 import '../models/user_model.dart' as models;
+import '../models/user_model.dart';
 
 class ActivityTrackerVM {
   StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
@@ -34,15 +35,14 @@ class ActivityTrackerVM {
   late double caloriesBurned;
   late ActivityData data;
   late int activeTimeInSeconds;
-  bool isGyroStep = false;
-  bool isMoving = false;
-  bool isStep = false;
+
   int get activeTimeInMinutes => (activeTimeInSeconds ~/ 60);
   Map<String, double> activityTypeDistance = {
     'walking': 0,
     'running': 0,
     'jogging': 0,
   };
+
   void startTracking() async {
     await _checkAndClearOldData();
     final models.User? currentUser = await _userVM.getUserData();
@@ -73,11 +73,10 @@ class ActivityTrackerVM {
           gyroscopeEventStream().listen((GyroscopeEvent event) {
         _lastGyroscopeEvent = event;
         _processSensorData();
-        _processGyroSensorData(event);
       });
     } else {
       if (kDebugMode) {
-        print('Error: Current user data not found');
+        print('Current user data not found');
       }
       await Future.delayed(const Duration(seconds: 10));
       startTracking();
@@ -85,13 +84,14 @@ class ActivityTrackerVM {
   }
 
   Future<ActivityData?> fetchLocalActivityData() async {
-    String? dataString = await _secureStorage.read(key: 'activityData');
+    final models.User? currentUser = await _userVM.getUserData();
+    String? dataString =
+        await _secureStorage.read(key: 'activityData-${currentUser?.userName}');
     if (dataString != null) {
       Map<String, dynamic> dataMap =
           json.decode(dataString) as Map<String, dynamic>;
       DateTime savedDate = DateTime.parse(dataMap['date']);
       DateTime today = DateTime.now();
-
       if (savedDate.isBefore(DateTime(today.year, today.month, today.day))) {
         await deleteLocalActivityData(savedDate);
         return null;
@@ -125,7 +125,7 @@ class ActivityTrackerVM {
         ActivityData activityData = ActivityData.fromFirestore(docSnapshot);
         activeTimeInSeconds = activityData.activeTime * 60;
         stepsCount = activityData.stepsCount;
-        distanceTraveled = activityData.distanceTraveled * 1000;
+        distanceTraveled = activityData.distanceTraveled;
         caloriesBurned = activityData.caloriesBurned;
         activityTypeDistance =
             activityData.activityTypeDistance.map((key, value) => MapEntry(
@@ -203,7 +203,7 @@ class ActivityTrackerVM {
 
     double strideLengthInMeters = _calculateStrideLength(height);
     double strideLengthInKilometers = strideLengthInMeters / 1000;
-
+    distanceTraveled = (stepsCount * strideLengthInKilometers) / 160;
     if (magnitude > runningThreshold) {
       activityTypeDistance['running'] =
           (activityTypeDistance['running'] ?? 0) + strideLengthInKilometers;
@@ -226,9 +226,6 @@ class ActivityTrackerVM {
       _calculateStepsCount(_lastLinearAccelerationEvent!);
       _calculateActiveTime();
       _updateActivityTypeDistance(_lastGyroscopeEvent!);
-      distanceTraveled = activityTypeDistance.values
-          .map((distance) => distance / 1000)
-          .reduce((a, b) => a + b);
       ActivityData activityData = ActivityData(
           username: currentUser?.userName ?? '',
           date: DateTime.now(),
@@ -253,30 +250,12 @@ class ActivityTrackerVM {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double threshold = 1;
+    const double threshold = 15.0;
 
-    if (magnitude > threshold && !isStep && isGyroStep) {
-      isStep = true;
+    if (magnitude > threshold) {
+      _calculateActiveTime();
       stepsCount++;
       _calculateCaloriesBurned(stepsCount);
-    } else if (magnitude < threshold) {
-      isStep = false;
-    }
-  }
-
-  void _processGyroSensorData(GyroscopeEvent event) {
-    final double x = event.x;
-    final double y = event.y;
-    final double z = event.z;
-
-    final double gyroMagnitude = _calculateMagnitude(x, y, z);
-
-    const double movementThreshold = 1.0;
-
-    if (gyroMagnitude > movementThreshold) {
-      isGyroStep = true;
-    } else {
-      isGyroStep = false;
     }
   }
 
@@ -357,9 +336,10 @@ class ActivityTrackerVM {
           activityData.activityTypeDistance[key] = 0.0;
         }
       });
+      final models.User? currentUser = await _userVM.getUserData();
 
       await _secureStorage.write(
-        key: 'activityData',
+        key: 'activityData-${currentUser?.userName}',
         value: json.encode(activityData.toMap()),
       );
       _activityDataController.add(activityData);
@@ -374,7 +354,6 @@ class ActivityTrackerVM {
     ActivityData? localActivityData = await fetchLocalActivityData();
     if (localActivityData != null) {
       await _updateActivityDataInFirestoreWithLocalData(localActivityData);
-      await _updateChallengeProgress(localActivityData);
     }
   }
 
@@ -411,7 +390,7 @@ class ActivityTrackerVM {
             double newCaloriesBurned = existingCaloriesBurned +
                 (localActivityData.caloriesBurned - existingCaloriesBurned);
             double newDistanceTraveled =
-                existingDistanceTraveled + localActivityData.distanceTraveled;
+                localActivityData.distanceTraveled - existingDistanceTraveled;
             Map<String, double> newActivityTypeDistance = {
               ...existingActivityTypeDistance
             };
@@ -419,6 +398,8 @@ class ActivityTrackerVM {
               newActivityTypeDistance[key] =
                   (newActivityTypeDistance[key] ?? 0.0) + value;
             });
+            _updateChallengeProgress(localActivityData);
+
             docRef.update({
               'distanceTraveled': newDistanceTraveled,
               'stepsCount': newStepsCount,
@@ -446,7 +427,7 @@ class ActivityTrackerVM {
         });
       } else {
         if (kDebugMode) {
-          print('Error: Current user data not found');
+          print('Current user data not found');
         }
       }
     } catch (e) {
@@ -458,7 +439,8 @@ class ActivityTrackerVM {
 
   Future<void> deleteLocalActivityData(DateTime date) async {
     try {
-      await _secureStorage.delete(key: 'activityData');
+      final models.User? currentUser = await _userVM.getUserData();
+      await _secureStorage.delete(key: 'activityData-${currentUser?.userName}');
       if (kDebugMode) {
         print('Local activity data deleted for date: $date');
       }
@@ -496,16 +478,17 @@ class ActivityTrackerVM {
     }
   }
 
-  void stopTracking() {
-    _saveLocalActivityData(ActivityData(
-        username: currentUser?.userName ?? '',
-        date: DateTime.now(),
-        distanceTraveled: distanceTraveled,
-        stepsCount: stepsCount,
-        activeTime: activeTimeInMinutes,
-        caloriesBurned: caloriesBurned,
-        activityTypeDistance: activityTypeDistance));
-
+  Future<void> stopTracking(User currentUser) async {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    ActivityData? localActivityData = await fetchLocalActivityData();
+    _updateActivityDataInFirestoreWithLocalData(localActivityData!);
+    await deleteLocalActivityData(today);
+    stepsCount = 0;
+    distanceTraveled = 0.0;
+    activeTimeInSeconds = 0;
+    caloriesBurned = 0.0;
+    activityTypeDistance = {'walking': 0, 'running': 0, 'jogging': 0};
     _linearAccelerationSubscription?.cancel();
     _gyroscopeSubscription?.cancel();
     _updateTimer?.cancel();
@@ -538,12 +521,11 @@ class ActivityTrackerVM {
         String normalizedActivityType =
             challengeProgress.activityType.toLowerCase();
         double currentDistanceForType =
-            (activityData.activityTypeDistance[normalizedActivityType] ?? 0.0) /
-                1000;
+            (activityData.activityTypeDistance[normalizedActivityType] ?? 0.0);
 
         double newProgress =
-            (currentDistanceForType / challengeProgress.distance) * 100;
-        challengeProgress.progress = newProgress;
+            (currentDistanceForType / challengeProgress.distance) * 1000;
+        challengeProgress.progress += newProgress;
 
         if (kDebugMode) {
           print("New progress calculated: $newProgress");
