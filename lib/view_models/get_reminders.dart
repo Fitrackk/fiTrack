@@ -17,32 +17,26 @@ class NotificationsVM {
         if (userDoc.exists) {
           String username = userDoc['username'];
           DateTime now = DateTime.now();
-          DateTime increasedTime = now.add(const Duration(hours: 1));
-          DateFormat dateFormat = DateFormat("HH:mm:ss.SSS");
-          String formattedCurrentTime = dateFormat.format(increasedTime);
+          DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
           var querySnapshot = await FirebaseFirestore.instance
               .collection('notifications')
               .where('username', isEqualTo: username)
-              .where('scheduledTime', isLessThanOrEqualTo: formattedCurrentTime)
               .get();
 
-          DateTime sevenDaysAgo = now.subtract(const Duration(days: 7));
-          var filteredDocs = querySnapshot.docs.where((doc) {
-            String scheduledTimeString = doc['scheduledTime'];
-            DateFormat format = DateFormat("HH:mm:ss.SSS");
-            DateTime scheduledTime = format.parse(scheduledTimeString);
-
-            DateTime scheduledDate = DateTime.parse(doc['scheduledDate']);
-            return scheduledDate.isAfter(sevenDaysAgo) &&
-                scheduledDate.isBefore(now) &&
-                scheduledTime.isBefore(increasedTime);
+          List<QueryDocumentSnapshot> filteredDocs =
+              querySnapshot.docs.where((doc) {
+            DateTime scheduledDateTime = dateFormat
+                .parse(doc['scheduledDate'] + ' ' + doc['scheduledTime']);
+            return scheduledDateTime.isBefore(now);
           }).toList();
 
           filteredDocs.sort((a, b) {
-            DateTime aDate = DateTime.parse(a['scheduledDate']);
-            DateTime bDate = DateTime.parse(b['scheduledDate']);
-            return bDate.compareTo(aDate);
+            DateTime aDateTime =
+                dateFormat.parse(a['scheduledDate'] + ' ' + a['scheduledTime']);
+            DateTime bDateTime =
+                dateFormat.parse(b['scheduledDate'] + ' ' + b['scheduledTime']);
+            return bDateTime.compareTo(aDateTime);
           });
 
           return filteredDocs;

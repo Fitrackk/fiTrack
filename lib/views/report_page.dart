@@ -144,6 +144,11 @@ class _ActivityDataPageState extends State<ActivityDataPage> {
                 if (activityData.isEmpty) {
                   return const Center(child: Text('No activity data found.'));
                 }
+                activityData.sort((a, b) {
+                  DateTime dateA = DateTime.parse(a['date']);
+                  DateTime dateB = DateTime.parse(b['date']);
+                  return dateA.compareTo(dateB);
+                });
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -151,7 +156,7 @@ class _ActivityDataPageState extends State<ActivityDataPage> {
                   itemBuilder: (context, index) {
                     final activity = activityData[index];
                     return CustomHistoryCard(
-                      date: DateTime.parse(activity['date'] as String),
+                      date: DateTime.parse(activity['date']),
                       day: activity['day'] as String,
                       steps: activity['stepsCount'] as int,
                       kcal: activity['caloriesBurned'] as double,

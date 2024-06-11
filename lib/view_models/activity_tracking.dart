@@ -652,7 +652,7 @@ class ActivityTrackerVM {
 
     try {
       final now = DateTime.now();
-      final cutoffDate = now.subtract(const Duration(days: 7));
+      final cutoffDate = now.subtract(const Duration(days: 6));
       final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSSSSS');
 
       QuerySnapshot activitySnapshot =
