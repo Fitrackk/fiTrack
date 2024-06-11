@@ -43,7 +43,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
               ),
               backgroundColor: FitColors.tertiary90,
               content: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 100),
                 curve: Curves.easeInOut,
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Column(
@@ -51,7 +51,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                   children: [
                     AnimatedOpacity(
                       opacity: 1.0,
-                      duration: Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 100),
                       child: Text(
                         'Join Challenge',
                         style: TextStyles.titleMedBold

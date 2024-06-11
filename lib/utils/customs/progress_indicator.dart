@@ -77,6 +77,7 @@ class StepProgressIndicator extends StatelessWidget {
   final Color progressColor;
 
   const StepProgressIndicator({
+    super.key,
     required this.currentStep,
     required this.totalSteps,
     this.width = 200.0,

@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:fitrack/services/firebase_service.dart';
-import 'package:fitrack/utils/customs/main_view.dart';
 import 'package:fitrack/view_models/activity_tracking.dart';
 import 'package:fitrack/view_models/challenges.dart';
 import 'package:fitrack/view_models/user.dart';
 import 'package:fitrack/view_models/user_state.dart';
 import 'package:fitrack/views/get_started_page.dart';
+import 'package:fitrack/views/main_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stator/stator.dart';
@@ -61,10 +62,14 @@ class _MainAppState extends State<MainApp> {
       final bool result =
           await platform.invokeMethod('requestExactAlarmPermission');
       if (!result) {
-        print('Exact alarm permission is required.');
+        if (kDebugMode) {
+          print('Exact alarm permission is required.');
+        }
       }
     } on PlatformException catch (e) {
-      print("Failed to request exact alarm permission: '${e.message}'.");
+      if (kDebugMode) {
+        print("Failed to request exact alarm permission: '${e.message}'.");
+      }
     }
   }
 

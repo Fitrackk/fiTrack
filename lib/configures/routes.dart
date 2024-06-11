@@ -1,5 +1,5 @@
-import 'package:fitrack/utils/customs/main_view.dart';
 import 'package:fitrack/views/challenges_page.dart';
+import 'package:fitrack/views/main_view.dart';
 import 'package:fitrack/views/notifications_page.dart';
 import 'package:fitrack/views/profile_editing.dart';
 import 'package:fitrack/views/reset_password_page.dart';

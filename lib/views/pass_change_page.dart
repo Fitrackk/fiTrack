@@ -8,6 +8,8 @@ import '../utils/validation_utils/validation_utils.dart';
 import '../view_models/change_password.dart';
 
 class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
+
   @override
   _ChangePasswordPageState createState() => _ChangePasswordPageState();
 }

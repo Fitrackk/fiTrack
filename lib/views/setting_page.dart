@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
+
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -188,24 +190,19 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               actions: <Widget>[
                                 TextButton(
-                                  child: Text(
-                                    'Cancel',
-                                    style: TextStyles.labelMediumBold
-                                        .copyWith(color: FitColors.text95),
-                                  ),
                                   style: TextButton.styleFrom(
                                     backgroundColor: FitColors.primary30,
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                ),
-                                TextButton(
                                   child: Text(
-                                    'Log Out',
+                                    'Cancel',
                                     style: TextStyles.labelMediumBold
                                         .copyWith(color: FitColors.text95),
                                   ),
+                                ),
+                                TextButton(
                                   style: TextButton.styleFrom(
                                     backgroundColor: FitColors.primary30,
                                   ),
@@ -215,6 +212,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                     navigatorKey.currentState!
                                         .pushReplacementNamed('/signing');
                                   },
+                                  child: Text(
+                                    'Log Out',
+                                    style: TextStyles.labelMediumBold
+                                        .copyWith(color: FitColors.text95),
+                                  ),
                                 ),
                               ],
                             ),

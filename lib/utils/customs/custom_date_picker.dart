@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CustomDatePicker extends StatefulWidget {
+  const CustomDatePicker({super.key});
+
   @override
   _CustomDatePickerState createState() => _CustomDatePickerState();
 }
@@ -16,10 +18,11 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _selectedDate)
+    if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
       });
+    }
   }
 
   @override

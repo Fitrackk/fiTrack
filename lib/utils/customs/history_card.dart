@@ -13,7 +13,7 @@ class CustomHistoryCard extends StatefulWidget {
   final double progress;
 
   const CustomHistoryCard({
-    Key? key,
+    super.key,
     required this.date,
     required this.day,
     required this.steps,
@@ -22,7 +22,7 @@ class CustomHistoryCard extends StatefulWidget {
     required this.distance,
     required this.challGoal,
     required this.progress,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomHistoryCard> createState() => _CustomHistoryCardState();

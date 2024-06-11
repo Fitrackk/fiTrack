@@ -46,7 +46,7 @@ class _ChallengesState extends State<Challenges> {
             unselectedLabelColor: FitColors.text20,
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
             AllChallenges(),
             JoinedChallenges(),

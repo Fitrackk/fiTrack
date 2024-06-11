@@ -8,7 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ActivityDataPage extends StatefulWidget {
-  const ActivityDataPage({Key? key}) : super(key: key);
+  const ActivityDataPage({super.key});
 
   @override
   _ActivityDataPageState createState() => _ActivityDataPageState();

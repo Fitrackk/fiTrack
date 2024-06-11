@@ -5,7 +5,7 @@ import '../../configures/color_theme.dart';
 class ActivityDropDown extends StatefulWidget {
   final TextEditingController typeController;
 
-  ActivityDropDown({super.key, required this.typeController});
+  const ActivityDropDown({super.key, required this.typeController});
 
   @override
   State<ActivityDropDown> createState() => _ActivityDropDownState();

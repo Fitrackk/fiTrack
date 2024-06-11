@@ -141,6 +141,7 @@ class _NotificationPageState extends State<NotificationPage> {
       child: Container(
         margin: const EdgeInsets.only(left: 30),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 35,
@@ -161,7 +162,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.calendar_month_outlined,
                         color: Colors.white,
                       ),

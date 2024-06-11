@@ -43,74 +43,6 @@ class ActivityTrackerVM {
     'running': 0,
     'jogging': 0,
   };
-
-  Future<ActivityData?> fetchLocalActivityData() async {
-    String? dataString = await _secureStorage.read(key: 'activityData');
-    if (dataString != null) {
-      Map<String, dynamic> dataMap =
-          json.decode(dataString) as Map<String, dynamic>;
-      DateTime savedDate = DateTime.parse(dataMap['date']);
-      DateTime today = DateTime.now();
-
-      if (savedDate.isBefore(DateTime(today.year, today.month, today.day))) {
-        await deleteLocalActivityData(savedDate);
-        return null;
-      }
-
-      return ActivityData(
-        username: dataMap['username'],
-        date: savedDate,
-        distanceTraveled: dataMap['distanceTraveled'],
-        stepsCount: dataMap['stepsCount'],
-        activeTime: dataMap['activeTime'],
-        caloriesBurned: dataMap['caloriesBurned'],
-        activityTypeDistance:
-            Map<String, double>.from(dataMap['activityTypeDistance']),
-      );
-    }
-    return null;
-  }
-
-  Future<void> deleteLocalActivityData(DateTime date) async {
-    try {
-      await _secureStorage.delete(key: 'activityData');
-      if (kDebugMode) {
-        print('Local activity data deleted for date: $date');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error deleting local activity data: $e');
-      }
-    }
-  }
-
-  Future<DateTime?> _getLastCheckedDate() async {
-    String? dateStr = await _secureStorage.read(key: 'lastCheckedDate');
-    if (dateStr != null) {
-      return DateTime.parse(dateStr);
-    }
-    return null;
-  }
-
-  Future<void> _setLastCheckedDate(DateTime date) async {
-    await _secureStorage.write(
-      key: 'lastCheckedDate',
-      value: date.toIso8601String(),
-    );
-  }
-
-  Future<void> _checkAndClearOldData() async {
-    DateTime now = DateTime.now();
-    DateTime today = DateTime(now.year, now.month, now.day);
-    DateTime? lastCheckedDate = await _getLastCheckedDate();
-    if (lastCheckedDate == null || lastCheckedDate.isBefore(today)) {
-      if (lastCheckedDate != null) {
-        await deleteLocalActivityData(lastCheckedDate);
-      }
-      await _setLastCheckedDate(today);
-    }
-  }
-
   void startTracking() async {
     await _checkAndClearOldData();
     final models.User? currentUser = await _userVM.getUserData();
@@ -150,6 +82,33 @@ class ActivityTrackerVM {
       await Future.delayed(const Duration(seconds: 10));
       startTracking();
     }
+  }
+
+  Future<ActivityData?> fetchLocalActivityData() async {
+    String? dataString = await _secureStorage.read(key: 'activityData');
+    if (dataString != null) {
+      Map<String, dynamic> dataMap =
+          json.decode(dataString) as Map<String, dynamic>;
+      DateTime savedDate = DateTime.parse(dataMap['date']);
+      DateTime today = DateTime.now();
+
+      if (savedDate.isBefore(DateTime(today.year, today.month, today.day))) {
+        await deleteLocalActivityData(savedDate);
+        return null;
+      }
+
+      return ActivityData(
+        username: dataMap['username'],
+        date: savedDate,
+        distanceTraveled: dataMap['distanceTraveled'],
+        stepsCount: dataMap['stepsCount'],
+        activeTime: dataMap['activeTime'],
+        caloriesBurned: dataMap['caloriesBurned'],
+        activityTypeDistance:
+            Map<String, double>.from(dataMap['activityTypeDistance']),
+      );
+    }
+    return null;
   }
 
   Future<ActivityData?> _fetchFirestoreActivityData(String username) async {
@@ -242,7 +201,7 @@ class ActivityTrackerVM {
     const double joggingThreshold = 4;
     const double runningThreshold = 6;
 
-    double strideLengthInMeters = calculateStrideLength(height);
+    double strideLengthInMeters = _calculateStrideLength(height);
     double strideLengthInKilometers = strideLengthInMeters / 1000;
 
     if (magnitude > runningThreshold) {
@@ -257,23 +216,8 @@ class ActivityTrackerVM {
     }
   }
 
-  double calculateStrideLength(double height) {
+  double _calculateStrideLength(double height) {
     return height * 0.7;
-  }
-
-  void stopTracking() {
-    _saveLocalActivityData(ActivityData(
-        username: currentUser?.userName ?? '',
-        date: DateTime.now(),
-        distanceTraveled: distanceTraveled,
-        stepsCount: stepsCount,
-        activeTime: activeTimeInMinutes,
-        caloriesBurned: caloriesBurned,
-        activityTypeDistance: activityTypeDistance));
-
-    _linearAccelerationSubscription?.cancel();
-    _gyroscopeSubscription?.cancel();
-    _updateTimer?.cancel();
   }
 
   Future<void> _processSensorData() async {
@@ -510,6 +454,61 @@ class ActivityTrackerVM {
         print("Error updating Firestore with local data: $e");
       }
     }
+  }
+
+  Future<void> deleteLocalActivityData(DateTime date) async {
+    try {
+      await _secureStorage.delete(key: 'activityData');
+      if (kDebugMode) {
+        print('Local activity data deleted for date: $date');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting local activity data: $e');
+      }
+    }
+  }
+
+  Future<DateTime?> _getLastCheckedDate() async {
+    String? dateStr = await _secureStorage.read(key: 'lastCheckedDate');
+    if (dateStr != null) {
+      return DateTime.parse(dateStr);
+    }
+    return null;
+  }
+
+  Future<void> _setLastCheckedDate(DateTime date) async {
+    await _secureStorage.write(
+      key: 'lastCheckedDate',
+      value: date.toIso8601String(),
+    );
+  }
+
+  Future<void> _checkAndClearOldData() async {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime? lastCheckedDate = await _getLastCheckedDate();
+    if (lastCheckedDate == null || lastCheckedDate.isBefore(today)) {
+      if (lastCheckedDate != null) {
+        await deleteLocalActivityData(lastCheckedDate);
+      }
+      await _setLastCheckedDate(today);
+    }
+  }
+
+  void stopTracking() {
+    _saveLocalActivityData(ActivityData(
+        username: currentUser?.userName ?? '',
+        date: DateTime.now(),
+        distanceTraveled: distanceTraveled,
+        stepsCount: stepsCount,
+        activeTime: activeTimeInMinutes,
+        caloriesBurned: caloriesBurned,
+        activityTypeDistance: activityTypeDistance));
+
+    _linearAccelerationSubscription?.cancel();
+    _gyroscopeSubscription?.cancel();
+    _updateTimer?.cancel();
   }
 
   Future<void> _updateChallengeProgress(ActivityData activityData) async {

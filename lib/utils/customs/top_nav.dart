@@ -9,6 +9,8 @@ import '../../views/notifications_page.dart';
 class TopNav extends StatelessWidget implements PreferredSizeWidget {
   final TopNavViewModel _viewModel = TopNavViewModel();
 
+  TopNav({super.key});
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>?>(

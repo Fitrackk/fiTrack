@@ -6,7 +6,7 @@ import '../configures/routes.dart';
 import '../view_models/registration.dart';
 
 class UserData extends StatelessWidget {
-  const UserData({Key? key});
+  const UserData({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class UserData extends StatelessWidget {
 }
 
 class DataForm extends StatefulWidget {
-  const DataForm({Key? key});
+  const DataForm({super.key});
 
   @override
   _DataFormState createState() => _DataFormState();

@@ -3,7 +3,7 @@ import 'package:fitrack/configures/text_style.dart';
 import 'package:flutter/material.dart';
 
 class StartedPage extends StatelessWidget {
-  const StartedPage({Key? key});
+  const StartedPage({super.key});
 
   @override
   Widget build(BuildContext context) {

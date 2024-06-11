@@ -8,7 +8,7 @@ class NotificationsCard extends StatefulWidget {
   final String time;
   final int? daysAgo;
 
-  NotificationsCard({
+  const NotificationsCard({
     super.key,
     required this.icon,
     required this.text,

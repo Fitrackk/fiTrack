@@ -4,7 +4,8 @@ import '../../configures/color_theme.dart';
 
 class DatePicker extends StatefulWidget {
   final TextEditingController dateController;
-  DatePicker({super.key, required this.dateController});
+
+  const DatePicker({super.key, required this.dateController});
 
   @override
   State<DatePicker> createState() => _DatePickerState();
