@@ -84,6 +84,7 @@ class _DataFormState extends State<DataForm> {
             ),
             const SizedBox(height: 20),
             TextField(
+              cursorColor: FitColors.primary30,
               controller: _usernameController,
               onChanged: (value) {
                 _authService.validateUserName(value);
@@ -115,6 +116,7 @@ class _DataFormState extends State<DataForm> {
               ),
             const SizedBox(height: 20),
             TextField(
+              cursorColor: FitColors.primary30,
               controller: _fullNameController,
               onChanged: (value) {
                 _authService.validateFullName(value);
@@ -152,6 +154,7 @@ class _DataFormState extends State<DataForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TextField(
+                        cursorColor: FitColors.primary30,
                         keyboardType: TextInputType.number,
                         controller: _heightController,
                         onChanged: (value) {
@@ -191,6 +194,7 @@ class _DataFormState extends State<DataForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TextField(
+                        cursorColor: FitColors.primary30,
                         keyboardType: TextInputType.number,
                         controller: _weightController,
                         onChanged: (value) {
@@ -231,6 +235,7 @@ class _DataFormState extends State<DataForm> {
               onTap: () => _selectDate(context),
               child: AbsorbPointer(
                 child: TextField(
+                  cursorColor: FitColors.primary30,
                   controller: _dateOfBirthController,
                   onChanged: (value) {
                     _authService.validateDateOfBirth(value);

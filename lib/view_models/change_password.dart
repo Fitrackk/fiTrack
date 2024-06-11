@@ -33,7 +33,6 @@ class ChangePasswordVM {
     try {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
-        // Reauthenticate the user first to verify the old password
         AuthCredential credential = EmailAuthProvider.credential(
           email: currentUser.email!,
           password: oldPassword,
@@ -46,7 +45,7 @@ class ChangePasswordVM {
       if (kDebugMode) {
         print('Error changing password: $e');
       }
-      rethrow; // Rethrow the error to be caught by the UI
+      rethrow;
     }
   }
 
@@ -54,13 +53,12 @@ class ChangePasswordVM {
     try {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
-        // Reauthenticate the user first to verify the old password
         AuthCredential credential = EmailAuthProvider.credential(
           email: currentUser.email!,
           password: oldPassword,
         );
         await currentUser.reauthenticateWithCredential(credential);
-        // If reauthentication is successful, return true
+
         return true;
       }
     } catch (e) {
@@ -68,7 +66,7 @@ class ChangePasswordVM {
         print('Error validating old password: $e');
       }
     }
-    // If reauthentication fails, return false
+
     return false;
   }
 }

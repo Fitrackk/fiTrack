@@ -79,8 +79,8 @@ class _SignInContentState extends State<SignInContent> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: InkWell(
-                    onTap: () => Navigator.pushReplacementNamed(
-                        context, '/reset_password'),
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/reset_password'),
                     child: Text("Forget password?",
                         style: TextStyles.bodySmall
                             .copyWith(color: FitColors.secondary10)),
@@ -155,7 +155,7 @@ class _SignInContentState extends State<SignInContent> {
                   },
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(FitColors.primary99),
+                        WidgetStateProperty.all(FitColors.primary99),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

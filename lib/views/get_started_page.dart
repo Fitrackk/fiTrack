@@ -53,14 +53,15 @@ class StartedPage extends StatelessWidget {
                     style: TextStyles.titleMedium
                         .copyWith(color: FitColors.primary30)),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               GestureDetector(
                 onTap: () =>
                     Navigator.pushReplacementNamed(context, '/signing'),
-                child: const Text("Sign In",
-                    style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: FitColors.text30)),
+                child: Text(
+                  "Sign In",
+                  style: TextStyles.labelLargeBold
+                      .copyWith(color: FitColors.text30),
+                ),
               ),
             ],
           ),

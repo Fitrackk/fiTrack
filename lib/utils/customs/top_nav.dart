@@ -25,7 +25,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
           if (snapshot.hasError || snapshot.data == null) {
             return AppBar(
               automaticallyImplyLeading: false,
-              title: const Text('Error fetching data'),
+              title: const Text(' '),
             );
           }
 
@@ -94,7 +94,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                           style: const TextStyle(
                             color: FitColors.primary30,
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: 14,
                           ),
                         ),
                       ),

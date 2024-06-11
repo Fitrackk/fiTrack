@@ -22,11 +22,11 @@ class _JoinChallengeButtonState extends State<JoinChallengeButton> {
           Navigator.pushReplacementNamed(context, '/challenge');
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(FitColors.primary30),
-          padding: MaterialStateProperty.all(
+          backgroundColor: WidgetStateProperty.all(FitColors.primary30),
+          padding: WidgetStateProperty.all(
             const EdgeInsets.symmetric(horizontal: 16.0),
           ),
-          minimumSize: MaterialStateProperty.all(
+          minimumSize: WidgetStateProperty.all(
             Size(double.infinity, currentHeight / 14),
           ),
         ),

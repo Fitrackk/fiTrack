@@ -355,7 +355,7 @@ class RegistrationVM extends ChangeNotifier {
         email: email,
         password: password,
       );
-      Navigator.pushReplacementNamed(
+      Navigator.pushNamed(
         context,
         '/user_data_form',
       );

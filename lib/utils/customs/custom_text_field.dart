@@ -71,13 +71,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
             color: FitColors.placeholder,
             spreadRadius: 0.1,
             blurRadius: 6,
-            offset: Offset(2, 4), // changes
+            offset: Offset(2, 4),
           )
         ],
         color: FitColors.tertiary90,
         borderRadius: BorderRadius.circular(50),
       ),
       child: TextField(
+        cursorColor: FitColors.primary30,
         controller: widget.controller,
         obscureText: widget.obscureText,
         keyboardType: TextInputType.name,

@@ -318,9 +318,9 @@ class _DashboardState extends State<Dashboard> {
         child: ElevatedButton(
           onPressed: () {},
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.transparent),
-            elevation: MaterialStateProperty.all(0),
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
+            backgroundColor: WidgetStateProperty.all(Colors.transparent),
+            elevation: WidgetStateProperty.all(0),
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
           ),
           child: Stack(
             children: [

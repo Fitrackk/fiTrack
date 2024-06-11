@@ -36,30 +36,32 @@ class _MainViewState extends State<MainView> {
     super.dispose();
   }
 
-  Future<bool> _onWillPop() async {
-    if (_currentIndex != 0) {
-      setState(() {
-        _currentIndex = 0;
-      });
-      _pageController.jumpToPage(0);
-      BlocProvider.of<BottomNavBloc>(context).add(BottomNavEvent.home);
-      return false;
+  Future<bool> _onPopInvoked(bool isPopInvoked) async {
+    if (isPopInvoked) {
+      if (_currentIndex != 0) {
+        setState(() {
+          _currentIndex = 0;
+        });
+        _pageController.jumpToPage(0);
+        BlocProvider.of<BottomNavBloc>(context).add(BottomNavEvent.home);
+        return false;
+      }
     }
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      onPopInvoked: _onPopInvoked,
       child: Scaffold(
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
-          children: [
-            const Dashboard(),
-            const ActivityDataPage(),
-            const Challenges(),
+          children: const [
+            Dashboard(),
+            ActivityDataPage(),
+            Challenges(),
             SettingsPage(),
           ],
           onPageChanged: (index) {

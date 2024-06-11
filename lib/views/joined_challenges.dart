@@ -49,22 +49,14 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AnimatedOpacity(
-                      opacity: 1.0,
-                      duration: const Duration(milliseconds: 100),
-                      child: Text(
-                        'Join Challenge',
-                        style: TextStyles.titleMedBold
-                            .copyWith(color: FitColors.text10),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.6,
                           child: TextFormField(
+                            cursorColor: FitColors.primary30,
                             controller: _idController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -125,7 +117,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          'Join !',
+                          'Join Challenge',
                           style: TextStyles.titleMedium
                               .copyWith(color: FitColors.primary95),
                         ),

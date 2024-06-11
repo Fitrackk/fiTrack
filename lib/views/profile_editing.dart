@@ -212,6 +212,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               const SizedBox(height: 16.0),
               TextField(
+                cursorColor: FitColors.primary30,
                 style:
                     TextStyles.bodyMediumBold.copyWith(color: FitColors.text20),
                 controller: _fullNameController,
@@ -224,15 +225,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       TextStyles.labelSmall.copyWith(color: FitColors.error40),
                   focusColor: FitColors.text20,
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: FitColors.tertiary60,
-                        width: 2), // Change line color here
+                    borderSide:
+                        BorderSide(color: FitColors.tertiary60, width: 2),
                   ),
                 ),
                 onChanged: _onFullNameChanged,
               ),
               const SizedBox(height: 16.0),
               TextField(
+                cursorColor: FitColors.primary30,
                 style:
                     TextStyles.bodyMediumBold.copyWith(color: FitColors.text20),
                 controller: _userNameController,
@@ -245,9 +246,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       TextStyles.labelSmall.copyWith(color: FitColors.error40),
                   focusColor: FitColors.text20,
                   focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: FitColors.tertiary60,
-                        width: 2), // Change line color here
+                    borderSide:
+                        BorderSide(color: FitColors.tertiary60, width: 2),
                   ),
                 ),
                 onChanged: _onUserNameChanged,
@@ -258,6 +258,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
+                      cursorColor: FitColors.primary30,
                       keyboardType: TextInputType.number,
                       style: TextStyles.bodyMediumBold
                           .copyWith(color: FitColors.text20),
@@ -284,6 +285,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
+                      cursorColor: FitColors.primary30,
                       keyboardType: TextInputType.number,
                       style: TextStyles.bodyMediumBold
                           .copyWith(color: FitColors.text20),

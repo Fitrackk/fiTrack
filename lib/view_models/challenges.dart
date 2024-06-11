@@ -59,13 +59,12 @@ class ChallengesVM {
 
         List<String> participantImages = [];
         for (String username in participantUsernames) {
-          // Fetch user data for each participant by username
           User? participantData = await _userVM.getUserByUsername(username);
           if (participantData != null) {
             participantImages.add(participantData.profileImageUrl ?? "");
           } else {
-            // If user data not found, use placeholder or default image
-            participantImages.add("");
+            participantImages.add(
+                "https://firebasestorage.googleapis.com/v0/b/fitrack-ar138.appspot.com/o/profile_images%2Funknown.png?alt=media&token=b78193da-27d7-4aa6-b4ef-41f7b51c95e9");
           }
         }
 
@@ -394,7 +393,6 @@ class ChallengesVM {
         for (var doc in querySnapshot.docs) {
           Challenge challenge = Challenge.fromFirestore(doc);
 
-          // Check if challenge date has passed
           if (DateTime.parse(challenge.challengeDate)
               .isBefore(DateTime.now())) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -410,7 +408,6 @@ class ChallengesVM {
             return;
           }
 
-          // Check if the challenge is already full
           if (challenge.participantUsernames.length >=
               challenge.participations) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -426,7 +423,6 @@ class ChallengesVM {
             return;
           }
 
-          // Check if the user already has a challenge on this date
           bool hasChallenge = await hasChallengeOnDate(username, challengeDate);
           if (hasChallenge) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -442,7 +438,6 @@ class ChallengesVM {
             return;
           }
 
-          // Join the challenge if all validations pass
           if (!challenge.participantUsernames.contains(username)) {
             List<String> updatedUsernames =
                 List.from(challenge.participantUsernames)..add(username);
@@ -491,9 +486,7 @@ class ChallengesVM {
         for (var doc in querySnapshot.docs) {
           Challenge challenge = Challenge.fromFirestore(doc);
 
-          // Check if the user is a participant
           if (challenge.participantUsernames.contains(username)) {
-            // Prevent the challenge owner from unjoining
             if (username == challenge.challengeOwner) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -511,7 +504,6 @@ class ChallengesVM {
             int index = challenge.participantUsernames.indexOf(username);
 
             if (index != -1 && index < challenge.participantUsernames.length) {
-              // Remove the username and the corresponding image if they exist at the same index
               List<String> updatedUsernames =
                   List.from(challenge.participantUsernames);
               updatedUsernames.removeAt(index);
@@ -521,7 +513,6 @@ class ChallengesVM {
               if (index < updatedImages.length) {
                 updatedImages.removeAt(index);
               }
-              // Delete the progress document associated with the user
               await FirebaseFirestore.instance
                   .collection('challengeProgress')
                   .doc('${challenge.challengeId}_$username')

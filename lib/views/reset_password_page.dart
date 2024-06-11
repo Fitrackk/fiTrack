@@ -48,8 +48,6 @@ class _ResetPasswordState extends State<ResetPassword> {
               children: [
                 SizedBox(
                   width: currentWidth / 2,
-                  // constraints:
-                  //     const BoxConstraints.tightFor(width: 180, height: 51),
                   child: Center(
                     child: Text(
                       "Forgot password",
@@ -62,7 +60,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             ),
           ),
           const SizedBox(
-            height: 50,
+            height: 30,
           ),
           Container(
             constraints: const BoxConstraints.tightFor(width: 319, height: 60),

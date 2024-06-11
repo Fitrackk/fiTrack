@@ -174,18 +174,20 @@ class _SettingsPageState extends State<SettingsPage> {
                     trailing:
                         const Icon(Icons.logout, color: FitColors.primary30),
                     onTap: () async {
-                      // Show confirmation dialog
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return Theme(
                             data: Theme.of(context).copyWith(
-                              dialogBackgroundColor: FitColors.tertiary80,
+                              dialogBackgroundColor: FitColors.tertiary90,
                             ),
                             child: AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                               content: Text(
                                 '\nAre you sure you want to log out?',
-                                style: TextStyles.bodyMed
+                                style: TextStyles.bodyLarge
                                     .copyWith(color: FitColors.text20),
                               ),
                               actions: <Widget>[

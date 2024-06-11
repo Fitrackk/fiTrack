@@ -115,7 +115,7 @@ class _SignUpState extends State<SignUp> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(FitColors.primary30),
+                          WidgetStateProperty.all(FitColors.primary30),
                     ),
                     child: Text(
                       "Next",
@@ -191,7 +191,7 @@ class _SignUpState extends State<SignUp> {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(FitColors.primary99),
+                          WidgetStateProperty.all(FitColors.primary99),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

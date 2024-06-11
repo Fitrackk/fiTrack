@@ -84,10 +84,8 @@ class UserVM extends ChangeNotifier {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        // If user with given username exists, return the user data
         return models.User?.fromFirestore(querySnapshot.docs.first);
       } else {
-        // If no user found, return null
         return null;
       }
     } catch (e) {

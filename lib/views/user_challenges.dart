@@ -77,10 +77,14 @@ class _UserChallengesState extends State<UserChallenges> {
                     SizedBox(
                       width: 100,
                       child: TextFormField(
+                        cursorColor: FitColors.primary30,
                         controller: _distanceController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           hintText: 'KM',
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: FitColors.primary30),
+                          ),
                         ),
                       ),
                     ),

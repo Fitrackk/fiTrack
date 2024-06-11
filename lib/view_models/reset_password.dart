@@ -32,7 +32,6 @@ class ResetPasswordVM extends ChangeNotifier {
         return;
       }
 
-      // Check email existence
       QuerySnapshot<Map<String, dynamic>> userDocs = await _firestore
           .collection('users')
           .where('email', isEqualTo: email)
@@ -44,7 +43,6 @@ class ResetPasswordVM extends ChangeNotifier {
         return;
       }
 
-      // Reset password
       await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
       _successMessage = 'Password reset email has been sent';
       notifyListeners();
