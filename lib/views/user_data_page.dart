@@ -17,7 +17,7 @@ class UserData extends StatelessWidget {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/signup');
+              Navigator.pushReplacementNamed(context, '/signup');
             },
             icon: const Icon(Icons.arrow_back_ios_new),
             color: FitColors.tertiary60,
@@ -348,7 +348,7 @@ class _DataFormState extends State<DataForm> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/signing');
+                    Navigator.pushReplacementNamed(context, '/signing');
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: FitColors.tertiary50,

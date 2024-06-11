@@ -79,8 +79,8 @@ class _SignInContentState extends State<SignInContent> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: InkWell(
-                    onTap: () =>
-                        Navigator.pushNamed(context, '/reset_password'),
+                    onTap: () => Navigator.pushReplacementNamed(
+                        context, '/reset_password'),
                     child: Text("Forget password?",
                         style: TextStyles.bodySmall
                             .copyWith(color: FitColors.secondary10)),
@@ -110,7 +110,8 @@ class _SignInContentState extends State<SignInContent> {
                         .copyWith(color: FitColors.text30)),
               ),
               GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, '/signup'),
+                  onTap: () =>
+                      Navigator.pushReplacementNamed(context, '/signup'),
                   child: Text(
                     "Sign up",
                     style: TextStyles.labelLargeBold
@@ -150,7 +151,7 @@ class _SignInContentState extends State<SignInContent> {
                 width: MediaQuery.of(context).size.width / 1.7,
                 child: ElevatedButton(
                   onPressed: () {
-                    _authService.signUpWithGoogle(context);
+                    _authService.signWithGoogle(context);
                   },
                   style: ButtonStyle(
                     backgroundColor:

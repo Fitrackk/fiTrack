@@ -7,8 +7,8 @@ import 'package:fitrack/views/setting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class BottomNav extends StatelessWidget {
-  const BottomNav({super.key});
+class Main extends StatelessWidget {
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,7 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   final PageController _pageController = PageController();
+  int _currentIndex = 0;
 
   @override
   void dispose() {
@@ -35,50 +36,79 @@ class _MainViewState extends State<MainView> {
     super.dispose();
   }
 
+  Future<bool> _onWillPop() async {
+    if (_currentIndex != 0) {
+      setState(() {
+        _currentIndex = 0;
+      });
+      _pageController.jumpToPage(0);
+      BlocProvider.of<BottomNavBloc>(context).add(BottomNavEvent.home);
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          const Dashboard(),
-          ActivityDataPage(),
-          const Challenges(),
-          SettingsPage(),
-        ],
-        onPageChanged: (index) {
-          BlocProvider.of<BottomNavBloc>(context)
-              .add(BottomNavEvent.values[index]);
-        },
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            const Dashboard(),
+            const ActivityDataPage(),
+            const Challenges(),
+            SettingsPage(),
+          ],
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            BlocProvider.of<BottomNavBloc>(context)
+                .add(BottomNavEvent.values[index]);
+          },
+        ),
+        bottomNavigationBar: BottomNavView(
+          pageController: _pageController,
+          currentIndex: _currentIndex,
+          onItemTapped: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
       ),
-      bottomNavigationBar: BottomNavView(pageController: _pageController),
     );
   }
 }
 
 class BottomNavView extends StatefulWidget {
   final PageController pageController;
+  final int currentIndex;
+  final ValueChanged<int> onItemTapped;
 
-  const BottomNavView({super.key, required this.pageController});
+  const BottomNavView({
+    super.key,
+    required this.pageController,
+    required this.currentIndex,
+    required this.onItemTapped,
+  });
 
   @override
   _BottomNavViewState createState() => _BottomNavViewState();
 }
 
 class _BottomNavViewState extends State<BottomNavView> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: _selectedIndex,
+      currentIndex: widget.currentIndex,
       selectedItemColor: FitColors.primary20,
       unselectedItemColor: FitColors.primary30,
       onTap: (index) {
-        setState(() {
-          _selectedIndex = index;
-        });
+        widget.onItemTapped(index);
         BlocProvider.of<BottomNavBloc>(context)
             .add(BottomNavEvent.values[index]);
         widget.pageController.animateToPage(index,

@@ -40,7 +40,7 @@ class StartedPage extends StatelessWidget {
               const SizedBox(height: 60),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/signup');
+                  Navigator.pushReplacementNamed(context, '/signup');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: FitColors.primary95,
@@ -55,7 +55,8 @@ class StartedPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/signing'),
+                onTap: () =>
+                    Navigator.pushReplacementNamed(context, '/signing'),
                 child: const Text("Sign In",
                     style: TextStyle(
                         decoration: TextDecoration.underline,

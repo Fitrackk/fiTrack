@@ -35,8 +35,8 @@ class _SignUpState extends State<SignUp> {
               children: [
                 Image.asset(
                   'assets/images/logo.png',
-                  width: 140,
-                  height: 140,
+                  width: 100,
+                  height: 100,
                   fit: BoxFit.cover,
                 ),
                 Text(
@@ -46,7 +46,7 @@ class _SignUpState extends State<SignUp> {
                     color: FitColors.text30,
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 Column(
                   children: [
                     if (_authService.emailError.isNotEmpty)
@@ -146,7 +146,8 @@ class _SignUpState extends State<SignUp> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.pushNamed(context, '/signing');
+                                Navigator.pushReplacementNamed(
+                                    context, '/signing');
                               },
                           ),
                         ],
@@ -186,7 +187,7 @@ class _SignUpState extends State<SignUp> {
                   width: currentWidth / 1.7,
                   child: ElevatedButton(
                     onPressed: () {
-                      _authService.signUpWithGoogle(context);
+                      _authService.signWithGoogle(context);
                     },
                     style: ButtonStyle(
                       backgroundColor:

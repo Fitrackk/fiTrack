@@ -19,7 +19,7 @@ class _JoinChallengeButtonState extends State<JoinChallengeButton> {
       height: currentHeight / 14,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/challenge');
+          Navigator.pushReplacementNamed(context, '/challenge');
         },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(FitColors.primary30),

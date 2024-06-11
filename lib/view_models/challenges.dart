@@ -161,7 +161,7 @@ class ChallengesVM {
     try {
       currentUser = await _userVM.getUserData();
       if (currentUser == null) {
-        Navigator.pushNamed(context, '/signing');
+        Navigator.pushReplacementNamed(context, '/signing');
         return;
       }
 
@@ -266,7 +266,7 @@ class ChallengesVM {
     try {
       currentUser = await _userVM.getUserData();
       if (currentUser == null) {
-        Navigator.pushNamed(context, '/signing');
+        Navigator.pushReplacementNamed(context, '/signing');
         return;
       }
 
@@ -377,7 +377,7 @@ class ChallengesVM {
     try {
       currentUser = await _userVM.getUserData();
       if (currentUser == null) {
-        Navigator.pushNamed(context, '/signing');
+        Navigator.pushReplacementNamed(context, '/signing');
         return;
       }
 

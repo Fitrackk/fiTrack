@@ -52,7 +52,7 @@ class RegistrationVM extends ChangeNotifier {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Future<void> signUpWithGoogle(BuildContext context) async {
+  Future<void> signWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -94,7 +94,7 @@ class RegistrationVM extends ChangeNotifier {
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       if (userCredential.user != null) {
-        Navigator.pushNamed(context, route);
+        Navigator.pushReplacementNamed(context, route);
       }
     } catch (error) {
       if (kDebugMode) {
@@ -355,7 +355,7 @@ class RegistrationVM extends ChangeNotifier {
         email: email,
         password: password,
       );
-      Navigator.pushNamed(
+      Navigator.pushReplacementNamed(
         context,
         '/user_data_form',
       );
@@ -419,7 +419,7 @@ class RegistrationVM extends ChangeNotifier {
         );
 
         if (isUserDataStored) {
-          Navigator.pushNamed(context, '/dashboard');
+          Navigator.pushReplacementNamed(context, '/dashboard');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Failed to store user data',

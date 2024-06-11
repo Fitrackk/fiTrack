@@ -1,4 +1,4 @@
-import 'package:fitrack/utils/customs/bottom_nav.dart';
+import 'package:fitrack/utils/customs/main_view.dart';
 import 'package:fitrack/views/challenges_page.dart';
 import 'package:fitrack/views/notifications_page.dart';
 import 'package:fitrack/views/profile_editing.dart';
@@ -15,7 +15,7 @@ class Routes {
     return {
       '/user_data_form': (context) => const UserData(),
       '/signup': (context) => const SignUp(),
-      '/dashboard': (context) => const BottomNav(),
+      '/dashboard': (context) => const Main(),
       '/reset_password': (context) => const ResetPassword(),
       '/signing': (context) => const Signing(),
       '/challenge': (context) => const Challenges(),
