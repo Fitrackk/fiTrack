@@ -266,7 +266,7 @@ class NotificationsVM {
               "time": DateTime(challengeDate.year, challengeDate.month,
                   challengeDate.day, 0 - 3, 0, 0),
               "message":
-                  "Midnight reminder: Your $challengeName challenge is today!",
+                  "Midnight reminder: Your $challengeName challenge is tomorrow!",
               "type": "challenge",
               "username": username
             },
