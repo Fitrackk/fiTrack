@@ -144,7 +144,7 @@ class ActivityTrackerVM {
       }
     } catch (error) {
       if (kDebugMode) {
-        print('Error fetching document from Firestore: $error');
+        print('fetching document from Firestore: $error');
       }
     }
     return null;
@@ -197,9 +197,9 @@ class ActivityTrackerVM {
 
     final double magnitude = _calculateMagnitude(x, y, z);
 
-    const double walkingThreshold = 2.5;
-    const double joggingThreshold = 4;
-    const double runningThreshold = 6;
+    const double walkingThreshold = 5;
+    const double joggingThreshold = 8;
+    const double runningThreshold = 12;
 
     double strideLengthInMeters = _calculateStrideLength(height);
     double strideLengthInKilometers = strideLengthInMeters / 1000;
@@ -378,8 +378,6 @@ class ActivityTrackerVM {
             int existingStepsCount = (data['stepsCount'] ?? 0).toInt();
             double existingCaloriesBurned =
                 (data['caloriesBurned'] ?? 0.0).toDouble();
-            double existingDistanceTraveled =
-                (data['distanceTraveled'] ?? 0.0).toDouble();
             Map<String, double> existingActivityTypeDistance =
                 Map<String, double>.from(data['activityTypeDistance'] ?? {});
             int newStepsCount =
@@ -389,8 +387,7 @@ class ActivityTrackerVM {
             int newActiveTime = localActivityData.activeTime;
             double newCaloriesBurned = existingCaloriesBurned +
                 (localActivityData.caloriesBurned - existingCaloriesBurned);
-            double newDistanceTraveled =
-                localActivityData.distanceTraveled - existingDistanceTraveled;
+            double newDistanceTraveled = localActivityData.distanceTraveled;
             Map<String, double> newActivityTypeDistance = {
               ...existingActivityTypeDistance
             };
@@ -525,11 +522,7 @@ class ActivityTrackerVM {
 
         double newProgress =
             (currentDistanceForType / challengeProgress.distance) * 1000;
-        challengeProgress.progress += newProgress;
-
-        if (kDebugMode) {
-          print("New progress calculated: $newProgress");
-        }
+        challengeProgress.progress = newProgress;
 
         await _firestore
             .collection('challengeProgress')

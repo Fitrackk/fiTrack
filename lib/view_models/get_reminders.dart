@@ -17,7 +17,7 @@ class NotificationsVM {
         if (userDoc.exists) {
           String username = userDoc['username'];
           DateTime now = DateTime.now();
-          DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+          DateTime adjustedNow = now.subtract(const Duration(hours: 3));
 
           var querySnapshot = await FirebaseFirestore.instance
               .collection('notifications')
@@ -26,16 +26,16 @@ class NotificationsVM {
 
           List<QueryDocumentSnapshot> filteredDocs =
               querySnapshot.docs.where((doc) {
-            DateTime scheduledDateTime = dateFormat
-                .parse(doc['scheduledDate'] + ' ' + doc['scheduledTime']);
-            return scheduledDateTime.isBefore(now);
+            DateTime scheduledDateTime = DateFormat("yyyy-MM-ddTHH:mm:ss")
+                .parse(doc['scheduledDate'] + 'T' + doc['scheduledTime']);
+            return scheduledDateTime.isBefore(adjustedNow);
           }).toList();
 
           filteredDocs.sort((a, b) {
-            DateTime aDateTime =
-                dateFormat.parse(a['scheduledDate'] + ' ' + a['scheduledTime']);
-            DateTime bDateTime =
-                dateFormat.parse(b['scheduledDate'] + ' ' + b['scheduledTime']);
+            DateTime aDateTime = DateFormat("yyyy-MM-ddTHH:mm:ss")
+                .parse(a['scheduledDate'] + 'T' + a['scheduledTime']);
+            DateTime bDateTime = DateFormat("yyyy-MM-ddTHH:mm:ss")
+                .parse(b['scheduledDate'] + 'T' + b['scheduledTime']);
             return bDateTime.compareTo(aDateTime);
           });
 

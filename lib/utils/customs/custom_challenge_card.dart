@@ -258,14 +258,10 @@ class _CustomChallengeCardState extends State<CustomChallengeCard> {
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Text(
-                                                'Are you sure?',
-                                                style: TextStyles.titleMedium,
-                                              ),
                                               const SizedBox(height: 20),
                                               Text(
-                                                'Are you sure you want to unjoin the challenge "${widget.challengeName}"?',
-                                                style: TextStyles.bodyMed,
+                                                'Are you sure you want to unjoin "${widget.challengeName}" challenge?',
+                                                style: TextStyles.bodyLarge,
                                                 textAlign: TextAlign.center,
                                               ),
                                               const SizedBox(height: 20),

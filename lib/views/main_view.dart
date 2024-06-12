@@ -55,22 +55,27 @@ class _MainViewState extends State<MainView> {
     return PopScope(
       onPopInvoked: _onPopInvoked,
       child: Scaffold(
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: const [
-            Dashboard(),
-            ActivityDataPage(),
-            Challenges(),
-            SettingsPage(),
-          ],
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-            BlocProvider.of<BottomNavBloc>(context)
-                .add(BottomNavEvent.values[index]);
+        body: BlocListener<BottomNavBloc, int>(
+          listener: (context, state) {
+            _pageController.jumpToPage(state);
           },
+          child: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: const [
+              Dashboard(),
+              ActivityDataPage(),
+              Challenges(),
+              SettingsPage(),
+            ],
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+              BlocProvider.of<BottomNavBloc>(context)
+                  .add(BottomNavEvent.values[index]);
+            },
+          ),
         ),
         bottomNavigationBar: BottomNavView(
           pageController: _pageController,
@@ -79,6 +84,11 @@ class _MainViewState extends State<MainView> {
             setState(() {
               _currentIndex = index;
             });
+            BlocProvider.of<BottomNavBloc>(context)
+                .add(BottomNavEvent.values[index]);
+            _pageController.animateToPage(index,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut);
           },
         ),
       ),

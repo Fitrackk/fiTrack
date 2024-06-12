@@ -44,7 +44,7 @@ class WaterReminderVM {
       }
     } else {
       if (kDebugMode) {
-        print("Error: Current user data not found");
+        print("Current user data not found");
       }
     }
   }

@@ -178,14 +178,44 @@ class _ActivityDataPageState extends State<ActivityDataPage> {
   }
 
   Widget _buildShimmerChart() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        height: 500,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: FitColors.tertiary90,
+    return SizedBox(
+      height: 400,
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: SfCartesianChart(
+          primaryXAxis: CategoryAxis(
+            labelStyle:
+                TextStyles.bodySmallBold.copyWith(color: FitColors.primary20),
+          ),
+          primaryYAxis: NumericAxis(
+            minimum: 0,
+            maximum: 10000,
+            interval: 1000,
+            labelStyle:
+                TextStyles.bodySmall.copyWith(color: FitColors.primary20),
+          ),
+          series: <CartesianSeries>[
+            ColumnSeries<Map<String, dynamic>, String>(
+              dataSource: const [
+                {'day': 'Mon', 'stepsCount': 4000},
+                {'day': 'Tue', 'stepsCount': 6000},
+                {'day': 'Wed', 'stepsCount': 8000},
+                {'day': 'Thu', 'stepsCount': 7000},
+                {'day': 'Fri', 'stepsCount': 9000},
+                {'day': 'Sat', 'stepsCount': 7500},
+                {'day': 'Sun', 'stepsCount': 9500},
+              ],
+              xValueMapper: (data, _) => data['day'] as String,
+              yValueMapper: (data, _) => (data['stepsCount'] as int).toDouble(),
+              name: 'Challenge Progress',
+              color: FitColors.tertiary80,
+              borderColor: FitColors.primary30,
+              borderWidth: 3,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(50), topRight: Radius.circular(50)),
+            ),
+          ],
         ),
       ),
     );
