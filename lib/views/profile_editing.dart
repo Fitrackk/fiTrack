@@ -18,7 +18,6 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _fullNameController = TextEditingController();
-  final _userNameController = TextEditingController();
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
   final _dateOfBirthController = TextEditingController();
@@ -26,7 +25,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   User? _user;
   String? _profileImageUrl;
-  String _usernameError = '';
   String _heightError = '';
   String _weightError = '';
   String _fullNameError = '';
@@ -41,12 +39,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (_user != null) {
       setState(() {
         _fullNameController.text = _user!.fullName ?? '';
-        _userNameController.text = _user!.userName ?? '';
         _heightController.text = _user!.height?.toString() ?? '';
         _weightController.text = _user!.weight?.toString() ?? '';
         _dateOfBirthController.text = _user!.dateOfBirth ?? '';
         _fullNameError = '';
-        _usernameError = '';
         _heightError = '';
         _weightError = '';
       });
@@ -83,7 +79,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       setState(() {
         _user = user;
         _fullNameController.text = user.fullName ?? '';
-        _userNameController.text = user.userName ?? '';
         _heightController.text = user.height?.toString() ?? '';
         _weightController.text = user.weight?.toString() ?? '';
         _profileImageUrl = user.profileImageUrl;
@@ -112,7 +107,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void dispose() {
     _fullNameController.dispose();
-    _userNameController.dispose();
     _heightController.dispose();
     _weightController.dispose();
     _dateOfBirthController.dispose();
@@ -137,13 +131,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     String? error = await _viewModel.validateWeight(value);
     setState(() {
       _weightError = error ?? '';
-    });
-  }
-
-  void _onUserNameChanged(String value) async {
-    String? error = await _viewModel.validateUserName(value);
-    setState(() {
-      _usernameError = error ?? '';
     });
   }
 
@@ -230,27 +217,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                 ),
                 onChanged: _onFullNameChanged,
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                cursorColor: FitColors.primary30,
-                style:
-                    TextStyles.bodyMediumBold.copyWith(color: FitColors.text20),
-                controller: _userNameController,
-                decoration: InputDecoration(
-                  labelText: 'User Name',
-                  labelStyle: TextStyles.titleMedBold
-                      .copyWith(color: FitColors.placeholder),
-                  errorText: _usernameError.isNotEmpty ? _usernameError : null,
-                  errorStyle:
-                      TextStyles.labelSmall.copyWith(color: FitColors.error40),
-                  focusColor: FitColors.text20,
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: FitColors.tertiary60, width: 2),
-                  ),
-                ),
-                onChanged: _onUserNameChanged,
               ),
               const SizedBox(height: 16.0),
               Column(
@@ -343,12 +309,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                           onPressed: () {
                             if (_user != null &&
-                                _usernameError.isEmpty &&
                                 _heightError.isEmpty &&
                                 _weightError.isEmpty &&
                                 _fullNameError.isEmpty) {
                               _user!.fullName = _fullNameController.text;
-                              _user!.userName = _userNameController.text;
                               _user!.height =
                                   double.tryParse(_heightController.text);
                               _user!.weight =

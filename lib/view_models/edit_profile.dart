@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
-import '../utils/validation_utils/validation_utils.dart';
 
 class EditProfile {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -61,14 +60,6 @@ class EditProfile {
     }
   }
 
-  Future<bool> checkUsernameUniqueness(String username) async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-        .collection('users')
-        .where('username', isEqualTo: username)
-        .get();
-    return querySnapshot.docs.isEmpty;
-  }
-
   Future<String?> validateFullName(String fullname) async {
     if (fullname.isEmpty) {
       return 'Full Name is required';
@@ -94,24 +85,6 @@ class EditProfile {
     if (parsedWeight == null || parsedWeight < 21 || parsedWeight > 200) {
       return 'Please enter a valid weight';
     }
-    return null;
-  }
-
-  Future<String?> validateUserName(String username) async {
-    if (username.isEmpty) return 'Username is required';
-    if (username.length < 3) {
-      return 'Username must be at least 3 characters long';
-    }
-    if (!ValidationUtils.isValidUserName(username)) {
-      return 'Username must not contain special characters';
-    }
-    User? currentUser = await fetchUserData();
-    if (currentUser != null && currentUser.userName == username) {
-      return null;
-    }
-    bool isUnique = await checkUsernameUniqueness(username);
-    if (!isUnique) return 'Username is already taken';
-
     return null;
   }
 }
