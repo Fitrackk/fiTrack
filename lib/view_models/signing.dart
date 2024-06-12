@@ -7,7 +7,9 @@ class SignInVM extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String _errorMessage = '';
+
   String get errorMessage => _errorMessage;
+
   set errorMessage(String message) {
     _errorMessage = message;
     notifyListeners();

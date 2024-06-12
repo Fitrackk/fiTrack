@@ -23,6 +23,7 @@ class ActivityTrackerVM {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final StreamController<ActivityData> _activityDataController =
       StreamController<ActivityData>.broadcast();
+
   Stream<ActivityData> get activityDataStream => _activityDataController.stream;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final UserVM _userVM = UserVM();

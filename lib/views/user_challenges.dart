@@ -32,6 +32,7 @@ class _UserChallengesState extends State<UserChallenges> {
   final TextEditingController _reminderController = TextEditingController();
   final userData = getSingleton<UserVM>();
   final challengeData = getSingleton<ChallengesVM>();
+
   void removeChallengeCard() {
     setState(() {
       // Remove the challenge card from the widget tree

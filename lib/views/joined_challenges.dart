@@ -25,6 +25,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
 
   final userData = getSingleton<UserVM>();
   final ChallengesVM challengeVM = ChallengesVM();
+
   void removeChallengeCard() {
     setState(() {
       // Remove the challenge card from the widget tree

@@ -12,6 +12,7 @@ class ResetPasswordVM extends ChangeNotifier {
   String _successMessage = '';
 
   String get emailError => _emailError;
+
   String get successMessage => _successMessage;
 
   void clearErrors() {

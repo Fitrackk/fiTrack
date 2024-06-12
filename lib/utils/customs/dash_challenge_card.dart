@@ -9,6 +9,7 @@ class JoinedChallengeCard extends StatefulWidget {
   final String challengeName;
   final remainingTime;
   final int challengeId;
+
   const JoinedChallengeCard(
       {super.key,
       required this.defaultChallengeProgress,

@@ -5,6 +5,7 @@ import '../../configures/text_style.dart';
 
 class JoinChallengeButton extends StatefulWidget {
   const JoinChallengeButton({super.key});
+
   @override
   State<JoinChallengeButton> createState() => _JoinChallengeButtonState();
 }

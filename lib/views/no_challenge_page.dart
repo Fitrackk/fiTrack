@@ -1,6 +1,7 @@
 import 'package:fitrack/configures/color_theme.dart';
 import 'package:fitrack/configures/text_style.dart';
 import 'package:flutter/material.dart';
+
 class NoChallenge extends StatelessWidget {
   const NoChallenge({super.key});
 
@@ -19,14 +20,20 @@ class NoChallenge extends StatelessWidget {
               color: FitColors.primary30,
             ),
             const SizedBox(height: 40),
-            Text("No Challenges Yet", style: TextStyles.titleLargeBold.copyWith(color: FitColors.text20),),
+            Text(
+              "No Challenges Yet",
+              style:
+                  TextStyles.titleLargeBold.copyWith(color: FitColors.text20),
+            ),
             const SizedBox(height: 40),
             Text(
               "you have no Challenges right now.",
               style: TextStyles.titleMedium.copyWith(color: FitColors.text40),
               textAlign: TextAlign.center,
             ),
-           const SizedBox(height: 40,)
+            const SizedBox(
+              height: 40,
+            )
           ],
         ),
       ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class FitColors {
-
   static const Color background = Color(0xffffffff);
   static const Color placeholder = Color(0x4d053b50);
 
@@ -19,7 +18,6 @@ class FitColors {
   static const Color text99 = Color(0xFFFAFDFF);
   static const Color text100 = Color(0xFFFFFFFF);
 
-
   static const Color primary0 = Color(0xFF000000);
   static const Color primary10 = Color(0xFF07232C);
   static const Color primary20 = Color(0xFF0F4557);
@@ -33,7 +31,6 @@ class FitColors {
   static const Color primary95 = Color(0xFFE9F7FB);
   static const Color primary99 = Color(0xFFFBFDFE);
   static const Color primary100 = Color(0xFFFFFFFF);
-
 
   static const Color secondary0 = Color(0xFF000000);
   static const Color secondary10 = Color(0xFF01322D);
@@ -49,7 +46,6 @@ class FitColors {
   static const Color secondary99 = Color(0xFFFAFFFE);
   static const Color secondary100 = Color(0xFFFFFFFF);
 
-
   static const Color tertiary0 = Color(0xFF000000);
   static const Color tertiary10 = Color(0xFF121D21);
   static const Color tertiary20 = Color(0xFF233A43);
@@ -63,7 +59,6 @@ class FitColors {
   static const Color tertiary95 = Color(0xFFEEF4F6);
   static const Color tertiary99 = Color(0xFFFCFDFD);
   static const Color tertiary100 = Color(0xFFFFFFFF);
-
 
   static const Color warning0 = Color(0xFF000000);
   static const Color warning10 = Color(0xFF331A00);
@@ -79,7 +74,6 @@ class FitColors {
   static const Color warning99 = Color(0xFFFFFCFA);
   static const Color warning100 = Color(0xFFFFFFFF);
 
-
   static const Color error0 = Color(0xFF000000);
   static const Color error10 = Color(0xFF410E0B);
   static const Color error20 = Color(0xFF601410);
@@ -93,7 +87,6 @@ class FitColors {
   static const Color error95 = Color(0xFFFCEEEE);
   static const Color error99 = Color(0xFFFFFBF9);
   static const Color error100 = Color(0xFFFFFFFF);
-
 
   static const Color neutral0 = Color(0xFF000000);
   static const Color neutral10 = Color(0xFF1D1B20);
@@ -109,7 +102,6 @@ class FitColors {
   static const Color neutral99 = Color(0xFFFFFBFE);
   static const Color neutral100 = Color(0xFFFFFFFF);
 
-
   static const Color success0 = Color(0xFF000000);
   static const Color success10 = Color(0xFF000000);
   static const Color success20 = Color(0xFF1F471F);
@@ -123,6 +115,4 @@ class FitColors {
   static const Color success95 = Color(0xFFEDF7ED);
   static const Color success99 = Color(0xFFFBFDFB);
   static const Color success100 = Color(0xFFFFFFFF);
-
-
 }
