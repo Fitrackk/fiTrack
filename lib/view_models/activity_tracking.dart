@@ -402,7 +402,7 @@ class ActivityTrackerVM {
               'distanceTraveled': newDistanceTraveled,
               'stepsCount': newStepsCount,
               'activeTime': newActiveTime,
-              'activityTypeDistance': newActivityTypeDistance,
+              'activityTypeDistance': localActivityData.activityTypeDistance,
               'caloriesBurned': newCaloriesBurned,
             }).then((_) {
               if (kDebugMode) {
@@ -522,7 +522,7 @@ class ActivityTrackerVM {
             (activityData.activityTypeDistance[normalizedActivityType] ?? 0.0);
 
         double newProgress =
-            (currentDistanceForType / challengeProgress.distance) * 1000;
+            (currentDistanceForType / challengeProgress.distance) * 100;
         challengeProgress.progress = newProgress;
 
         await _firestore

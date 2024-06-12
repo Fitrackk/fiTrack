@@ -121,21 +121,31 @@ class ChallengesVM {
     }
   }
 
-  Future<List<ChallengeProgress>> getChallengeProgress(int challengeId) async {
+  Future<ChallengeProgress?> getChallengeProgress(int challengeId) async {
     try {
+      currentUser = await _userVM.getUserData();
+      if (currentUser == null) {
+        return null;
+      }
+
+      username = currentUser!.userName;
+
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('challengeProgress')
           .where('challengeId', isEqualTo: challengeId)
+          .where('username', isEqualTo: username)
           .get();
 
-      return querySnapshot.docs.map((doc) {
-        return ChallengeProgress.fromFirestore(doc);
-      }).toList();
+      if (querySnapshot.docs.isEmpty) {
+        return null; // Return null if no progress is found for the user
+      }
+
+      return ChallengeProgress.fromFirestore(querySnapshot.docs.first);
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching challenge progress: $e");
       }
-      return [];
+      return null;
     }
   }
 

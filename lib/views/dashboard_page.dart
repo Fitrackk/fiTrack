@@ -201,49 +201,53 @@ class _DashboardState extends State<Dashboard> {
                     List<Challenge> challenges =
                         snapshot.data as List<Challenge>;
                     if (challenges.isNotEmpty) {
+                      List<Widget> challengeCards = [];
+
                       for (var challenge in challenges) {
                         if (challenge.challengeDate == todayDate) {
-                          return FutureBuilder<List<ChallengeProgress>>(
-                            future: ChallengesVM()
-                                .getChallengeProgress(challenge.challengeId),
-                            builder: (context, progressSnapshot) {
-                              if (progressSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return _buildShimmerCard();
-                              } else if (progressSnapshot.hasError) {
-                                return Center(
-                                  child:
-                                      Text('Error: ${progressSnapshot.error}'),
-                                );
-                              } else if (progressSnapshot.hasData) {
-                                double totalProgress = 0;
-                                progressSnapshot.data?.forEach((progress) {
-                                  totalProgress += progress.progress;
-                                });
+                          challengeCards.add(
+                            FutureBuilder<ChallengeProgress?>(
+                              future: ChallengesVM()
+                                  .getChallengeProgress(challenge.challengeId),
+                              builder: (context, progressSnapshot) {
+                                if (progressSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return _buildShimmerCard();
+                                } else if (progressSnapshot.hasError) {
+                                  return Center(
+                                    child: Text(
+                                        'Error: ${progressSnapshot.error}'),
+                                  );
+                                } else if (progressSnapshot.hasData) {
+                                  ChallengeProgress? progress =
+                                      progressSnapshot.data;
+                                  double progressPercentage = progress == null
+                                      ? 0
+                                      : progress.progress * 100;
 
-                                double progressPercentage =
-                                    progressSnapshot.data!.isEmpty
-                                        ? 0
-                                        : totalProgress /
-                                            progressSnapshot.data!.length;
-
-                                return JoinedChallengeCard(
-                                  defaultChallengeProgress:
-                                      progressPercentage.toInt(),
-                                  remainingTime: getRemainingTime(),
-                                  challengeName: challenge.challengeName,
-                                  challengeId: challenge.challengeId,
-                                );
-                              } else if (progressSnapshot.hasError) {
-                                return Text("Error: ${progressSnapshot.error}");
-                              } else {
-                                return const Text(" ");
-                              }
-                            },
+                                  return JoinedChallengeCard(
+                                    defaultChallengeProgress:
+                                        progressPercentage.toInt(),
+                                    remainingTime: getRemainingTime(),
+                                    challengeName: challenge.challengeName,
+                                    challengeId: challenge.challengeId,
+                                  );
+                                } else {
+                                  return const Text(" ");
+                                }
+                              },
+                            ),
                           );
                         }
                       }
-                      return const JoinChallengeButton();
+
+                      if (challengeCards.isNotEmpty) {
+                        return Column(
+                          children: challengeCards,
+                        );
+                      } else {
+                        return const JoinChallengeButton();
+                      }
                     } else {
                       return const JoinChallengeButton();
                     }

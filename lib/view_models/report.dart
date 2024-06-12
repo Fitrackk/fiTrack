@@ -120,7 +120,7 @@ class ActivityDataVM {
           if (progress.isNotEmpty) {
             ChallengeProgress challengeProgress =
                 progress.firstWhere((p) => p.challengeId == challengeId);
-            progressValue = challengeProgress.progress;
+            progressValue = challengeProgress.progress * 100;
           }
 
           num progressVal = progressValue is double

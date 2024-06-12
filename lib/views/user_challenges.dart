@@ -245,7 +245,7 @@ class _UserChallengesState extends State<UserChallenges> {
                           itemCount: challenges.length,
                           itemBuilder: (context, index) {
                             Challenge challenge = challenges[index];
-                            return FutureBuilder<List<ChallengeProgress>>(
+                            return FutureBuilder<ChallengeProgress?>(
                               future: challengeData
                                   .getChallengeProgress(challenge.challengeId),
                               builder: (context, progressSnapshot) {
@@ -258,16 +258,12 @@ class _UserChallengesState extends State<UserChallenges> {
                                         'Error: ${progressSnapshot.error}'),
                                   );
                                 } else if (progressSnapshot.hasData) {
-                                  double totalProgress = progressSnapshot.data!
-                                      .fold(
-                                          0,
-                                          (sum, progress) =>
-                                              sum + progress.progress);
-                                  double progressPercentage =
-                                      progressSnapshot.data!.isEmpty
-                                          ? 0
-                                          : totalProgress /
-                                              progressSnapshot.data!.length;
+                                  ChallengeProgress? progress =
+                                      progressSnapshot.data;
+                                  double progressPercentage = progress == null
+                                      ? 0
+                                      : progress.progress * 100;
+
                                   return Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 15, 0, 5),

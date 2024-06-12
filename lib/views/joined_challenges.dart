@@ -178,7 +178,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                             itemCount: joinedChallenges.length,
                             itemBuilder: (context, index) {
                               Challenge challenge = joinedChallenges[index];
-                              return FutureBuilder<List<ChallengeProgress>>(
+                              return FutureBuilder<ChallengeProgress?>(
                                 future: ChallengesVM().getChallengeProgress(
                                     challenge.challengeId),
                                 builder: (context, progressSnapshot) {
@@ -191,16 +191,11 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                                           'Error: ${progressSnapshot.error}'),
                                     );
                                   } else if (progressSnapshot.hasData) {
-                                    double totalProgress = 0;
-                                    progressSnapshot.data?.forEach((progress) {
-                                      totalProgress += progress.progress;
-                                    });
-
-                                    double progressPercentage =
-                                        progressSnapshot.data!.isEmpty
-                                            ? 0
-                                            : totalProgress /
-                                                progressSnapshot.data!.length;
+                                    ChallengeProgress? progress =
+                                        progressSnapshot.data;
+                                    double progressPercentage = progress == null
+                                        ? 0
+                                        : progress.progress * 100;
 
                                     return SingleChildScrollView(
                                       child: Column(
@@ -228,9 +223,7 @@ class _JoinedChallengesState extends State<JoinedChallenges> {
                                                 "${progressPercentage.toStringAsFixed(0)}%",
                                             onUnjoin: removeChallengeCard,
                                           ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
+                                          const SizedBox(height: 5),
                                         ],
                                       ),
                                     );
