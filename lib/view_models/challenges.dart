@@ -574,7 +574,7 @@ class ChallengesVM {
   Future<void> deleteOldChallenges() async {
     final DateTime currentDate = DateTime.now();
     final DateTime thresholdDate =
-        currentDate.subtract(const Duration(days: 30));
+        currentDate.subtract(const Duration(days: 1));
 
     try {
       QuerySnapshot querySnapshot =
